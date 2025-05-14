@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>aibarf | Sign Up</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="navbar">
+      <div class="logo">aibarf</div>
+      <nav class="nav-links">
+        <button onclick="location.href='index.html'">Home</button>
+        <button onclick="location.href='login.html'">Login</button>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="page">
+        <h2>Create Account</h2>
+        <form id="signup-form">
+          <input type="text" id="signup-name" placeholder="Username" required />
+          <input type="email" id="signup-email" placeholder="Email" required />
+          <input type="password" id="signup-password" placeholder="Password" required />
+          <input type="password" id="signup-confirm" placeholder="Confirm Password" required />
+          <button type="submit">Sign Up</button>
+        </form>
+      </section>
+    </main>
+
+    <script>
+      document.getElementById('signup-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const name = document.getElementById('signup-name').value;
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+        const confirm = document.getElementById('signup-confirm').value;
+
+        if (password !== confirm) {
+          alert('Passwords do not match');
+          return;
+        }
+
+        try {
+          const res = await fetch('https://aibarf-auth.coryzuber.workers.dev/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password })
+          });
+          const json = await res.json();
+          if (res.ok) {
+            alert('Account created successfully! Redirecting to login.');
+            location.href = 'login.html';
+          } else {
+            alert(json.error || 'Signup failed');
+          }
+        } catch (err) {
+          console.error(err);
+          alert('An unexpected error occurred.');
+        }
+      });
+    </script>
+  </body>
+</html>
