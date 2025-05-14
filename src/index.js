@@ -1,5 +1,5 @@
 // Cloudflare Worker: src/index.js
-// Handles CORS preflight, signup, login with D1 and Web Crypto
+// Handles CORS, signup, login, username/email availability with D1 and Web Crypto
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -39,15 +39,51 @@ function validatePassword(password) {
 
 export default {
   async fetch(request, env) {
+    const url = new URL(request.url);
+    const { pathname } = url;
+
     // Handle CORS preflight
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: CORS_HEADERS });
     }
 
-    const url = new URL(request.url);
-    const { pathname } = url;
+    // Username availability check
+    if (pathname === '/check-username' && request.method === 'GET') {
+      const name = url.searchParams.get('username');
+      if (!name) {
+        return new Response(JSON.stringify({ error: 'Missing username' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        });
+      }
 
-    // Signup endpoint
+      const exists = await env.DB.prepare('SELECT id FROM users WHERE name = ?')
+        .bind(name).first();
+
+      return new Response(JSON.stringify({ available: !exists }), {
+        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+      });
+    }
+
+    // Email availability check
+    if (pathname === '/check-email' && request.method === 'GET') {
+      const email = url.searchParams.get('email');
+      if (!email) {
+        return new Response(JSON.stringify({ error: 'Missing email' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        });
+      }
+
+      const exists = await env.DB.prepare('SELECT id FROM users WHERE email = ?')
+        .bind(email.toLowerCase()).first();
+
+      return new Response(JSON.stringify({ available: !exists }), {
+        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+      });
+    }
+
+    // Signup
     if (pathname === '/signup' && request.method === 'POST') {
       const { name, email, password } = await request.json();
       if (!name || !email || !password) {
@@ -65,7 +101,6 @@ export default {
         });
       }
 
-      // Check email uniqueness
       const emailExists = await env.DB.prepare('SELECT id FROM users WHERE email = ?')
         .bind(email).first();
       if (emailExists) {
@@ -75,7 +110,6 @@ export default {
         });
       }
 
-      // Check username uniqueness
       const nameExists = await env.DB.prepare('SELECT id FROM users WHERE name = ?')
         .bind(name).first();
       if (nameExists) {
@@ -109,7 +143,7 @@ export default {
       }
     }
 
-    // Login endpoint
+    // Login
     if (pathname === '/login' && request.method === 'POST') {
       const { email, password } = await request.json();
       if (!email || !password) {
@@ -122,6 +156,7 @@ export default {
       const row = await env.DB.prepare(
         'SELECT password_hash, user_id FROM password_logins WHERE email = ?'
       ).bind(email).first();
+
       if (!row || !(await verifyPassword(password, row.password_hash))) {
         return new Response(JSON.stringify({ error: 'Invalid credentials' }), {
           status: 401,
@@ -131,13 +166,13 @@ export default {
 
       const user = await env.DB.prepare('SELECT name FROM users WHERE id = ?')
         .bind(row.user_id).first();
+
       return new Response(JSON.stringify({ name: user.name }), {
         status: 200,
         headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
       });
     }
 
-    // Not found
     return new Response('Not found', { status: 404, headers: CORS_HEADERS });
   }
 };
