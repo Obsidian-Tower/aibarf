@@ -1,220 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>aibarf | Sign Up</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Mobile-first base styles */
+    :root {
+      --bg: #0a0a0a;
+      --card: #121212;
+      --fg: #cccccc;
+      --accent: #2b7dfc;
+      --error: #d32f2f;
+      --success: #28a745;
+      --border-radius: 0.5rem;
+      --border-width: 0.125rem;
+      --input-height: 3rem;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      padding: 1rem;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 24rem;
+      margin: 2rem auto;
+      background: var(--card);
+      padding: 1.5rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 0 1rem rgba(0,0,0,0.6);
+    }
+    h2 { font-size: 1.5rem; margin-bottom: 1rem; text-align: center; }
+    form { display: flex; flex-direction: column; gap: 1.5rem; }
+    label { font-size: 0.9rem; margin-bottom: 0.25rem; }
+    input[type]:is(text, email, password) {
+      width: 100%;
+      height: var(--input-height);
+      padding: 0 0.75rem;
+      border: var(--border-width) solid #444;
+      border-radius: var(--border-radius);
+      background: #181818;
+      color: var(--fg);
+      font-size: 1rem;
+      transition: border-color 150ms, box-shadow 150ms;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0.5rem rgba(43,125,252,0.5);
+    }
+    .error { border-color: var(--error) !important; }
+    .valid { border-color: var(--success) !important; }
+    .form-group { display: flex; flex-direction: column; }
+    .help-text { font-size: 0.8rem; color: #888; margin-top: 0.25rem; }
+    .error-text { font-size: 0.8rem; color: var(--error); margin-top: 0.25rem; min-height:1rem; }
+    .strength-meter { font-size: 0.9rem; margin-top:0.25rem; min-height:1rem; }
+    .requirement-list { list-style: none; padding-left:1rem; font-size:0.8rem; color:#666; }
+    .requirement-list .met { color: var(--success); }
+    .toggle-btn {
+      position: absolute; right:0.75rem; top:50%; transform: translateY(-50%);
+      background:transparent; border:none; color:var(--fg); cursor:pointer;
+      font-size:0.9rem;
+    }
+    .checkbox-group { display: flex; align-items: center; gap:0.5rem; }
+    .checkbox-group input { width: auto; height: auto; margin:0; }
+    button[type="submit"] {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--border-radius);
+      height: var(--input-height);
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, opacity 0.2s;
+    }
+    button[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .banner { text-align:center; padding:0.75rem; border-radius:var(--border-radius); }
+    .banner.error { background: var(--error); color:#fff; margin-bottom:1rem; }
+    .banner.success { background: var(--success); color:#fff; margin-bottom:1rem; }
+    @media (min-width: 600px) {
+      .container { padding:2rem; }
+      h2 { font-size:1.75rem; }
+    }
+  </style>
 </head>
 <body>
-  <header class="navbar">
-    <div class="logo">aibarf</div>
-    <nav class="nav-links">
-      <a class="button" href="index.html">Home</a>
-      <a class="button" href="login.html">Login</a>
-    </nav>
-  </header>
-
-  <main class="container">
-    <section class="signup-page page">
-      <h2>Create Account</h2>
-
-      <!-- Global error & success banners -->
-      <div id="form-error" style="display:none;background:#b00020;color:#fff;padding:1rem;border-radius:var(--radius);margin-bottom:1.5rem;" role="alert"></div>
-      <div id="success-banner" style="display:none;background:#2e7d32;color:#fff;padding:1rem;border-radius:var(--radius);margin-bottom:1.5rem;" role="alert">
-        Account created! Check your email to verify your account.
+  <div class="container">
+    <h2>Sign Up</h2>
+    <div id="global-error" class="banner error" style="display:none;"></div>
+    <div id="global-success" class="banner success" style="display:none;"></div>
+    <form id="signup-form" novalidate>
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required autocomplete="username">
+        <div id="username-error" class="error-text"></div>
+        <div id="username-help" class="help-text">3–20 letters or numbers.</div>
       </div>
-
-      <form id="signup-form" novalidate>
-        <!-- Username -->
-        <div class="form-group">
-          <label for="signup-name">Username</label>
-          <input type="text" id="signup-name" name="username" required aria-describedby="username-help username-error" />
-          <div id="username-help" class="help-text">3–20 characters: letters and numbers only.</div>
-          <div id="username-error" class="error-message" aria-live="polite" style="min-height:1.4em;color:var(--fg);"></div>
-        </div>
-
-        <!-- Email -->
-        <div class="form-group">
-          <label for="signup-email">Email</label>
-          <input type="email" id="signup-email" name="email" required aria-describedby="email-help email-error" />
-          <div id="email-help" class="help-text">We’ll send you a verification email.</div>
-          <div id="email-error" class="error-message" aria-live="polite" style="min-height:1.4em;color:var(--fg);"></div>
-        </div>
-
-        <!-- Password -->
-        <div class="form-group">
-          <label for="signup-password">Password</label>
-          <div style="position:relative;">
-            <input type="password" id="signup-password" name="password" required aria-describedby="password-help password-error password-strength" style="padding-right:4rem;" />
-            <button type="button" id="toggle-password" aria-label="Show password" style="position:absolute;right:0.5rem;top:50%;transform:translateY(-50%);background:transparent;border:none;color:var(--fg);cursor:pointer;font-size:1rem;">Show</button>
-          </div>
-          <div id="password-help" class="help-text">At least 8 characters, including letters and numbers.</div>
-          <div id="password-strength" class="strength-meter" aria-live="polite" style="min-height:1.4em;color:var(--fg);"></div>
-          <div id="password-error" class="error-message" aria-live="polite" style="min-height:1.4em;color:var(--fg);"></div>
-          <ul id="password-requirements" class="requirement-list" style="list-style:none;padding-left:1rem;margin-top:0.5rem;">
-            <li id="pw-req-length" class="requirement-item">At least 8 characters</li>
-            <li id="pw-req-letter" class="requirement-item">Contains a letter</li>
-            <li id="pw-req-number" class="requirement-item">Contains a number</li>
-          </ul>
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="form-group">
-          <label for="signup-confirm">Confirm Password</label>
-          <input type="password" id="signup-confirm" name="confirm" required aria-describedby="confirm-error" />
-          <div id="confirm-error" class="error-message" aria-live="polite" style="min-height:1.4em;color:var(--fg);"></div>
-        </div>
-
-        <!-- TOS -->
-        <div class="form-group">
-          <input type="checkbox" id="tos" name="tos" required />
-          <label for="tos">I agree to the <a href="terms.html" target="_blank">Terms of Service</a> and <a href="privacy.html" target="_blank">Privacy Policy</a></label>
-          <div id="tos-error" class="error-message" aria-live="polite" style="min-height:1.4em;color:var(--fg);"></div>
-        </div>
-
-        <!-- Newsletter Opt-In -->
-        <div class="form-group">
-          <input type="checkbox" id="newsletter" name="newsletter" />
-          <label for="newsletter">Subscribe to our newsletter (optional)</label>
-        </div>
-
-        <!-- Honeypot for bots -->
-        <div style="display:none;"><label for="website">Website</label><input type="text" id="website" name="website" /></div>
-
-        <!-- Submit -->
-        <button type="submit" id="submit-button">Sign Up</button>
-      </form>
-    </section>
-  </main>
-
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required autocomplete="email">
+        <div id="email-error" class="error-text"></div>
+      </div>
+      <div class="form-group" style="position:relative;">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required autocomplete="new-password">
+        <button type="button" id="toggle-password" class="toggle-btn">Show</button>
+        <div id="password-error" class="error-text"></div>
+        <div id="password-strength" class="strength-meter"></div>
+        <ul class="requirement-list">
+          <li id="req-length">At least 8 characters</li>
+          <li id="req-letter">Contains a letter</li>
+          <li id="req-number">Contains a number</li>
+        </ul>
+      </div>
+      <div class="form-group">
+        <label for="confirm">Confirm Password</label>
+        <input type="password" id="confirm" name="confirm" required autocomplete="new-password">
+        <div id="confirm-error" class="error-text"></div>
+      </div>
+      <div class="form-group checkbox-group">
+        <input type="checkbox" id="tos" name="tos" required>
+        <label for="tos">I agree to the <a href="#" style="color:var(--accent);">Terms</a></label>
+      </div>
+      <div id="tos-error" class="error-text"></div>
+      <div class="form-group checkbox-group">
+        <input type="checkbox" id="newsletter" name="newsletter">
+        <label for="newsletter">Subscribe to newsletter</label>
+      </div>
+      <!-- Honeypot -->
+      <div style="display:none;"><label for="website">Website</label><input type="text" id="website" name="website"></div>
+      <button type="submit" id="submit">Sign Up</button>
+    </form>
+  </div>
   <script>
-    const usernameInput = document.getElementById('signup-name');
-    const usernameError = document.getElementById('username-error');
-    let usernameTimer;
+    const apiBase = 'https://aibarf-auth.coryzuber.workers.dev';
+    const form = document.getElementById('signup-form');
+    const globalError = document.getElementById('global-error');
+    const globalSuccess = document.getElementById('global-success');
 
-    usernameInput.addEventListener('input', () => {
-      clearTimeout(usernameTimer);
-      usernameError.textContent = '';
-      const val = usernameInput.value.trim();
-      if (val.length < 3) return;  // too short to check
-      usernameError.textContent = 'Checking…';
-      usernameTimer = setTimeout(async () => {
+    const qs = id => document.getElementById(id);
+    const setError = (el, msg) => {
+      el.textContent = msg;
+      if (msg) el.previousElementSibling.classList.add('error');
+      else el.previousElementSibling.classList.remove('error');
+    };
+
+    // Username availability
+    let userTimer;
+    qs('username').addEventListener('input', e => {
+      clearTimeout(userTimer);
+      setError(qs('username-error'), '');
+      const val = e.target.value.trim();
+      if (val.length < 3) return;
+      userTimer = setTimeout(async () => {
         try {
-          const res = await fetch(`https://aibarf-auth.coryzuber.workers.dev/check-username?username=${encodeURIComponent(val)}`);
+          const res = await fetch(`${apiBase}/check-username?username=${encodeURIComponent(val)}`);
           const { available } = await res.json();
           if (available) {
-            usernameError.textContent = 'Username available!';
-            usernameError.style.color = 'var(--accent)';
+            setError(qs('username-error'), 'Available');
+            qs('username').classList.add('valid');
           } else {
-            usernameError.textContent = 'Username already taken';
-            usernameError.style.color = 'var(--fg)';
+            setError(qs('username-error'), 'Taken');
           }
-        } catch (e) {
-          usernameError.textContent = 'Error checking username';
+        } catch {
+          setError(qs('username-error'), 'Error checking');
         }
       }, 500);
     });
 
-
-    const emailInput = document.getElementById('signup-email');
-    const emailError = document.getElementById('email-error');
-    emailInput.addEventListener('input', () => {
-      emailError.textContent = '';
-      const val = emailInput.value;
-      if (val && !/^\S+@\S+\.\S+$/.test(val)) {
-        emailError.textContent = 'Invalid email format';
-      }
+    // Email format
+    qs('email').addEventListener('input', e => {
+      const valid = /^\S+@\S+\.\S+$/.test(e.target.value);
+      setError(qs('email-error'), valid ? '' : 'Invalid email');
     });
 
-    const passwordInput = document.getElementById('signup-password');
-    const pwStrength = document.getElementById('password-strength');
-    const pwReqList = {
-      length: document.getElementById('pw-req-length'),
-      letter: document.getElementById('pw-req-letter'),
-      number: document.getElementById('pw-req-number')
+    // Password strength
+    const pw = qs('password'), strength = qs('password-strength');
+    const reqs = {
+      length: qs('req-length'),
+      letter: qs('req-letter'),
+      number: qs('req-number')
     };
-
-    passwordInput.addEventListener('input', () => {
-      const val = passwordInput.value;
-      let strength = 0;
-      if (val.length >= 8) { strength++; pwReqList.length.classList.add('met'); } else pwReqList.length.classList.remove('met');
-      if (/[A-Za-z]/.test(val)) { strength++; pwReqList.letter.classList.add('met'); } else pwReqList.letter.classList.remove('met');
-      if (/[0-9]/.test(val)) { strength++; pwReqList.number.classList.add('met'); } else pwReqList.number.classList.remove('met');
+    pw.addEventListener('input', () => {
+      const v = pw.value;
+      let score = 0;
+      if (v.length >= 8) { score++; reqs.length.classList.add('met'); } else reqs.length.classList.remove('met');
+      if (/[A-Za-z]/.test(v)) { score++; reqs.letter.classList.add('met'); } else reqs.letter.classList.remove('met');
+      if (/[0-9]/.test(v)) { score++; reqs.number.classList.add('met'); } else reqs.number.classList.remove('met');
       const msgs = ['Too weak','Weak','Good','Strong'];
-      pwStrength.textContent = msgs[strength];
-      pwStrength.style.color = strength > 1 ? 'var(--accent)' : 'var(--fg-muted)';
+      strength.textContent = msgs[score];
+      pw.classList.toggle('valid', score > 1);
+      pw.classList.toggle('error', score < 2 && v.length > 0);
     });
 
-    const togglePwBtn = document.getElementById('toggle-password');
-    togglePwBtn && togglePwBtn.addEventListener('click', () => {
-      const type = passwordInput.type === 'password' ? 'text' : 'password';
-      passwordInput.type = type;
-      togglePwBtn.textContent = type === 'password' ? 'Show' : 'Hide';
+    // Toggle password visibility
+    qs('toggle-password').addEventListener('click', () => {
+      const type = pw.type === 'password' ? 'text' : 'password';
+      pw.type = type;
+      qs('toggle-password').textContent = type === 'password' ? 'Show' : 'Hide';
     });
 
-    const confirmInput = document.getElementById('signup-confirm');
-    const confirmError = document.getElementById('confirm-error');
-    confirmInput.addEventListener('input', () => {
-      confirmError.textContent = confirmInput.value !== passwordInput.value ? 'Passwords do not match' : '';
+    // Confirm match
+    qs('confirm').addEventListener('input', e => {
+      setError(qs('confirm-error'), e.target.value === pw.value ? '' : 'Does not match');
     });
 
-    const form = document.getElementById('signup-form');
-    const formError = document.getElementById('form-error');
-    const successBanner = document.getElementById('success-banner');
-
+    // Form submission
     form.addEventListener('submit', async e => {
       e.preventDefault();
-      formError.style.display = 'none';
-      successBanner.style.display = 'none';
-
-      // TOS
-      if (!document.getElementById('tos').checked) {
-        document.getElementById('tos-error').textContent = 'You must agree to the terms.';
-        return;
-      }
-
-      // Honeypot
-      if (document.getElementById('website').value) return;
-
-      // Disable button
-      const submitBtn = document.getElementById('submit-button');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Signing up...';
-
+      globalError.style.display = globalSuccess.style.display = 'none';
+      if (!qs('tos').checked) { setError(qs('tos-error'), 'Required'); return; }
+      if (qs('website').value) return;
+      const btn = qs('submit'); btn.disabled = true; btn.textContent = 'Signing up...';
       const payload = {
-        name: usernameInput.value,
-        email: emailInput.value,
-        password: passwordInput.value
+        name: qs('username').value,
+        email: qs('email').value,
+        password: pw.value
       };
-
       try {
-        const res = await fetch('https://aibarf-auth.coryzuber.workers.dev/signup', {
+        const res = await fetch(`${apiBase}/signup`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
         const data = await res.json();
         if (!res.ok) {
-          formError.textContent = data.error || 'Signup failed';
-          formError.style.display = 'block';
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Sign Up';
+          globalError.textContent = data.error || 'Error';
+          globalError.style.display = 'block';
         } else {
-          successBanner.style.display = 'block';
-          form.reset();
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Sign Up';
+          globalSuccess.style.display = 'block';
           setTimeout(() => location.href = 'login.html', 3000);
         }
-      } catch (err) {
-        formError.textContent = 'Network error — please try again';
-        formError.style.display = 'block';
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Sign Up';
+      } catch {
+        globalError.textContent = 'Network error';
+        globalError.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Sign Up';
       }
     });
   </script>
