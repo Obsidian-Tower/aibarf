@@ -63,8 +63,7 @@ body {
   display: none;
 }
 
-.page.active {
-  display: block;
+.page:not(.hidden) {
   animation: fadeIn 0.4s ease-in-out;
 }
 
