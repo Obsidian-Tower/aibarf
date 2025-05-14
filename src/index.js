@@ -1,10 +1,17 @@
-// Secure password hashing using Web Crypto
+// Cloudflare Worker: src/index.js
+// Handles CORS preflight, signup, login with D1 and Web Crypto
+
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET,HEAD,POST,OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
 async function hashPassword(password) {
   const enc = new TextEncoder();
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const pwBuf = enc.encode(password);
   const salted = new Uint8Array([...salt, ...pwBuf]);
-
   const hash = await crypto.subtle.digest('SHA-256', salted);
   const full = new Uint8Array([...salt, ...new Uint8Array(hash)]);
   return btoa(String.fromCharCode(...full));
@@ -14,14 +21,11 @@ async function verifyPassword(password, storedHash) {
   const enc = new TextEncoder();
   const bin = atob(storedHash);
   const full = Uint8Array.from(bin, c => c.charCodeAt(0));
-
   const salt = full.slice(0, 16);
   const originalHash = full.slice(16);
-
   const pwBuf = enc.encode(password);
   const salted = new Uint8Array([...salt, ...pwBuf]);
   const testHash = new Uint8Array(await crypto.subtle.digest('SHA-256', salted));
-
   return originalHash.every((b, i) => b === testHash[i]);
 }
 
@@ -34,41 +38,50 @@ function validatePassword(password) {
 }
 
 export default {
-  async fetch(req, env) {
-    const url = new URL(req.url);
-    const path = url.pathname;
-    const method = req.method;
+  async fetch(request, env) {
+    // Handle CORS preflight
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { status: 204, headers: CORS_HEADERS });
+    }
 
-    if (method === 'POST' && path === '/signup') {
-      const { name, email, password } = await req.json();
+    const url = new URL(request.url);
+    const { pathname } = url;
+
+    // Signup endpoint
+    if (pathname === '/signup' && request.method === 'POST') {
+      const { name, email, password } = await request.json();
       if (!name || !email || !password) {
-        return new Response(JSON.stringify({ error: 'Missing name, email, or password' }), {
+        return new Response(JSON.stringify({ error: 'Missing fields' }), {
           status: 400,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
         });
       }
 
-      const passwordErrors = validatePassword(password);
-      if (passwordErrors.length > 0) {
-        return new Response(JSON.stringify({ error: passwordErrors.join(" ") }), {
+      const pwdErrors = validatePassword(password);
+      if (pwdErrors.length) {
+        return new Response(JSON.stringify({ error: pwdErrors.join(' ') }), {
           status: 400,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
         });
       }
 
-      const existingEmail = await env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(email).first();
-      if (existingEmail) {
+      // Check email uniqueness
+      const emailExists = await env.DB.prepare('SELECT id FROM users WHERE email = ?')
+        .bind(email).first();
+      if (emailExists) {
         return new Response(JSON.stringify({ error: 'Email already in use' }), {
           status: 409,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
         });
       }
 
-      const existingName = await env.DB.prepare('SELECT id FROM users WHERE name = ?').bind(name).first();
-      if (existingName) {
+      // Check username uniqueness
+      const nameExists = await env.DB.prepare('SELECT id FROM users WHERE name = ?')
+        .bind(name).first();
+      if (nameExists) {
         return new Response(JSON.stringify({ error: 'Username already taken' }), {
           status: 409,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
         });
       }
 
@@ -77,38 +90,54 @@ export default {
 
       try {
         await env.DB.batch([
-          env.DB.prepare('INSERT INTO users (id, email, name) VALUES (?, ?, ?)').bind(userId, email, name),
-          env.DB.prepare('INSERT INTO password_logins (email, password_hash, user_id) VALUES (?, ?, ?)').bind(email, passwordHash, userId),
-          env.DB.prepare('INSERT INTO auth_providers (provider, provider_user_id, user_id) VALUES (?, ?, ?)').bind('email', email, userId)
+          env.DB.prepare('INSERT INTO users (id, email, name) VALUES (?, ?, ?)')
+            .bind(userId, email, name),
+          env.DB.prepare('INSERT INTO password_logins (email, password_hash, user_id) VALUES (?, ?, ?)')
+            .bind(email, passwordHash, userId),
+          env.DB.prepare('INSERT INTO auth_providers (provider, provider_user_id, user_id) VALUES (?, ?, ?)')
+            .bind('email', email, userId)
         ]);
         return new Response(JSON.stringify({ success: true, userId }), {
-          headers: { 'Content-Type': 'application/json' }
+          status: 201,
+          headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
         });
       } catch (e) {
         return new Response(JSON.stringify({ error: `Signup failed: ${e.message}` }), {
           status: 500,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
         });
       }
     }
 
-    if (method === 'POST' && path === '/login') {
-      const { email, password } = await req.json();
+    // Login endpoint
+    if (pathname === '/login' && request.method === 'POST') {
+      const { email, password } = await request.json();
       if (!email || !password) {
-        return new Response('Missing credentials', { status: 400 });
+        return new Response(JSON.stringify({ error: 'Missing credentials' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        });
       }
 
-      const row = await env.DB.prepare('SELECT password_hash, user_id FROM password_logins WHERE email = ?').bind(email).first();
+      const row = await env.DB.prepare(
+        'SELECT password_hash, user_id FROM password_logins WHERE email = ?'
+      ).bind(email).first();
       if (!row || !(await verifyPassword(password, row.password_hash))) {
-        return new Response('Invalid credentials', { status: 401 });
+        return new Response(JSON.stringify({ error: 'Invalid credentials' }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+        });
       }
 
-      const user = await env.DB.prepare('SELECT name FROM users WHERE id = ?').bind(row.user_id).first();
+      const user = await env.DB.prepare('SELECT name FROM users WHERE id = ?')
+        .bind(row.user_id).first();
       return new Response(JSON.stringify({ name: user.name }), {
-        headers: { 'Content-Type': 'application/json' }
+        status: 200,
+        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
       });
     }
 
-    return new Response('Not Found', { status: 404 });
+    // Not found
+    return new Response('Not found', { status: 404, headers: CORS_HEADERS });
   }
 };
