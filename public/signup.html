@@ -99,19 +99,26 @@
     usernameInput.addEventListener('input', () => {
       clearTimeout(usernameTimer);
       usernameError.textContent = '';
-      const val = usernameInput.value;
-      if (val.length < 3) return;
-      if (!/^[a-zA-Z0-9]+$/.test(val)) {
-        usernameError.textContent = 'Usernames can only contain letters and numbers.';
-        return;
-      }
-      usernameError.textContent = 'Checking username...';
-      usernameTimer = setTimeout(() => {
-        // TODO: Replace with server-side availability check
-        usernameError.textContent = 'Username available!';
-        usernameError.style.color = 'var(--accent)';
+      const val = usernameInput.value.trim();
+      if (val.length < 3) return;  // too short to check
+      usernameError.textContent = 'Checking…';
+      usernameTimer = setTimeout(async () => {
+        try {
+          const res = await fetch(`https://aibarf-auth.coryzuber.workers.dev/check-username?username=${encodeURIComponent(val)}`);
+          const { available } = await res.json();
+          if (available) {
+            usernameError.textContent = 'Username available!';
+            usernameError.style.color = 'var(--accent)';
+          } else {
+            usernameError.textContent = 'Username already taken';
+            usernameError.style.color = 'var(--fg)';
+          }
+        } catch (e) {
+          usernameError.textContent = 'Error checking username';
+        }
       }, 500);
     });
+
 
     const emailInput = document.getElementById('signup-email');
     const emailError = document.getElementById('email-error');
