@@ -13,115 +13,23 @@
     <header class="navbar">
       <div class="logo">aibarf</div>
       <nav class="nav-links">
-        <button onclick="showPage('login')">Login</button>
-        <button onclick="showPage('signup')">Create Account</button>
-        <span id="user-display" class="hidden">👤 <span id="username"></span></span>
+        <a class="button" href="login.html">Login</a>
+        <a class="button" href="signup.html">Create Account</a>
       </nav>
     </header>
 
     <main class="container">
-      <section id="landing" class="page">
-        <h1 style="font-size: 3rem; font-weight: 500;">Welcome to aibarf</h1>
-        <p style="font-size: 1.5rem; max-width: 800px; margin: 2rem auto;">
+      <section class="hero">
+        <h1>Welcome to aibarf</h1>
+        <p>
           A minimalist, forward-thinking image hosting platform designed for
           control, clarity, and creative permanence.
         </p>
         <div class="cta-buttons">
-          <button onclick="showPage('login')">Login</button>
-          <button onclick="showPage('signup')">Create Account</button>
+          <a class="button" href="login.html">Login</a>
+          <a class="button" href="signup.html">Create Account</a>
         </div>
       </section>
-
-      <section id="signup" class="page hidden">
-        <h2>Create Account</h2>
-        <form onsubmit="signup(); return false;">
-          <input type="text" id="signup-name" placeholder="Username" required />
-          <input type="email" id="signup-email" placeholder="Email" required />
-          <input type="password" id="signup-password" placeholder="Password" required />
-          <input type="password" id="signup-confirm" placeholder="Confirm Password" required />
-          <button type="submit">Sign Up</button>
-        </form>
-      </section>
-
-      <section id="login" class="page hidden">
-        <h2>Login</h2>
-        <form onsubmit="login(); return false;">
-          <input type="email" id="login-email" placeholder="Email" required />
-          <input type="password" id="login-password" placeholder="Password" required />
-          <button type="submit">Login</button>
-        </form>
-      </section>
-
-      <section id="account" class="page hidden">
-        <h2>Your Account</h2>
-        <p>Welcome back, <span id="account-name"></span>.</p>
-        <button onclick="logout()">Logout</button>
-      </section>
     </main>
-
-    <script>
-      const pages = ['landing', 'signup', 'login', 'account'];
-
-      function showPage(id) {
-        pages.forEach((p) => document.getElementById(p).classList.add('hidden'));
-        document.getElementById(id).classList.remove('hidden');
-      }
-
-      async function signup() {
-        const name = document.getElementById('signup-name').value;
-        const email = document.getElementById('signup-email').value;
-        const password = document.getElementById('signup-password').value;
-        const confirm = document.getElementById('signup-confirm').value;
-
-        if (password !== confirm) {
-          alert("Passwords do not match");
-          return;
-        }
-
-        const res = await fetch("https://aibarf-auth.coryzuber.workers.dev/signup", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password })
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          loginSuccess(name);
-        } else {
-          const error = await res.json();
-          alert(error.error || "Signup failed");
-        }
-      }
-
-      async function login() {
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
-
-        const res = await fetch("https://aibarf-auth.coryzuber.workers.dev/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password })
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          loginSuccess(data.name);
-        } else {
-          alert("Login failed");
-        }
-      }
-
-      function loginSuccess(name) {
-        document.getElementById("username").textContent = name;
-        document.getElementById("user-display").classList.remove("hidden");
-        document.getElementById("account-name").textContent = name;
-        showPage("account");
-      }
-
-      function logout() {
-        document.getElementById("user-display").classList.add("hidden");
-        showPage("landing");
-      }
-    </script>
   </body>
 </html>
