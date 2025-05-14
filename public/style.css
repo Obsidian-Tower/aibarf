@@ -63,7 +63,9 @@ body {
   display: none;
 }
 
+/* Show any page that is not hidden */
 .page:not(.hidden) {
+  display: block;
   animation: fadeIn 0.4s ease-in-out;
 }
 
