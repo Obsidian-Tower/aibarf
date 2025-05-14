@@ -296,8 +296,8 @@
       const qs = (id) => document.getElementById(id);
 
       const USERNAME_REGEX = /^[a-zA-Z0-9_-]{3,20}$/;
-      const EMAIL_REGEX = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/;
-      const SPECIAL_CHAR_REGEX = /[!@#$%^&*(),.?\":{}|<>]/;
+      const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+      const SPECIAL_CHAR_REGEX = /[!@#$%^&*(),.?":{}|<>]/;
 
       const setError = (el, msg) => {
         el.textContent = msg;
@@ -306,13 +306,13 @@
         input.classList.toggle("error", !!msg);
       };
 
-      // Username availability and format
+      // Username check
       let userTimer;
       qs("username").addEventListener("input", (e) => {
         clearTimeout(userTimer);
-        const msg = qs("username-error");
         const input = e.target;
         const val = input.value.trim();
+        const msg = qs("username-error");
         msg.textContent = "";
         input.classList.remove("valid", "error");
         msg.classList.remove("valid");
@@ -344,7 +344,45 @@
         }, 400);
       });
 
-      // Toggle password visibility
+      // Email check
+      let emailTimer;
+      qs("email").addEventListener("input", (e) => {
+        clearTimeout(emailTimer);
+        const input = e.target;
+        const val = input.value.trim();
+        const msg = qs("email-error");
+        msg.textContent = "";
+        input.classList.remove("valid", "error");
+        msg.classList.remove("valid");
+
+        if (!EMAIL_REGEX.test(val)) {
+          msg.textContent = "Invalid email";
+          input.classList.add("error");
+          return;
+        }
+
+        emailTimer = setTimeout(async () => {
+          try {
+            const res = await fetch(
+              `${apiBase}/check-email?email=${encodeURIComponent(val)}`
+            );
+            const { available } = await res.json();
+            if (available) {
+              msg.textContent = "Available";
+              msg.classList.add("valid");
+              input.classList.add("valid");
+            } else {
+              msg.textContent = "Email already registered";
+              input.classList.add("error");
+            }
+          } catch {
+            msg.textContent = "Error checking";
+            input.classList.add("error");
+          }
+        }, 400);
+      });
+
+      // Toggle password
       qs("toggle-password").addEventListener("click", () => {
         const pw = qs("password");
         const type = pw.type === "password" ? "text" : "password";
@@ -359,7 +397,7 @@
         length: qs("req-length"),
         letter: qs("req-letter"),
         number: qs("req-number"),
-        special: null, // Add manually if you extend your requirement list in UI
+        special: null, // optional expansion
       };
       const strength = qs("password-strength");
 
@@ -400,13 +438,7 @@
         );
       });
 
-      // Email format validation
-      qs("email").addEventListener("input", (e) => {
-        const valid = EMAIL_REGEX.test(e.target.value.trim());
-        setError(qs("email-error"), valid ? "" : "Invalid email");
-      });
-
-      // Form submission
+      // Submission
       const form = document.getElementById("signup-form");
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -429,7 +461,7 @@
         const payload = {
           name: qs("username").value,
           email: qs("email").value,
-          password: pw.value,
+          password: qs("password").value,
         };
 
         try {
