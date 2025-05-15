@@ -201,6 +201,9 @@
     </div>
 
     <script>
+      // Point to your auth Worker’s domain
+      const API = "https://aibarf-auth.coryzuber.workers.dev";
+
       const qs = (id) => document.getElementById(id);
       const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -252,10 +255,11 @@
         btn.textContent = "Logging in…";
 
         try {
-          // POST to same-origin /login endpoint
-          const res = await fetch("/login", {
+          // POST to your Worker’s /login endpoint
+          const res = await fetch(`${API}/login`, {
             method: "POST",
-            credentials: "include", // send/receive cookies
+            mode: "cors", // allow cross-site
+            credentials: "include", // send & receive cookies
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               email: emailEl.value.trim(),
@@ -268,7 +272,7 @@
             globalError.textContent = data.error || "Login failed.";
             globalError.style.display = "block";
           } else {
-            // Redirect to home
+            // On success, redirect to home so nav can call /me
             window.location.href = "/";
           }
         } catch (err) {
