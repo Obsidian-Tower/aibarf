@@ -93,10 +93,21 @@
     </footer>
 
     <script>
+      const API = "https://aibarf-auth.coryzuber.workers.dev";
       const navRight = document.getElementById("nav-right");
 
+      function renderGuest() {
+        navRight.innerHTML = `
+          <a href="login.html">Log In</a>
+          <a href="signup.html"><button>Sign Up</button></a>
+        `;
+      }
+
       // Ask the Worker who we are
-      fetch("/me", { credentials: "include" })
+      fetch(`${API}/me`, {
+        credentials: "include",
+        mode: "cors"
+      })
         .then((res) => res.json())
         .then((data) => {
           if (data.user) {
@@ -109,9 +120,10 @@
               .getElementById("logout-btn")
               .addEventListener("click", () => {
                 // Call /logout to clear the session cookie
-                fetch("/logout", {
+                fetch(`${API}/logout`, {
                   method: "POST",
                   credentials: "include",
+                  mode: "cors"
                 }).then(() => {
                   // Reload to refresh nav
                   location.reload();
@@ -119,18 +131,12 @@
               });
           } else {
             // Guest state
-            navRight.innerHTML = `
-              <a href="login.html">Log In</a>
-              <a href="signup.html"><button>Sign Up</button></a>
-            `;
+            renderGuest();
           }
         })
         .catch(() => {
           // On error, treat as guest
-          navRight.innerHTML = `
-            <a href="login.html">Log In</a>
-            <a href="signup.html"><button>Sign Up</button></a>
-          `;
+          renderGuest();
         });
     </script>
   </body>
