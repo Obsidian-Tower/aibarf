@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>aibarf | Log In</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --card: #121212;
+        --fg: #cccccc;
+        --accent: #2b7dfc;
+        --accent-glow: rgba(43, 125, 252, 0.7);
+        --error: #d32f2f;
+        --radius: 0.5rem;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background: var(--bg);
+        color: var(--fg);
+        padding: 1rem;
+      }
+
+      .container {
+        max-width: 24rem;
+        margin: 3rem auto;
+        background: var(--card);
+        padding: 1rem 2rem 2rem;
+        border-radius: var(--radius);
+        box-shadow: 0 0 1rem rgba(0, 0, 0, 0.6);
+      }
+
+      h2 {
+        text-align: center;
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      label {
+        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+      }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="password"] {
+        height: 2.25rem;
+        padding: 0 0.75rem;
+        font-size: 0.95rem;
+        border-radius: var(--radius);
+        border: 1px solid #444;
+        background: #181818;
+        color: var(--fg);
+        transition: box-shadow 0.25s ease, border-color 0.25s ease;
+      }
+
+      input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 8px 2px var(--accent-glow);
+        outline: none;
+      }
+
+      input.error {
+        border-color: var(--error);
+        box-shadow: 0 0 6px 1px rgba(211, 47, 47, 0.5);
+      }
+
+      .error-text {
+        font-size: 0.8rem;
+        color: var(--error);
+        min-height: 1rem;
+      }
+
+      .toggle-btn {
+        position: absolute;
+        right: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: var(--fg);
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+
+      button[type="submit"] {
+        height: 3rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: var(--radius);
+        background: var(--accent);
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        margin-top: 1rem;
+      }
+
+      button[type="submit"]:hover {
+        background: #1f5ec2;
+      }
+
+      button[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .banner {
+        text-align: center;
+        padding: 0.75rem;
+        border-radius: var(--radius);
+        margin-bottom: 1rem;
+      }
+
+      .banner.error {
+        background: var(--error);
+        color: white;
+      }
+
+      .banner.success {
+        background: var(--accent);
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Log In</h2>
+
+      <div id="global-error" class="banner error" style="display: none"></div>
+      <div
+        id="global-success"
+        class="banner success"
+        style="display: none"
+      ></div>
+
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            autocomplete="email"
+          />
+          <div id="email-error" class="error-text"></div>
+        </div>
+
+        <div class="form-group" style="position: relative">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            autocomplete="current-password"
+          />
+          <button type="button" class="toggle-btn" id="toggle-password">
+            Show
+          </button>
+          <div id="password-error" class="error-text"></div>
+        </div>
+
+        <button type="submit" id="login-submit">Log In</button>
+      </form>
+    </div>
+
+    <script>
+      const apiBase = "https://aibarf-auth.coryzuber.workers.dev";
+      const qs = (id) => document.getElementById(id);
+
+      const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+      // Toggle password visibility
+      qs("toggle-password").addEventListener("click", () => {
+        const pw = qs("password");
+        const type = pw.type === "password" ? "text" : "password";
+        pw.type = type;
+        qs("toggle-password").textContent =
+          type === "password" ? "Show" : "Hide";
+      });
+
+      // Form submission
+      const form = qs("login-form");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = qs("email"),
+          password = qs("password");
+        const emailErr = qs("email-error"),
+          pwErr = qs("password-error");
+        const globalError = qs("global-error"),
+          globalSuccess = qs("global-success");
+        globalError.style.display = globalSuccess.style.display = "none";
+        emailErr.textContent = pwErr.textContent = "";
+
+        // Basic client‑side validation
+        let valid = true;
+        if (!EMAIL_REGEX.test(email.value.trim())) {
+          emailErr.textContent = "Please enter a valid email";
+          email.classList.add("error");
+          valid = false;
+        }
+        if (!password.value) {
+          pwErr.textContent = "Please enter your password";
+          password.classList.add("error");
+          valid = false;
+        }
+        if (!valid) return;
+
+        // Submit to API
+        const btn = qs("login-submit");
+        btn.disabled = true;
+        btn.textContent = "Logging in...";
+
+        try {
+          const res = await fetch(`${apiBase}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: email.value.trim(),
+              password: password.value,
+            }),
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            globalError.textContent = data.error || "Login failed.";
+            globalError.style.display = "block";
+          } else {
+            globalSuccess.textContent = "Success! Redirecting…";
+            globalSuccess.style.display = "block";
+            setTimeout(() => (location.href = "dashboard.html"), 1500);
+          }
+        } catch {
+          globalError.textContent = "Network error. Please try again.";
+          globalError.style.display = "block";
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Log In";
+        }
+      });
+    </script>
+  </body>
+</html>
