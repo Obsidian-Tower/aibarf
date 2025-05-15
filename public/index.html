@@ -1,116 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>aibarf | Home</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --bg: #0a0a0a;
-        --fg: #cccccc;
-        --accent: #2b7dfc;
-        --radius: 0.5rem;
-      }
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        background: var(--bg);
-        color: var(--fg);
-        font-family: "Poppins", sans-serif;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
-      nav {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1rem 2rem;
-      }
-      nav a,
-      nav span {
-        color: var(--fg);
-        text-decoration: none;
-        margin-left: 1rem;
-        font-weight: 500;
-      }
-      nav a:hover {
-        color: var(--accent);
-      }
-      #hero {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        /* reserve space for your logo */
-      }
-      footer {
-        text-align: center;
-        padding: 1rem;
-        font-size: 0.8rem;
-        color: #777;
-      }
-      button {
-        background: var(--accent);
-        color: #fff;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: var(--radius);
-        cursor: pointer;
-      }
-      button:hover {
-        background: #1f5ec2;
-      }
-    </style>
-  </head>
-  <body>
-    <nav>
-      <!-- logo on the left -->
-      <a href="index.html">
-        <img src="/images/aibarf-logo-1.jpeg" alt="aibarf Logo" height="32" />
-      </a>
-      <!-- dynamic right side -->
-      <div id="nav-right">
-        <!-- JS will inject Log In / Sign Up or Username -->
-      </div>
-    </nav>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>aibarf | Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
+        rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --fg: #cccccc;
+      --accent: #2b7dfc;
+      --radius: 0.5rem;
+    }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: "Poppins",sans-serif;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+    nav {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:1rem 2rem;
+    }
+    nav a, nav span, nav button {
+      color: var(--fg);
+      text-decoration:none;
+      margin-left:1rem;
+      font-weight:500;
+      background:none;
+      border:none;
+      cursor:pointer;
+    }
+    nav a:hover, nav button:hover { color: var(--accent); }
+    #hero {
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      /* logo or hero content goes here */
+    }
+    footer {
+      text-align:center;
+      padding:1rem;
+      font-size:0.8rem;
+      color:#777;
+    }
+    button#logout-btn {
+      background: var(--accent);
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+    }
+    button#logout-btn:hover {
+      background: #1f5ec2;
+    }
+  </style>
+</head>
+<body>
 
-    <section id="hero">
-      <!-- empty for now; drop your logo or hero copy here -->
-    </section>
+  <nav>
+    <!-- left side: your logo -->
+    <a href="index.html">
+      <img src="/images/aibarf-logo-1.jpeg" alt="aibarf Logo" height="32"/>
+    </a>
 
-    <footer>
-      &copy; 2025 aibarf. All images synthetic. All minds welcome.
-    </footer>
+    <!-- right side: dynamic -->
+    <div id="nav-right"></div>
+  </nav>
 
-    <script>
-      // Replace this with real auth check (e.g. fetch /me or read a cookie)
-      const isLoggedIn = Boolean(localStorage.getItem("aibarf_user"));
-      const username = localStorage.getItem("aibarf_user");
+  <section id="hero">
+    <!-- empty for now; drop your main content or logo here -->
+  </section>
 
-      const navRight = document.getElementById("nav-right");
-      if (isLoggedIn && username) {
-        navRight.innerHTML = `
-        <span>Hello, ${username}</span>
+  <footer>
+    &copy; 2025 aibarf. All images synthetic. All minds welcome.
+  </footer>
+
+  <script>
+    // On load, decide what to show
+    const navRight = document.getElementById('nav-right');
+    const user = localStorage.getItem('aibarf_user');
+
+    if (user) {
+      navRight.innerHTML = `
+        <span>Hello, ${user}</span>
         <button id="logout-btn">Log Out</button>
       `;
-        document.getElementById("logout-btn").addEventListener("click", () => {
-          localStorage.removeItem("aibarf_user");
-          window.location.reload();
-        });
-      } else {
-        navRight.innerHTML = `
+      document.getElementById('logout-btn').addEventListener('click', () => {
+        localStorage.removeItem('aibarf_user');
+        location.reload();
+      });
+    } else {
+      navRight.innerHTML = `
         <a href="login.html">Log In</a>
         <a href="signup.html"><button>Sign Up</button></a>
       `;
-      }
-    </script>
-  </body>
+    }
+  </script>
+
+</body>
 </html>
