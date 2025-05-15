@@ -40,7 +40,10 @@
         max-width: 24rem;
         margin: 3rem auto;
         background: var(--card);
-        padding: 2rem;
+        padding-left: 2rem;
+        padding-right: 2rem;
+        padding-bottom: 2rem;
+        padding-top: 1rem;
         border-radius: var(--radius);
         box-shadow: 0 0 1rem rgba(0, 0, 0, 0.6);
       }
@@ -126,7 +129,6 @@
       .requirement-list {
         font-size: 0.75rem;
         list-style: none;
-        padding-left: 1rem;
         color: #777;
       }
 
@@ -161,7 +163,6 @@
 
       .checkbox-group label {
         position: relative;
-        top: 0.2em;
       }
 
       button[type="submit"] {
@@ -415,6 +416,11 @@
           </label>
         </div>
 
+        <span
+          class="help-text-inline"
+          style="text-align: center; font-size: 0.7rem"
+          >Click to view Terms</span
+        >
         <div id="tos-error" class="error-text"></div>
 
         <div style="display: none">
@@ -425,7 +431,19 @@
         <button type="submit" id="submit">Sign Up</button>
       </form>
     </div>
-
+    <!-- Terms Modal Overlay -->
+    <div id="terms-modal" class="modal-overlay" hidden>
+      <div class="modal-window">
+        <button id="terms-close" class="modal-close">&times;</button>
+        <!-- full‑page iframe -->
+        <iframe
+          id="terms-iframe"
+          src=""
+          class="modal-iframe"
+          title="Terms of Use"
+        ></iframe>
+      </div>
+    </div>
     <script>
       const apiBase = "https://aibarf-auth.coryzuber.workers.dev";
       const qs = (id) => document.getElementById(id);
@@ -668,19 +686,5 @@
         }
       });
     </script>
-
-    <!-- Terms Modal Overlay -->
-    <div id="terms-modal" class="modal-overlay" hidden>
-      <div class="modal-window">
-        <button id="terms-close" class="modal-close">&times;</button>
-        <!-- full‑page iframe -->
-        <iframe
-          id="terms-iframe"
-          src=""
-          class="modal-iframe"
-          title="Terms of Use"
-        ></iframe>
-      </div>
-    </div>
   </body>
 </html>
