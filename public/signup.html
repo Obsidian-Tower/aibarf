@@ -513,14 +513,30 @@
 
         const levels = ["Too weak", "Weak", "Good", "Strong"];
         strength.textContent = levels[score] || "";
+        // toggle green glow when strength is “Good” (score ≥ 2) or higher
+        if (score >= 3) {
+          pw.classList.add("valid");
+          pw.classList.remove("error");
+        } else {
+          pw.classList.remove("valid");
+        }
       });
 
       // Confirm password
       qs("confirm").addEventListener("input", (e) => {
+        // show/hide the error message
         setError(
           qs("confirm-error"),
           e.target.value === pw.value ? "" : "Does not match"
         );
+
+        // toggle green glow on match
+        if (e.target.value === pw.value) {
+          e.target.classList.add("valid");
+          e.target.classList.remove("error");
+        } else {
+          e.target.classList.remove("valid");
+        }
       });
 
       // Submission
