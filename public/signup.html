@@ -201,6 +201,70 @@
         color: white;
       }
 
+      .terms {
+        font-family: "Poppins", sans-serif;
+        font-size: 1.5rem; /* match your signup page */
+        color: black; /* fill stays black */
+
+        /* 1px stroke starting at red (0°) */
+        -webkit-text-stroke-width: 1px;
+        -webkit-text-stroke-color: hsl(0, 100%, 50%);
+        text-stroke-width: 1px;
+        text-stroke-color: hsl(0, 100%, 50%);
+
+        /* glow in the same hue & brightness */
+        text-shadow: 0 0 8px hsl(0, 100%, 50%), 0 0 16px hsl(0, 100%, 50%);
+
+        /* animate through 7 discrete HSL steps over 7s */
+        animation: hueShift 7s linear infinite;
+
+        margin: 0;
+      }
+
+      @keyframes hueShift {
+        /* Red → Orange → Yellow → Green → Blue → Indigo → Violet → back to Red */
+        0% {
+          -webkit-text-stroke-color: hsl(0, 100%, 50%);
+          text-stroke-color: hsl(0, 100%, 50%);
+          text-shadow: 0 0 8px hsl(0, 100%, 50%), 0 0 16px hsl(0, 100%, 50%);
+        }
+        14.2857% {
+          -webkit-text-stroke-color: hsl(30, 100%, 50%);
+          text-stroke-color: hsl(30, 100%, 50%);
+          text-shadow: 0 0 8px hsl(30, 100%, 50%), 0 0 16px hsl(30, 100%, 50%);
+        }
+        28.5714% {
+          -webkit-text-stroke-color: hsl(60, 100%, 50%);
+          text-stroke-color: hsl(60, 100%, 50%);
+          text-shadow: 0 0 8px hsl(60, 100%, 50%), 0 0 16px hsl(60, 100%, 50%);
+        }
+        42.8571% {
+          -webkit-text-stroke-color: hsl(120, 100%, 50%);
+          text-stroke-color: hsl(120, 100%, 50%);
+          text-shadow: 0 0 8px hsl(120, 100%, 50%), 0 0 16px hsl(120, 100%, 50%);
+        }
+        57.1428% {
+          -webkit-text-stroke-color: hsl(240, 100%, 50%);
+          text-stroke-color: hsl(240, 100%, 50%);
+          text-shadow: 0 0 8px hsl(240, 100%, 50%), 0 0 16px hsl(240, 100%, 50%);
+        }
+        71.4285% {
+          -webkit-text-stroke-color: hsl(275, 100%, 50%);
+          text-stroke-color: hsl(275, 100%, 50%);
+          text-shadow: 0 0 8px hsl(275, 100%, 50%), 0 0 16px hsl(275, 100%, 50%);
+        }
+        85.7142% {
+          -webkit-text-stroke-color: hsl(300, 100%, 50%);
+          text-stroke-color: hsl(300, 100%, 50%);
+          text-shadow: 0 0 8px hsl(300, 100%, 50%), 0 0 16px hsl(300, 100%, 50%);
+        }
+        100% {
+          -webkit-text-stroke-color: hsl(360, 100%, 50%);
+          text-stroke-color: hsl(360, 100%, 50%);
+          text-shadow: 0 0 8px hsl(360, 100%, 50%), 0 0 16px hsl(360, 100%, 50%);
+        }
+      }
+
       @media (min-width: 600px) {
         .container {
           padding: 2.5rem;
@@ -280,7 +344,7 @@
           <input type="checkbox" id="tos" name="tos" required />
           <label for="tos"
             >I agree to the
-            <a href="/terms.html" target="_blank" rel="noopener"
+            <a href="/terms.html" class="terms" target="_blank" rel="noopener"
               >Terms</a
             ></label
           >
