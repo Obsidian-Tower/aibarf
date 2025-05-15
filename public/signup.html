@@ -54,7 +54,7 @@
       form {
         display: flex;
         flex-direction: column;
-        gap: 1.25rem;
+        gap: 0.25rem;
       }
 
       .form-group {
@@ -270,6 +270,19 @@
           padding: 2.5rem;
         }
       }
+      .label-with-help {
+        display: flex; /* make label a flex container */
+        justify-content: space-between; /* push help text to the right */
+        align-items: center;
+        width: 100%; /* span the full form-group width */
+        margin-bottom: 0.5rem; /* space before the input */
+        font-size: 0.9rem; /* same as your other labels */
+      }
+
+      .help-text-inline {
+        font-size: 0.75rem; /* same styling as your old .help-text */
+        color: #888;
+      }
     </style>
   </head>
   <body>
@@ -283,7 +296,11 @@
       ></div>
       <form id="signup-form" novalidate>
         <div class="form-group">
-          <label for="username">Username</label>
+          <label for="username" class="label-with-help">
+            <span>Username</span>
+            <span class="help-text-inline">3–20 letters or numbers.</span>
+          </label>
+
           <input
             type="text"
             id="username"
@@ -292,7 +309,6 @@
             autocomplete="username"
           />
           <div id="username-error" class="error-text"></div>
-          <div class="help-text">3–20 letters or numbers.</div>
         </div>
 
         <div class="form-group">
