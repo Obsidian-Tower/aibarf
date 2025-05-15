@@ -145,6 +145,19 @@
         background: var(--accent);
         color: white;
       }
+      /* Fix Chrome’s yellow‑white autofill background on login */
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover,
+      input:-webkit-autofill:focus {
+        /* force the inset shadow to recolor the background */
+        box-shadow: 0 0 0px 1000px #181818 inset !important;
+        /* ensure the text stays your fg color */
+        -webkit-text-fill-color: var(--fg) !important;
+        /* keep the caret visible in the same color */
+        caret-color: var(--fg);
+        /* lock the background so it doesn’t flash to white */
+        transition: background-color 9999s ease-out 0s;
+      }
     </style>
   </head>
   <body>
