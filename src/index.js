@@ -164,15 +164,22 @@ export default {
         });
       }
 
-      const user = await env.DB.prepare('SELECT name FROM users WHERE id = ?')
-        .bind(row.user_id).first();
+      const user = await env.DB.prepare('SELECT name, email FROM users WHERE id = ?')
+    .bind(row.user_id).first();
 
-      return new Response(JSON.stringify({ name: user.name }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
-      });
+  // 1) Build a richer payload
+  const payload = {
+    success: true,
+    user: {
+      name:  user.name,
+      email: user.email
     }
+  };
 
-    return new Response('Not found', { status: 404, headers: CORS_HEADERS });
-  }
+  // 2) Return it
+  return new Response(JSON.stringify(payload), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+  });
+}
 };
