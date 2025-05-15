@@ -1,108 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>aibarf | Home</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
-        rel="stylesheet"/>
-  <style>
-    :root {
-      --bg: #0a0a0a;
-      --fg: #cccccc;
-      --accent: #2b7dfc;
-      --radius: 0.5rem;
-    }
-    * { box-sizing:border-box; margin:0; padding:0; }
-    body {
-      background: var(--bg);
-      color: var(--fg);
-      font-family: "Poppins",sans-serif;
-      min-height:100vh;
-      display:flex;
-      flex-direction:column;
-    }
-    nav {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:1rem 2rem;
-    }
-    nav a, nav span, nav button {
-      color: var(--fg);
-      text-decoration:none;
-      margin-left:1rem;
-      font-weight:500;
-      background:none;
-      border:none;
-      cursor:pointer;
-    }
-    nav a:hover, nav button:hover { color: var(--accent); }
-    #hero {
-      flex:1;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      /* logo or hero content goes here */
-    }
-    footer {
-      text-align:center;
-      padding:1rem;
-      font-size:0.8rem;
-      color:#777;
-    }
-    button#logout-btn {
-      background: var(--accent);
-      color: #fff;
-      padding: 0.5rem 1rem;
-      border-radius: var(--radius);
-    }
-    button#logout-btn:hover {
-      background: #1f5ec2;
-    }
-  </style>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>aibarf | Home</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #cccccc;
+        --accent: #2b7dfc;
+        --radius: 0.5rem;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Poppins", sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+      }
+      nav a,
+      nav span,
+      nav button {
+        color: var(--fg);
+        text-decoration: none;
+        margin-left: 1rem;
+        font-weight: 500;
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+      nav a:hover,
+      nav button:hover {
+        color: var(--accent);
+      }
+      #hero {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* logo or hero content goes here */
+      }
+      footer {
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.8rem;
+        color: #777;
+      }
+      button#logout-btn {
+        background: var(--accent);
+        color: #fff;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius);
+      }
+      button#logout-btn:hover {
+        background: #1f5ec2;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <!-- left side: your logo -->
+      <a href="index.html">
+        <img src="/images/aibarf-logo-1.png" alt="aibarf Logo" height="32" />
+      </a>
 
-  <nav>
-    <!-- left side: your logo -->
-    <a href="index.html">
-      <img src="/images/aibarf-logo-1.jpeg" alt="aibarf Logo" height="32"/>
-    </a>
+      <!-- right side: dynamic -->
+      <div id="nav-right"></div>
+    </nav>
 
-    <!-- right side: dynamic -->
-    <div id="nav-right"></div>
-  </nav>
+    <section id="hero">
+      <!-- empty for now; drop your main content or logo here -->
+    </section>
 
-  <section id="hero">
-    <!-- empty for now; drop your main content or logo here -->
-  </section>
+    <footer>
+      &copy; 2025 aibarf. All images synthetic. All minds welcome.
+    </footer>
 
-  <footer>
-    &copy; 2025 aibarf. All images synthetic. All minds welcome.
-  </footer>
+    <script>
+      const navRight = document.getElementById("nav-right");
 
-  <script>
-    // On load, decide what to show
-    const navRight = document.getElementById('nav-right');
-    const user = localStorage.getItem('aibarf_user');
-
-    if (user) {
-      navRight.innerHTML = `
-        <span>Hello, ${user}</span>
-        <button id="logout-btn">Log Out</button>
-      `;
-      document.getElementById('logout-btn').addEventListener('click', () => {
-        localStorage.removeItem('aibarf_user');
-        location.reload();
-      });
-    } else {
-      navRight.innerHTML = `
-        <a href="login.html">Log In</a>
-        <a href="signup.html"><button>Sign Up</button></a>
-      `;
-    }
-  </script>
-
-</body>
+      // Ask the Worker who we are
+      fetch("/me", { credentials: "include" })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.user) {
+            // Logged‑in state
+            navRight.innerHTML = `
+              <span>Hello, ${data.user.name}</span>
+              <button id="logout-btn">Log Out</button>
+            `;
+            document
+              .getElementById("logout-btn")
+              .addEventListener("click", () => {
+                // Call /logout to clear the session cookie
+                fetch("/logout", {
+                  method: "POST",
+                  credentials: "include"
+                }).then(() => {
+                  // Reload to refresh nav
+                  location.reload();
+                });
+              });
+          } else {
+            // Guest state
+            navRight.innerHTML = `
+              <a href="login.html">Log In</a>
+              <a href="signup.html"><button>Sign Up</button></a>
+            `;
+          }
+        })
+        .catch(() => {
+          // On error, treat as guest
+          navRight.innerHTML = `
+            <a href="login.html">Log In</a>
+            <a href="signup.html"><button>Sign Up</button></a>
+          `;
+        });
+    </script>
+  </body>
 </html>
