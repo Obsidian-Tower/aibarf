@@ -204,9 +204,7 @@
     </div>
 
     <script>
-      const apiBase = "https://aibarf-auth.coryzuber.workers.dev";
       const qs = (id) => document.getElementById(id);
-
       const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
       // Toggle password visibility
@@ -222,16 +220,21 @@
       const form = qs("login-form");
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
+
         const email = qs("email"),
           password = qs("password");
         const emailErr = qs("email-error"),
           pwErr = qs("password-error");
         const globalError = qs("global-error"),
           globalSuccess = qs("global-success");
+
+        // reset any old messages
         globalError.style.display = globalSuccess.style.display = "none";
         emailErr.textContent = pwErr.textContent = "";
+        email.classList.remove("error");
+        password.classList.remove("error");
 
-        // Basic client‑side validation
+        // Basic validation
         let valid = true;
         if (!EMAIL_REGEX.test(email.value.trim())) {
           emailErr.textContent = "Please enter a valid email";
@@ -245,14 +248,15 @@
         }
         if (!valid) return;
 
-        // Submit to API
+        // Submit to /login on this origin
         const btn = qs("login-submit");
         btn.disabled = true;
-        btn.textContent = "Logging in...";
+        btn.textContent = "Logging in…";
 
         try {
-          const res = await fetch(`${apiBase}/login`, {
+          const res = await fetch("/login", {
             method: "POST",
+            credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               email: email.value.trim(),
@@ -260,15 +264,15 @@
             }),
           });
           const data = await res.json();
+
           if (!res.ok) {
             globalError.textContent = data.error || "Login failed.";
             globalError.style.display = "block";
           } else {
-            globalSuccess.textContent = "Success! Redirecting…";
-            globalSuccess.style.display = "block";
-            setTimeout(() => (location.href = "index.html"), 1500);
+            // Success! Redirect to home so index.html can call /me and show your name.
+            window.location.href = "/";
           }
-        } catch {
+        } catch (err) {
           globalError.textContent = "Network error. Please try again.";
           globalError.style.display = "block";
         } finally {
