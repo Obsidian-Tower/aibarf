@@ -449,15 +449,17 @@
 
         termsLink.addEventListener("click", (e) => {
           e.preventDefault();
-          // set the iframe src (only once)
-          if (!iframe.src) iframe.src = termsLink.href;
-          // show it
+
+          // OPTION A: use the anchor's href property
+          iframe.src = termsLink.href;
+
+          // OPTION B: or explicitly read the attribute
+          // iframe.src = termsLink.getAttribute("href");
+
           modal.hidden = false;
         });
 
-        closeBtn.addEventListener("click", () => {
-          modal.hidden = true;
-        });
+        closeBtn.addEventListener("click", () => (modal.hidden = true));
       });
 
       // Username check
