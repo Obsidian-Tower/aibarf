@@ -3,16 +3,25 @@
 
 const encoder = new TextEncoder();
 
-// —————— CORS helper (echo origin + allow credentials) ——————
+const ALLOWED = [
+  "https://aibarf.com",
+  "https://aibarf-auth.coryzuber.workers.dev"
+];
+
 function getCorsHeaders(request) {
   const origin = request.headers.get("Origin");
-  return {
-    "Access-Control-Allow-Origin": origin ? origin : "*",
+  const allowOrigin = ALLOWED.includes(origin) ? origin : null;
+  const base = {
     "Access-Control-Allow-Credentials": "true",
     "Access-Control-Allow-Methods": "GET,HEAD,POST,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
   };
+  if (allowOrigin) {
+    base["Access-Control-Allow-Origin"] = allowOrigin;
+  }
+  return base;
 }
+
 
 // —————— Base64‑URL helpers ——————
 function base64url(str) {
@@ -22,9 +31,7 @@ function base64url(str) {
     .replace(/=+$/, "");
 }
 function base64urlDecode(b64url) {
-  // Replace URL‑safe chars
   let b64 = b64url.replace(/-/g, "+").replace(/_/g, "/");
-  // Pad to multiple of 4
   while (b64.length % 4) b64 += "=";
   return atob(b64);
 }
@@ -32,10 +39,7 @@ function base64urlDecode(b64url) {
 // —————— JWT HS256 Helpers ——————
 async function signJWT(payload, secret) {
   const header = base64url(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-  const nowSec = Math.floor(Date.now() / 1000);
-  // Ensure exp is in seconds
   if (payload.exp && payload.exp > 1e12) {
-    // user accidentally passed ms; convert
     payload.exp = Math.floor(payload.exp / 1000);
   }
   const body = base64url(JSON.stringify(payload));
@@ -66,7 +70,7 @@ async function verifyJWT(token, secret) {
   );
   const sigBuf = Uint8Array.from(
     base64urlDecode(sig),
-    (c) => c.charCodeAt(0)
+    c => c.charCodeAt(0)
   );
   const valid = await crypto.subtle.verify(
     "HMAC",
@@ -94,9 +98,8 @@ async function hashPassword(password) {
 
 async function verifyPassword(password, storedHash) {
   const bin = atob(storedHash);
-  const full = Uint8Array.from(bin, (c) => c.charCodeAt(0));
-  const salt = full.slice(0, 16),
-        orig = full.slice(16);
+  const full = Uint8Array.from(bin, c => c.charCodeAt(0));
+  const salt = full.slice(0, 16), orig = full.slice(16);
   const pwBuf = encoder.encode(password);
   const testBuf = await crypto.subtle.digest(
     "SHA-256",
@@ -264,7 +267,7 @@ export default {
         status: 200,
         headers: {
           ...headers,
-          "Set-Cookie": `session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax`,
+          "Set-Cookie": `session=${token}; Domain=.coryzuber.workers.dev; Path=/; HttpOnly; Secure; SameSite=None`,
         },
       });
     }
@@ -277,12 +280,11 @@ export default {
 
       const payload = await verifyJWT(m[1], env.SESSION_SECRET);
       if (!payload) {
-        // clear invalid cookie
         return new Response(JSON.stringify({}), {
           status: 200,
           headers: {
             ...headers,
-            "Set-Cookie": `session=deleted; Path=/; Max-Age=0; HttpOnly`,
+            "Set-Cookie": `session=deleted; Domain=.coryzuber.workers.dev; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None`,
           },
         });
       }
@@ -305,7 +307,7 @@ export default {
         status: 200,
         headers: {
           ...headers,
-          "Set-Cookie": `session=deleted; Path=/; Max-Age=0; HttpOnly`,
+          "Set-Cookie": `session=deleted; Domain=.coryzuber.workers.dev; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None`,
         },
       });
     }
