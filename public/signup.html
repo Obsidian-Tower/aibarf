@@ -286,29 +286,46 @@
         opacity: 0.5;
         cursor: not-allowed;
       }
-
-      /* Make sure hidden actually hides the overlay */
       .modal-overlay[hidden] {
         display: none !important;
       }
-
-      /* Only show it when it’s not hidden */
       .modal-overlay:not([hidden]) {
-        display: flex; /* your existing flex settings */
+        display: flex;
         align-items: center;
         justify-content: center;
         position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        inset: 0;
         background: rgba(0, 0, 0, 0.6);
         z-index: 1000;
       }
 
-      /* Move display out of the base .modal-overlay so it doesn’t auto‑show */
-      .modal-overlay {
-        /* remove display:flex from here */
+      /* the white box around the iframe */
+      .modal-window {
+        background: var(--card);
+        /* make it tall enough to scroll inside */
+        width: min(90%, 600px);
+        height: 80vh;
+        border-radius: var(--radius);
+        box-shadow: 0 0 1rem rgba(0, 0, 0, 0.8);
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* the iframe fills the window and scrolls */
+      .modal-iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+      .modal-close {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--fg);
+        cursor: pointer;
       }
     </style>
   </head>
@@ -427,38 +444,19 @@
       document.addEventListener("DOMContentLoaded", () => {
         const termsLink = document.getElementById("show-terms");
         const modal = document.getElementById("terms-modal");
-        const content = document.getElementById("terms-content");
+        const iframe = document.getElementById("terms-iframe");
         const closeBtn = document.getElementById("terms-close");
 
-        // 1) Intercept the click, load /terms.html, show modal
-        termsLink.addEventListener("click", async (e) => {
+        termsLink.addEventListener("click", (e) => {
           e.preventDefault();
-          // Show overlay immediately (with Loading…)
+          // set the iframe src (only once)
+          if (!iframe.src) iframe.src = termsLink.href;
+          // show it
           modal.hidden = false;
-          try {
-            const res = await fetch(termsLink.href);
-            const html = await res.text();
-            // shove the inner <body> of terms.html into our modal
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, "text/html");
-            content.innerHTML = doc.querySelector(".container").innerHTML;
-          } catch (err) {
-            content.textContent = "Failed to load terms. Please try again.";
-          }
         });
 
-        // 2) Close the modal
         closeBtn.addEventListener("click", () => {
           modal.hidden = true;
-          content.textContent = "Loading…";
-        });
-
-        // 3) Also close on overlay click (optional)
-        modal.addEventListener("click", (e) => {
-          if (e.target === modal) {
-            modal.hidden = true;
-            content.textContent = "Loading…";
-          }
         });
       });
 
@@ -673,7 +671,13 @@
     <div id="terms-modal" class="modal-overlay" hidden>
       <div class="modal-window">
         <button id="terms-close" class="modal-close">&times;</button>
-        <div id="terms-content" class="modal-content">Loading…</div>
+        <!-- full‑page iframe -->
+        <iframe
+          id="terms-iframe"
+          src=""
+          class="modal-iframe"
+          title="Terms of Use"
+        ></iframe>
       </div>
     </div>
   </body>
