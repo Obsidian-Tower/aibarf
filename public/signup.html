@@ -286,6 +286,30 @@
         opacity: 0.5;
         cursor: not-allowed;
       }
+
+      /* Make sure hidden actually hides the overlay */
+      .modal-overlay[hidden] {
+        display: none !important;
+      }
+
+      /* Only show it when it’s not hidden */
+      .modal-overlay:not([hidden]) {
+        display: flex; /* your existing flex settings */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1000;
+      }
+
+      /* Move display out of the base .modal-overlay so it doesn’t auto‑show */
+      .modal-overlay {
+        /* remove display:flex from here */
+      }
     </style>
   </head>
   <body>
@@ -370,9 +394,7 @@
           />
           <label for="tos">
             I agree to the
-            <a href="/terms.html" class="terms" target="_blank" rel="noopener">
-              Terms
-            </a>
+            <a href="/terms.html" class="terms" id="show-terms">Terms</a>
           </label>
         </div>
 
@@ -401,6 +423,44 @@
         if (!input || !input.classList) return;
         input.classList.toggle("error", !!msg);
       };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const termsLink = document.getElementById("show-terms");
+        const modal = document.getElementById("terms-modal");
+        const content = document.getElementById("terms-content");
+        const closeBtn = document.getElementById("terms-close");
+
+        // 1) Intercept the click, load /terms.html, show modal
+        termsLink.addEventListener("click", async (e) => {
+          e.preventDefault();
+          // Show overlay immediately (with Loading…)
+          modal.hidden = false;
+          try {
+            const res = await fetch(termsLink.href);
+            const html = await res.text();
+            // shove the inner <body> of terms.html into our modal
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+            content.innerHTML = doc.querySelector(".container").innerHTML;
+          } catch (err) {
+            content.textContent = "Failed to load terms. Please try again.";
+          }
+        });
+
+        // 2) Close the modal
+        closeBtn.addEventListener("click", () => {
+          modal.hidden = true;
+          content.textContent = "Loading…";
+        });
+
+        // 3) Also close on overlay click (optional)
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) {
+            modal.hidden = true;
+            content.textContent = "Loading…";
+          }
+        });
+      });
 
       // Username check
       let userTimer;
@@ -608,5 +668,13 @@
         }
       });
     </script>
+
+    <!-- Terms Modal Overlay -->
+    <div id="terms-modal" class="modal-overlay" hidden>
+      <div class="modal-window">
+        <button id="terms-close" class="modal-close">&times;</button>
+        <div id="terms-content" class="modal-content">Loading…</div>
+      </div>
+    </div>
   </body>
 </html>
