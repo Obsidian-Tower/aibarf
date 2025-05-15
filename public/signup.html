@@ -264,7 +264,6 @@
           text-shadow: 0 0 8px hsl(360, 100%, 50%), 0 0 16px hsl(360, 100%, 50%);
         }
       }
-
       @media (min-width: 600px) {
         .container {
           padding: 2.5rem;
@@ -278,10 +277,14 @@
         margin-bottom: 0.5rem; /* space before the input */
         font-size: 0.9rem; /* same as your other labels */
       }
-
       .help-text-inline {
         font-size: 0.75rem; /* same styling as your old .help-text */
         color: #888;
+      }
+      /* put this in your <style> block */
+      .disabled-checkbox {
+        opacity: 0.5;
+        cursor: not-allowed;
       }
     </style>
   </head>
@@ -357,14 +360,22 @@
         </div>
 
         <div class="checkbox-group">
-          <input type="checkbox" id="tos" name="tos" required />
-          <label for="tos"
-            >I agree to the
-            <a href="/terms.html" class="terms" target="_blank" rel="noopener"
-              >Terms</a
-            ></label
-          >
+          <input
+            type="checkbox"
+            id="tos"
+            name="tos"
+            required
+            disabled
+            class="disabled-checkbox"
+          />
+          <label for="tos">
+            I agree to the
+            <a href="/terms.html" class="terms" target="_blank" rel="noopener">
+              Terms
+            </a>
+          </label>
         </div>
+
         <div id="tos-error" class="error-text"></div>
 
         <div style="display: none">
@@ -537,6 +548,14 @@
         } else {
           e.target.classList.remove("valid");
         }
+      });
+
+      const termsLink = document.querySelector("a.terms");
+      const tosCheckbox = document.getElementById("tos");
+
+      termsLink.addEventListener("click", () => {
+        tosCheckbox.disabled = false;
+        tosCheckbox.classList.remove("disabled-checkbox");
       });
 
       // Submission
