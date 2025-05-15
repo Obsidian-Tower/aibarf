@@ -254,15 +254,19 @@
         btn.textContent = "Logging in…";
 
         try {
-          const res = await fetch("/login", {
-            method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              email: email.value.trim(),
-              password: password.value,
-            }),
-          });
+          // AFTER — call your Worker directly, sending & receiving the session cookie
+          const res = await fetch(
+            "https://aibarf-auth.coryzuber.workers.dev/login",
+            {
+              method: "POST",
+              credentials: "include", // ← IMPORTANT: send/receive cookies
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: email.value.trim(),
+                password: password.value,
+              }),
+            }
+          );
           const data = await res.json();
 
           if (!res.ok) {
