@@ -145,17 +145,14 @@
         background: var(--accent);
         color: white;
       }
+
       /* Fix Chrome’s yellow‑white autofill background on login */
       input:-webkit-autofill,
       input:-webkit-autofill:hover,
       input:-webkit-autofill:focus {
-        /* force the inset shadow to recolor the background */
         box-shadow: 0 0 0px 1000px #181818 inset !important;
-        /* ensure the text stays your fg color */
         -webkit-text-fill-color: var(--fg) !important;
-        /* keep the caret visible in the same color */
         caret-color: var(--fg);
-        /* lock the background so it doesn’t flash to white */
         transition: background-color 9999s ease-out 0s;
       }
     </style>
@@ -221,59 +218,57 @@
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const email = qs("email"),
-          password = qs("password");
+        // Element refs
+        const emailEl = qs("email"),
+          passwordEl = qs("password");
         const emailErr = qs("email-error"),
           pwErr = qs("password-error");
         const globalError = qs("global-error"),
           globalSuccess = qs("global-success");
 
-        // reset any old messages
+        // Reset old messages
         globalError.style.display = globalSuccess.style.display = "none";
         emailErr.textContent = pwErr.textContent = "";
-        email.classList.remove("error");
-        password.classList.remove("error");
+        emailEl.classList.remove("error");
+        passwordEl.classList.remove("error");
 
-        // Basic validation
+        // Validate
         let valid = true;
-        if (!EMAIL_REGEX.test(email.value.trim())) {
+        if (!EMAIL_REGEX.test(emailEl.value.trim())) {
           emailErr.textContent = "Please enter a valid email";
-          email.classList.add("error");
+          emailEl.classList.add("error");
           valid = false;
         }
-        if (!password.value) {
+        if (!passwordEl.value) {
           pwErr.textContent = "Please enter your password";
-          password.classList.add("error");
+          passwordEl.classList.add("error");
           valid = false;
         }
         if (!valid) return;
 
-        // Submit to /login on this origin
+        // Disable button
         const btn = qs("login-submit");
         btn.disabled = true;
         btn.textContent = "Logging in…";
 
         try {
-          // AFTER — call your Worker directly, sending & receiving the session cookie
-          const res = await fetch(
-            "https://aibarf-auth.coryzuber.workers.dev/login",
-            {
-              method: "POST",
-              credentials: "include", // ← IMPORTANT: send/receive cookies
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                email: email.value.trim(),
-                password: password.value,
-              }),
-            }
-          );
+          // POST to same-origin /login endpoint
+          const res = await fetch("/login", {
+            method: "POST",
+            credentials: "include", // send/receive cookies
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: emailEl.value.trim(),
+              password: passwordEl.value,
+            }),
+          });
           const data = await res.json();
 
           if (!res.ok) {
             globalError.textContent = data.error || "Login failed.";
             globalError.style.display = "block";
           } else {
-            // Success! Redirect to home so index.html can call /me and show your name.
+            // Redirect to home
             window.location.href = "/";
           }
         } catch (err) {
