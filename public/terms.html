@@ -27,6 +27,21 @@
         padding: 0;
       }
 
+      /* from your Thought Engine page */
+      .glow-box {
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.1),
+          inset 0 0 10px rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease-in-out;
+      }
+
+      /* handy padding & margin utilities */
+      .p-4 {
+        padding: 0.3rem;
+      }
+      .mb-4 {
+        margin-bottom: 0.3rem;
+      }
+
       body {
         background: var(--bg);
         color: var(--fg);
@@ -52,13 +67,10 @@
 
       h2 {
         font-size: 1.2rem;
-        margin-top: 2rem;
-        margin-bottom: 0.5rem;
         color: var(--fg);
       }
 
       p {
-        margin-bottom: 1rem;
         color: var(--fg);
       }
 
@@ -99,80 +111,105 @@
       <h1>Terms of Use</h1>
 
       <p><strong>Effective Date:</strong> May 2025</p>
-
-      <h2>1. AI-Only Content Policy</h2>
-      <p>
-        aibarf is a public gallery of synthetic visuals. All uploads must
-        originate from AI-generation tools. This includes diffusion models,
-        GANs, algorithmic renderers, or other forms of computational visual
-        synthesis. Photos of the real world are not permitted.
-      </p>
-
-      <h2>2. Real People Prohibited</h2>
-      <p>
-        Do not upload likenesses of real individuals, including celebrities or
-        acquaintances. All resemblance must be incidental or purely
-        machine-generated. Deepfake attempts are strictly disallowed.
-      </p>
-
-      <h2>3. Content Filtering & Age Controls</h2>
-      <p>
-        All users under 18 — and all accounts prior to verification — are
-        subject to global content filters. These filters block access to
-        AI-generated content that is tagged NSFW or sensitive. Filters are on by
-        default, always. Only after submitting valid age verification (such as a
-        government-issued ID) can an account request filter toggling.
-      </p>
-
-      <h2>4. What Counts as NSFW</h2>
-      <p>
-        Content involving nudity, sexual themes, horror, violence, or grotesque
-        distortion is considered NSFW. Uploaders must clearly mark NSFW tags or
-        risk suspension. The content itself is permitted, but only if accurately
-        labeled.
-      </p>
-
-      <h2>5. Intellectual Property</h2>
-      <p>
-        You retain ownership of images you upload, subject to the license of the
-        generator you used. By uploading to aibarf, you grant us permission to
-        host and publicly display your content in perpetuity, including in site
-        features, sort algorithms, and promotions.
-      </p>
-
-      <h2>6. Forbidden Uses</h2>
-      <ul>
-        <li>Uploading real-world photographs</li>
-        <li>Using AI images to commit fraud or impersonation</li>
-        <li>Instructing AI tools to depict real humans</li>
-        <li>Coordinated harassment using AI content</li>
-        <li>Unlabeled NSFW content</li>
-      </ul>
-
-      <h2>7. Reporting and Moderation</h2>
-      <p>
-        All users can flag content. Moderators may review and remove content
-        that violates these terms. You may appeal removals. Repeated abuse of
-        the platform will result in account restrictions or bans.
-      </p>
-
-      <h2>8. Disclaimer of Liability</h2>
-      <p>
-        aibarf is not liable for any emotional, legal, or social consequences
-        from viewing AI-generated content. Viewer discretion is advised. All
-        images are fake. All humans are synthetic. You have been warned.
-      </p>
-
-      <h2>9. A Note from the Machine</h2>
-      <p>
-        This site is not for documenting reality. It’s for witnessing
-        imagination. If you want to argue what’s “real,” you’re in the wrong
-        place. Go to a mirror. That’s the most fake thing you’ll ever see.
-      </p>
-
+      <div id="tos-sections">
+        <div class="glow-box p-4 mb-4 term-block">
+          <h2>1. AI-Only Content Policy</h2>
+          <p>
+            aibarf is a public gallery of synthetic visuals. All uploads must
+            originate from AI-generation tools. This includes diffusion models,
+            GANs, algorithmic renderers, or other forms of computational visual
+            synthesis. Photos of the real world are not permitted.
+          </p>
+        </div>
+        <div class="glow-box p-4 mb-4 term-block">
+          <h2>2. Real People Prohibited</h2>
+          <p>
+            Do not upload likenesses of real individuals, including celebrities
+            or acquaintances. All resemblance must be incidental or purely
+            machine-generated. Deepfake attempts are strictly disallowed.
+          </p>
+        </div>
+        <div class="glow-box p-4 mb-4 term-block">
+          <h2>3. Content Filtering & Age Controls</h2>
+          <p>
+            All users under 18 — and all accounts prior to verification — are
+            subject to global content filters. These filters block access to
+            AI-generated content that is tagged NSFW or sensitive. Filters are
+            on by default, always. Only after submitting valid age verification
+            (such as a government-issued ID) can an account request filter
+            toggling.
+          </p>
+        </div>
+        <div class="glow-box p-4 mb-4 term-block">
+          <h2>4. What Counts as NSFW</h2>
+          <p>
+            Content involving nudity, sexual themes, horror, violence, or
+            grotesque distortion is considered NSFW. Uploaders must clearly mark
+            NSFW tags or risk suspension. The content itself is permitted, but
+            only if accurately labeled.
+          </p>
+        </div>
+        <div class="glow-box p-4 mb-4 term-block">
+          <h2>5. Intellectual Property</h2>
+          <p>
+            You retain ownership of images you upload, subject to the license of
+            the generator you used. By uploading to aibarf, you grant us
+            permission to host and publicly display your content in perpetuity,
+            including in site features, sort algorithms, and promotions.
+          </p>
+        </div>
+        <div class="glow-box p-4 mb-4 term-block">
+          <h2>6. Forbidden Uses</h2>
+          <ul>
+            <li>Uploading real-world photographs</li>
+            <li>Using AI images to commit fraud or impersonation</li>
+            <li>Instructing AI tools to depict real humans</li>
+            <li>Coordinated harassment using AI content</li>
+            <li>Unlabeled NSFW content</li>
+          </ul>
+        </div>
+        <div class="glow-box p-4 mb-4 term-block">
+          <h2>7. Reporting and Moderation</h2>
+          <p>
+            All users can flag content. Moderators may review and remove content
+            that violates these terms. You may appeal removals. Repeated abuse
+            of the platform will result in account restrictions or bans.
+          </p>
+        </div>
+        <div class="glow-box p-4 mb-4 term-block">
+          <h2>8. Disclaimer of Liability</h2>
+          <p>
+            aibarf is not liable for any emotional, legal, or social
+            consequences from viewing AI-generated content. Viewer discretion is
+            advised. All images are fake. All humans are synthetic. You have
+            been warned.
+          </p>
+        </div>
+        <div class="glow-box p-4 mb-4 term-block">
+          <h2>9. A Note from the Machine</h2>
+          <p>
+            This site is not for documenting reality. It’s for witnessing
+            imagination. If you want to argue what’s “real,” you’re in the wrong
+            place. Go to a mirror. That’s the most fake thing you’ll ever see.
+          </p>
+        </div>
+      </div>
       <footer>
         &copy; 2025 aibarf. All images synthetic. All minds welcome.
       </footer>
     </div>
+    <script>
+      // find all your new blocks
+      const blocks = document.querySelectorAll(".term-block");
+      const hueStep = 360 / blocks.length;
+
+      blocks.forEach((blk, i) => {
+        const hue = Math.round(i * hueStep);
+        // dark background, bright border/text
+        blk.style.backgroundColor = `hsl(${hue},30%,15%)`;
+        blk.style.border = `1px solid hsl(${hue},60%,50%)`;
+        blk.style.color = `hsl(${hue},70%,80%)`;
+      });
+    </script>
   </body>
 </html>
