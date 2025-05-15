@@ -6,6 +6,7 @@ An open-source, minimalist image hosting platform built with:
 - Cloudflare D1 (SQL database for users, metadata, comments)
 - R2 (for storing image files)
 - Cloudflare Pages (static frontend)
+- mailgun
 
 ## Features
 
