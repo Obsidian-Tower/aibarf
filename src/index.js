@@ -1,28 +1,6 @@
 // src/index.js
-// Cloudflare Worker with CORS, signup/login, cookie‑based JWT sessions, /me + /logout
-
 const encoder = new TextEncoder();
-
-const ALLOWED = [
-  "https://aibarf.com",
-  "https://aibarf-auth.coryzuber.workers.dev"
-];
-
-function getCorsHeaders(request) {
-  const origin = request.headers.get("Origin");
-  const allowOrigin = ALLOWED.includes(origin) ? origin : null;
-  const base = {
-    "Access-Control-Allow-Credentials": "true",
-    "Access-Control-Allow-Methods": "GET,HEAD,POST,OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-  };
-  if (allowOrigin) {
-    base["Access-Control-Allow-Origin"] = allowOrigin;
-  }
-  return base;
-}
-
-
+// Cloudflare Worker with CORS, signup/login, cookie‑based JWT sessions, /me + /logout
 // —————— Base64‑URL helpers ——————
 function base64url(str) {
   return btoa(str)
@@ -116,6 +94,92 @@ function validatePassword(pw) {
   if (!/[0-9]/.test(pw)) errs.push("Must contain a number");
   return errs;
 }
+
+// ─────────── Email Templates ───────────
+const RESET_EMAIL_HTML = `<!DOCTYPE html>
+<html>
+  <head><meta charset="UTF-8"/><title>Password Reset</title></head>
+  <body style="font-family:Arial,sans-serif;background:#f4f4f4;margin:0;padding:0">
+    <div style="max-width:600px;margin:2rem auto;background:#fff;padding:1.5rem;border-radius:8px">
+      <h1 style="color:#333">Password Reset Request</h1>
+      <p>We got a request to reset your aibarf.com password. Click below:</p>
+      <p style="text-align:center">
+        <a href="{{RESET_LINK}}" 
+           style="display:inline-block;padding:.75rem 1.5rem;
+                  background:#2b7dfc;color:#fff;text-decoration:none;
+                  border-radius:4px;font-weight:bold">
+          Reset My Password
+        </a>
+      </p>
+      <p>If that button fails, copy & paste:</p>
+      <p><a href="{{RESET_LINK}}">{{RESET_LINK}}</a></p>
+      <p>If you didn’t ask, ignore this email.</p>
+      <p style="font-size:.8rem;color:#999;text-align:center;margin-top:2rem">
+        &copy; 2025 aibarf LLC
+      </p>
+    </div>
+  </body>
+</html>`;
+
+// ─── Password reset token TTL (1 hour) ───
+const RESET_TOKEN_TTL = 1000 * 60 * 60;
+
+const RESET_EMAIL_TEXT = `Password Reset Request
+
+We got a request to reset your aibarf.com password.
+
+Reset link: {{RESET_LINK}}
+
+If you didn’t ask, you can ignore this email.
+
+© 2025 aibarf LLC
+`;
+// ────────────────────────────────────────
+// ─── sendResetEmail via Mailgun ───
+async function sendResetEmail(env, toEmail, token) {
+  const resetLink = `https://aibarf.com/reset-password.html?token=${token}`;
+  const htmlBody = RESET_EMAIL_HTML.replace(/{{RESET_LINK}}/g, resetLink);
+  const textBody = RESET_EMAIL_TEXT.replace(/{{RESET_LINK}}/g, resetLink);
+  const auth = btoa(`api:${env.MAILGUN_API_KEY}`);
+
+  const res = await fetch(
+    "https://api.mailgun.net/v3/mg.aibarf.com/messages",
+    {
+      method: "POST",
+      headers: {
+        "Authorization": `Basic ${auth}`,
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({
+        from:    "no-reply@mg.aibarf.com",
+        to:      toEmail,
+        subject: "Reset your aibarf.com password",
+        text:    textBody,
+        html:    htmlBody
+      })
+    }
+  );
+  if (!res.ok) throw new Error("Mailgun failed: " + await res.text());
+}
+
+
+const ALLOWED = [
+  "https://aibarf.com",
+  "https://www.aibarf.com",
+  "https://aibarf-auth.coryzuber.workers.dev"
+];
+
+function getCorsHeaders(request) {
+  // Echo back the request’s Origin, or wildcard if none
+  const origin = request.headers.get("Origin") || "*";
+  return {
+    "Access-Control-Allow-Origin":      origin,
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Methods":     "GET,HEAD,POST,OPTIONS",
+    "Access-Control-Allow-Headers":     "Content-Type",
+  };
+}
+
 
 export default {
   async fetch(request, env) {
@@ -310,6 +374,101 @@ export default {
           "Set-Cookie": `session=deleted; Domain=.coryzuber.workers.dev; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None`,
         },
       });
+    }
+    // —————— Forgot‑password ——————
+    if (pathname === "/forgot-password" && request.method === "POST") {
+      const { email } = await request.json();
+      if (!email) {
+        return new Response(
+          JSON.stringify({ error: "Missing email" }),
+          { status: 400, headers }
+        );
+      }
+
+      const normalizedEmail = email.toLowerCase();
+      // Lookup user by email
+      const user = await env.DB.prepare(
+        "SELECT id,email FROM users WHERE email=?"
+      )
+        .bind(normalizedEmail)
+        .first();
+
+      if (user) {
+        // Generate a one‑time token and expiration
+        const token   = crypto.randomUUID();
+        const expires = Date.now() + RESET_TOKEN_TTL;
+
+        // Store it (creates or replaces existing)
+        await env.DB.prepare(
+          "INSERT OR REPLACE INTO password_resets(user_id,token,expires) VALUES(?,?,?)"
+        )
+          .bind(user.id, token, expires)
+          .run();
+
+        // Fire-and-forget the email send
+        sendResetEmail(env, user.email, token)
+          .catch(err => console.error("Error sending reset email:", err));
+      }
+
+      // Always return success (prevents email enumeration)
+      return new Response(
+        JSON.stringify({ success: true }),
+        { status: 200, headers }
+      );
+    }
+
+    // —————— Reset‑password ——————
+    if (pathname === "/reset-password" && request.method === "POST") {
+      const { token, password } = await request.json();
+      if (!token || !password) {
+        return new Response(
+          JSON.stringify({ error: "Missing token or password" }),
+          { status: 400, headers }
+        );
+      }
+
+      // Enforce your existing strength rules
+      const pwErrs = validatePassword(password);
+      if (pwErrs.length) {
+        return new Response(
+          JSON.stringify({ error: pwErrs.join(", ") }),
+          { status: 400, headers }
+        );
+      }
+
+      // Look up the token and check expiration
+      const row = await env.DB.prepare(
+        "SELECT user_id,expires FROM password_resets WHERE token=?"
+      )
+        .bind(token)
+        .first();
+
+      if (!row || Date.now() > row.expires) {
+        return new Response(
+          JSON.stringify({ error: "Invalid or expired token" }),
+          { status: 400, headers }
+        );
+      }
+
+      // Hash the new password and update the login row
+      const hash = await hashPassword(password);
+      await env.DB.prepare(
+        "UPDATE password_logins SET password_hash=? WHERE user_id=?"
+      )
+        .bind(hash, row.user_id)
+        .run();
+
+      // Delete the used token so it can’t be reused
+      await env.DB.prepare(
+        "DELETE FROM password_resets WHERE token=?"
+      )
+        .bind(token)
+        .run();
+
+      return new Response(
+        JSON.stringify({ success: true }),
+        { status: 200, headers }
+      );
     }
 
     // —————— Fallback 404 ——————
