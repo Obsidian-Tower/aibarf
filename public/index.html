@@ -12,10 +12,10 @@
       :root {
         --bg: #0a0a0a;
         --fg: #cccccc;
-        --accent: #2b7dfc;
-        --accent-glow: rgba(43, 125, 252, 0.7);
-        --purple: #a084fc;
-        --purple-glow: rgba(160, 132, 252, 0.7);
+        --accent: rgb(0, 102, 255);
+        --accent-glow: rgba(0, 102, 255, 0.7);
+        --purple: rgb(128, 0, 255);
+        --purple-glow: rgb(128, 0, 255, 0.7);
         --radius: 0.5rem;
       }
 
@@ -54,6 +54,7 @@
       }
 
       /* Guest buttons */
+      /* Guest buttons */
       button.btn-login,
       button.btn-signup {
         margin-left: 1rem;
@@ -64,34 +65,27 @@
         cursor: pointer;
         font-weight: 500;
         font-size: 1rem;
-      }
 
-      /* Always-glowing animations */
-      @keyframes glowBlue {
-        from { box-shadow: 0 0 4px 1px var(--accent-glow); }
-        to   { box-shadow: 0 0 12px 4px var(--accent-glow); }
-      }
-      @keyframes glowPurple {
-        from { box-shadow: 0 0 4px 1px var(--purple-glow); }
-        to   { box-shadow: 0 0 12px 4px var(--purple-glow); }
+        /* static glow */
+        box-shadow: 0 0 2px 2px var(--accent-glow);
+        transition: box-shadow 0.3s ease;
       }
 
       button.btn-login {
         color: var(--accent);
-        animation: glowBlue 2s ease-in-out infinite alternate;
       }
+
       button.btn-login:hover {
-        animation-play-state: paused;
-        box-shadow: 0 0 16px 6px var(--accent-glow);
+        box-shadow: 0 0 16px 4px var(--accent-glow);
       }
 
       button.btn-signup {
         color: var(--purple);
-        animation: glowPurple 2s ease-in-out infinite alternate;
+        box-shadow: 0 0 2px 2px var(--purple-glow);
       }
+
       button.btn-signup:hover {
-        animation-play-state: paused;
-        box-shadow: 0 0 16px 6px var(--purple-glow);
+        box-shadow: 0 0 16px 4px var(--purple-glow);
       }
 
       #hero {
@@ -152,10 +146,10 @@
 
       fetch(`${API}/me`, {
         credentials: "include",
-        mode: "cors"
+        mode: "cors",
       })
-        .then(res => res.json())
-        .then(data => {
+        .then((res) => res.json())
+        .then((data) => {
           if (data.user) {
             navRight.innerHTML = `
               <span>Hello, ${data.user.name}</span>
@@ -167,7 +161,7 @@
                 fetch(`${API}/logout`, {
                   method: "POST",
                   credentials: "include",
-                  mode: "cors"
+                  mode: "cors",
                 }).then(() => location.reload());
               });
           } else {
