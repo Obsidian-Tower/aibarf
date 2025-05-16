@@ -406,8 +406,15 @@ export default {
           .run();
 
         // Fire-and-forget the email send
-        sendResetEmail(env, user.email, token)
-          .catch(err => console.error("Error sending reset email:", err));
+        try {
+          await sendResetEmail(env, user.email, token);
+        } catch (err) {
+          console.error("🔴 sendResetEmail error:", err);
+          return new Response(
+            JSON.stringify({ error: "Email send failed: " + err.message }),
+            { status: 500, headers }
+          );
+        }
       }
 
       // Always return success (prevents email enumeration)
