@@ -155,6 +155,19 @@
         caret-color: var(--fg);
         transition: background-color 9999s ease-out 0s;
       }
+      /* Forgot‑password link styling */
+      .forgot-link {
+        display: block;
+        text-align: right;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--fg);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .forgot-link:hover {
+        color: var(--accent);
+      }
     </style>
   </head>
   <body>
@@ -197,6 +210,10 @@
         </div>
 
         <button type="submit" id="login-submit">Log In</button>
+        <!-- Forgot‑password link -->
+        <a href="/forgot-password.html" class="forgot-link">
+          Forgot your password?
+        </a>
       </form>
     </div>
 
