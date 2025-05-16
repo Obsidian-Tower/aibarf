@@ -14,6 +14,8 @@
         --fg: #cccccc;
         --accent: rgb(56, 136, 255);
         --accent-glow: rgba(56, 136, 255, 0.7);
+        /* purple is now purely a starting value, animation will override */
+        --purple: hsl(0, 100%, 50%);
         --radius: 0.5rem;
       }
 
@@ -64,42 +66,34 @@
         transition: box-shadow 0.3s ease;
       }
       button.btn-login:hover {
-        box-shadow: 0 0 16px 4px var(--accent-glow);
+        box-shadow: 0 0 60px 4px var(--accent-glow);
       }
 
-      /* Sign Up with hue‑shifting glow */
+      /* Sign Up — hue‑shifting text + glow from currentColor */
       @keyframes hueShift {
         0% {
           color: hsl(0, 100%, 50%);
-          box-shadow: 0 0 2px 2px hsla(0, 100%, 50%, 0.7);
         }
-        14.2857% {
+        14% {
           color: hsl(30, 100%, 50%);
-          box-shadow: 0 0 2px 2px hsla(30, 100%, 50%, 0.7);
         }
-        28.5714% {
+        28% {
           color: hsl(60, 100%, 50%);
-          box-shadow: 0 0 2px 2px hsla(60, 100%, 50%, 0.7);
         }
-        42.8571% {
+        43% {
           color: hsl(120, 100%, 50%);
-          box-shadow: 0 0 2px 2px hsla(120, 100%, 50%, 0.7);
         }
-        57.1428% {
+        57% {
           color: hsl(240, 100%, 50%);
-          box-shadow: 0 0 2px 2px hsla(240, 100%, 50%, 0.7);
         }
-        71.4285% {
+        71% {
           color: hsl(275, 100%, 50%);
-          box-shadow: 0 0 2px 2px hsla(275, 100%, 50%, 0.7);
         }
-        85.7142% {
+        86% {
           color: hsl(300, 100%, 50%);
-          box-shadow: 0 0 2px 2px hsla(300, 100%, 50%, 0.7);
         }
         100% {
           color: hsl(360, 100%, 50%);
-          box-shadow: 0 0 2px 2px hsla(360, 100%, 50%, 0.7);
         }
       }
 
@@ -112,12 +106,16 @@
         cursor: pointer;
         font-weight: 500;
         font-size: 1rem;
-        animation: hueShift 7s linear infinite;
+        /* start at purple but get overridden by the animation */
+        color: var(--purple);
+        animation: hueShift 25s linear infinite;
+        /* use currentColor for the glow */
+        box-shadow: 0 0 2px 2px currentColor;
         transition: box-shadow 0.3s ease;
       }
       button.btn-signup:hover {
-        /* grow the glow just like the login button */
-        box-shadow: 0 0 16px 4px currentColor;
+        /* now the glow *size* can grow, and will use the current hue */
+        box-shadow: 0 0 60px 4px currentColor;
       }
 
       #hero {
