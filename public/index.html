@@ -13,13 +13,18 @@
         --bg: #0a0a0a;
         --fg: #cccccc;
         --accent: #2b7dfc;
+        --accent-glow: rgba(43, 125, 252, 0.7);
+        --purple: #a084fc;
+        --purple-glow: rgba(160, 132, 252, 0.7);
         --radius: 0.5rem;
       }
+
       * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
       }
+
       body {
         background: var(--bg);
         color: var(--fg);
@@ -28,68 +33,106 @@
         display: flex;
         flex-direction: column;
       }
+
       nav {
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 1rem 2rem;
       }
-      nav a,
-      nav span,
-      nav button {
-        color: var(--fg);
-        text-decoration: none;
+
+      /* Brand link */
+      nav a.logo {
+        display: flex;
+        align-items: center;
+      }
+
+      /* Dynamic nav-right */
+      #nav-right {
+        display: flex;
+        align-items: center;
+      }
+
+      /* Guest buttons */
+      button.btn-login,
+      button.btn-signup {
         margin-left: 1rem;
-        font-weight: 500;
-        background: none;
+        padding: 0.5rem 1rem;
         border: none;
+        border-radius: var(--radius);
+        background: none;
         cursor: pointer;
+        font-weight: 500;
+        font-size: 1rem;
       }
-      nav a:hover,
-      nav button:hover {
+
+      /* Always-glowing animations */
+      @keyframes glowBlue {
+        from { box-shadow: 0 0 4px 1px var(--accent-glow); }
+        to   { box-shadow: 0 0 12px 4px var(--accent-glow); }
+      }
+      @keyframes glowPurple {
+        from { box-shadow: 0 0 4px 1px var(--purple-glow); }
+        to   { box-shadow: 0 0 12px 4px var(--purple-glow); }
+      }
+
+      button.btn-login {
         color: var(--accent);
+        animation: glowBlue 2s ease-in-out infinite alternate;
       }
+      button.btn-login:hover {
+        animation-play-state: paused;
+        box-shadow: 0 0 16px 6px var(--accent-glow);
+      }
+
+      button.btn-signup {
+        color: var(--purple);
+        animation: glowPurple 2s ease-in-out infinite alternate;
+      }
+      button.btn-signup:hover {
+        animation-play-state: paused;
+        box-shadow: 0 0 16px 6px var(--purple-glow);
+      }
+
       #hero {
         flex: 1;
         display: flex;
         align-items: center;
         justify-content: center;
-        /* logo or hero content goes here */
       }
+
       footer {
         text-align: center;
         padding: 1rem;
         font-size: 0.8rem;
         color: #777;
       }
-      button#logout-btn {
-        background: var(--accent);
-        color: #fff;
-        padding: 0.5rem 1rem;
-        border-radius: var(--radius);
-      }
-      button#logout-btn:hover {
-        background: #1f5ec2;
+      footer a.z532 {
+        color: #00ff84;
+        text-decoration: none;
+        font-weight: 500;
+        margin-left: 0.25rem;
       }
     </style>
   </head>
   <body>
     <nav>
-      <!-- left side: your logo -->
-      <a href="index.html">
+      <!-- left: logo -->
+      <a href="index.html" class="logo">
         <img src="/images/aibarf-logo-1.jpeg" alt="aibarf Logo" height="32" />
       </a>
 
-      <!-- right side: dynamic -->
+      <!-- right: dynamic -->
       <div id="nav-right"></div>
     </nav>
 
     <section id="hero">
-      <!-- empty for now; drop your main content or logo here -->
+      <!-- your hero content -->
     </section>
 
     <footer>
-      &copy; 2025 aibarf. All images synthetic. All minds welcome.
+      &copy; 2025 aibarf. All images synthetic. All minds welcome.
+      <a href="https://z532.ai" class="z532">A Z532 product.</a>
     </footer>
 
     <script>
@@ -98,20 +141,22 @@
 
       function renderGuest() {
         navRight.innerHTML = `
-          <a href="login.html">Log In</a>
-          <a href="signup.html"><button>Sign Up</button></a>
+          <button class="btn-login" onclick="location.href='login.html'">
+            Log In
+          </button>
+          <button class="btn-signup" onclick="location.href='signup.html'">
+            Sign Up
+          </button>
         `;
       }
 
-      // Ask the Worker who we are
       fetch(`${API}/me`, {
         credentials: "include",
         mode: "cors"
       })
-        .then((res) => res.json())
-        .then((data) => {
+        .then(res => res.json())
+        .then(data => {
           if (data.user) {
-            // Logged‑in state
             navRight.innerHTML = `
               <span>Hello, ${data.user.name}</span>
               <button id="logout-btn">Log Out</button>
@@ -119,25 +164,17 @@
             document
               .getElementById("logout-btn")
               .addEventListener("click", () => {
-                // Call /logout to clear the session cookie
                 fetch(`${API}/logout`, {
                   method: "POST",
                   credentials: "include",
                   mode: "cors"
-                }).then(() => {
-                  // Reload to refresh nav
-                  location.reload();
-                });
+                }).then(() => location.reload());
               });
           } else {
-            // Guest state
             renderGuest();
           }
         })
-        .catch(() => {
-          // On error, treat as guest
-          renderGuest();
-        });
+        .catch(renderGuest);
     </script>
   </body>
 </html>
