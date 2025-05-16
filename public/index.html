@@ -14,8 +14,6 @@
         --fg: #cccccc;
         --accent: rgb(56, 136, 255);
         --accent-glow: rgba(56, 136, 255, 0.7);
-        --purple: rgb(165, 77, 253);
-        --purple-glow: rgb(165, 77, 253, 0.7);
         --radius: 0.5rem;
       }
 
@@ -41,21 +39,70 @@
         padding: 1rem 2rem;
       }
 
-      /* Brand link */
       nav a.logo {
         display: flex;
         align-items: center;
       }
 
-      /* Dynamic nav-right */
       #nav-right {
         display: flex;
         align-items: center;
       }
 
-      /* Guest buttons */
-      /* Guest buttons */
-      button.btn-login,
+      /* Log In */
+      button.btn-login {
+        margin-left: 1rem;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: var(--radius);
+        background: none;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 1rem;
+        color: var(--accent);
+        box-shadow: 0 0 2px 2px var(--accent-glow);
+        transition: box-shadow 0.3s ease;
+      }
+      button.btn-login:hover {
+        box-shadow: 0 0 16px 4px var(--accent-glow);
+      }
+
+      /* Sign Up with hue‑shifting glow */
+      @keyframes hueShift {
+        0% {
+          color: hsl(0, 100%, 50%);
+          box-shadow: 0 0 2px 2px hsla(0, 100%, 50%, 0.7);
+        }
+        14.2857% {
+          color: hsl(30, 100%, 50%);
+          box-shadow: 0 0 2px 2px hsla(30, 100%, 50%, 0.7);
+        }
+        28.5714% {
+          color: hsl(60, 100%, 50%);
+          box-shadow: 0 0 2px 2px hsla(60, 100%, 50%, 0.7);
+        }
+        42.8571% {
+          color: hsl(120, 100%, 50%);
+          box-shadow: 0 0 2px 2px hsla(120, 100%, 50%, 0.7);
+        }
+        57.1428% {
+          color: hsl(240, 100%, 50%);
+          box-shadow: 0 0 2px 2px hsla(240, 100%, 50%, 0.7);
+        }
+        71.4285% {
+          color: hsl(275, 100%, 50%);
+          box-shadow: 0 0 2px 2px hsla(275, 100%, 50%, 0.7);
+        }
+        85.7142% {
+          color: hsl(300, 100%, 50%);
+          box-shadow: 0 0 2px 2px hsla(300, 100%, 50%, 0.7);
+        }
+        100% {
+          color: hsl(360, 100%, 50%);
+          box-shadow: 0 0 2px 2px hsla(360, 100%, 50%, 0.7);
+        }
+      }
+
       button.btn-signup {
         margin-left: 1rem;
         padding: 0.5rem 1rem;
@@ -65,27 +112,12 @@
         cursor: pointer;
         font-weight: 500;
         font-size: 1rem;
-
-        /* static glow */
-        box-shadow: 0 0 2px 2px var(--accent-glow);
+        animation: hueShift 7s linear infinite;
         transition: box-shadow 0.3s ease;
       }
-
-      button.btn-login {
-        color: var(--accent);
-      }
-
-      button.btn-login:hover {
-        box-shadow: 0 0 16px 4px var(--accent-glow);
-      }
-
-      button.btn-signup {
-        color: var(--purple);
-        box-shadow: 0 0 2px 2px var(--purple-glow);
-      }
-
       button.btn-signup:hover {
-        box-shadow: 0 0 16px 4px var(--purple-glow);
+        /* grow the glow just like the login button */
+        box-shadow: 0 0 16px 4px currentColor;
       }
 
       #hero {
@@ -111,17 +143,14 @@
   </head>
   <body>
     <nav>
-      <!-- left: logo -->
       <a href="index.html" class="logo">
         <img src="/images/aibarf-logo-1.jpeg" alt="aibarf Logo" height="32" />
       </a>
-
-      <!-- right: dynamic -->
       <div id="nav-right"></div>
     </nav>
 
     <section id="hero">
-      <!-- your hero content -->
+      <!-- hero content -->
     </section>
 
     <footer>
