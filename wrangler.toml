@@ -12,7 +12,7 @@ binding = "DB"                         # This must match your code (e.g. env.DB)
 database_name = "aibarf-core-v1"      # What you named it in the Cloudflare dashboard
 database_id = "d4aad340-2cb5-4dd5-a998-4d80f7adc8d8"   # You get this from the D1 dashboard
 
-# Optional: if you use R2 storage later
-[[r2_buckets]]
-binding = "IMAGES"
-bucket_name = "user-images-v1"
+
+[r2_buckets]
+USER_IMAGES = { binding = "USER_IMAGES", bucket_name = "user-images-v1" }
+
