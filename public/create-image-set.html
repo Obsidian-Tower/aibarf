@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>aibarf | Create Image Set</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --card: #121212;
+        --card-light: #1a1a1a;
+        --card-dark: #0d0d0d;
+        --color-light: #cccccc; /* white-ish for levels 1–5 */
+        --color-dark: #888888; /* grey for levels 6–0 */
+        --error: #d32f2f;
+        --accent-glow: rgba(255, 255, 255, 0.7);
+        --grey-glow: rgba(136, 136, 136, 0.7);
+        --radius: 0.5rem;
+      }
+      @keyframes hueShift {
+        0% {
+          color: hsl(0, 100%, 50%);
+        }
+        14% {
+          color: hsl(30, 100%, 50%);
+        }
+        28% {
+          color: hsl(60, 100%, 50%);
+        }
+        43% {
+          color: hsl(120, 100%, 50%);
+        }
+        57% {
+          color: hsl(240, 100%, 50%);
+        }
+        71% {
+          color: hsl(275, 100%, 50%);
+        }
+        86% {
+          color: hsl(300, 100%, 50%);
+        }
+        100% {
+          color: hsl(360, 100%, 50%);
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--color-light);
+        font-family: "Poppins", sans-serif;
+        padding: 1rem;
+      }
+      .container {
+        max-width: 30rem;
+        margin: 2rem auto;
+        background: var(--card);
+        padding: 2rem;
+        border-radius: var(--radius);
+        box-shadow: 0 0 1rem rgba(0, 0, 0, 0.6);
+      }
+      h2 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+      label {
+        margin-bottom: 0.25rem;
+        font-size: 0.95rem;
+      }
+      .help-text-inline {
+        font-size: 0.8rem;
+        color: var(--color-dark);
+        margin-top: 0.25rem;
+      }
+      .counter {
+        font-size: 0.8rem;
+        color: var(--color-dark);
+        text-align: right;
+        margin-top: 0.25rem;
+      }
+      input[type="text"],
+      textarea,
+      input[type="file"] {
+        background: #181818;
+        color: var(--color-light);
+        border: 1px solid #444;
+        border-radius: var(--radius);
+        padding: 0.5rem;
+        font-size: 0.95rem;
+        transition: box-shadow 0.2s ease, border-color 0.2s ease;
+      }
+      input:focus,
+      textarea:focus {
+        border-color: var(--accent-glow);
+        box-shadow: 0 0 8px var(--accent-glow);
+        outline: none;
+      }
+      .error-text {
+        color: var(--error);
+        font-size: 0.8rem;
+        min-height: 1em;
+        margin-top: 0.25rem;
+      }
+      .banner {
+        padding: 0.75rem;
+        border-radius: var(--radius);
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      .banner.error {
+        background: var(--error);
+        color: #fff;
+      }
+      #preview {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 0.5rem;
+      }
+      #preview img {
+        width: 100%;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 4px;
+      }
+      /* —— Create‑Set “Submit” matches Signup button —— */
+      button[type="submit"] {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: var(--radius);
+        background: none;
+        cursor: pointer;
+        /* start at purple but will animate */
+        color: var(--purple);
+        animation: hueShift 25s linear infinite;
+        /* glow from currentColor */
+        box-shadow: 0 0 2px 2px currentColor;
+        transition: box-shadow 0.3s ease;
+      }
+      button[type="submit"]:hover {
+        /* bigger glow on hover, still currentColor */
+        box-shadow: 0 0 60px 4px currentColor;
+      }
+
+      button[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* ——— Maturity “Cards” ——— */
+      .level-box {
+        border: 1px solid;
+        border-radius: var(--radius);
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        color: inherit;
+      }
+      .level-box.light {
+        background: var(--card-light);
+        border-color: var(--color-light);
+        color: var(--color-light);
+      }
+      .level-box.dark {
+        background: var(--card-dark);
+        border-color: var(--color-dark);
+        color: var(--color-dark);
+      }
+      .level-box legend {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+      }
+      .radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .radio-group label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      /* ——— Circular Radios + Glow ——— */
+      .radio-group input[type="radio"] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid currentColor;
+        border-radius: 50%;
+        margin-right: 0.75rem;
+        position: relative;
+        background: none;
+        transition: box-shadow 0.2s ease;
+      }
+      .radio-group input[type="radio"]::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0.5rem;
+        height: 0.5rem;
+        background: currentColor;
+        border-radius: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        transition: transform 0.2s ease;
+      }
+      .radio-group input[type="radio"]:checked::after {
+        transform: translate(-50%, -50%) scale(1);
+      }
+      .level-box.light input[type="radio"]:checked {
+        box-shadow: 0 0 6px 4px var(--accent-glow);
+      }
+      .level-box.dark input[type="radio"]:checked {
+        box-shadow: 0 0 6px 4px var(--grey-glow);
+      }
+      .level-box.light .radio-group input[type="radio"] {
+        color: var(--color-light);
+      }
+      .level-box.dark .radio-group input[type="radio"] {
+        color: var(--color-dark);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Create New Image Set</h2>
+      <div id="global-error" class="banner error" style="display: none"></div>
+
+      <form id="create-set-form" enctype="multipart/form-data" novalidate>
+        <!-- Title -->
+        <div class="form-group">
+          <label for="title"
+            >Title * <span class="help-text-inline">(1–50 chars)</span></label
+          >
+          <input
+            type="text"
+            id="title"
+            name="title"
+            maxlength="50"
+            required
+            placeholder="Give your set a name"
+          />
+          <div class="counter" id="title-counter">0 / 50</div>
+          <div id="title-error" class="error-text"></div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label for="description"
+            >Description *
+            <span class="help-text-inline">(1–500 chars)</span></label
+          >
+          <textarea
+            id="description"
+            name="description"
+            rows="3"
+            maxlength="500"
+            required
+            placeholder="Describe your set"
+          ></textarea>
+          <div class="counter" id="description-counter">0 / 500</div>
+          <div id="description-error" class="error-text"></div>
+        </div>
+
+        <!-- Maturity -->
+        <h3>Relative Maturity Rating</h3>
+        <fieldset class="level-box light">
+          <legend>Levels 1–5 (viewable without account)</legend>
+          <div class="radio-group">
+            <label
+              ><input type="radio" name="level" value="1" checked />1
+              🧸🏞️🌿🖍️🐥</label
+            >
+            <label
+              ><input type="radio" name="level" value="2" />2 🎨🍭🔮🧬🌈</label
+            >
+            <label
+              ><input type="radio" name="level" value="3" />3 🚗🏙️🏗️🤸‍♀️🚴‍♂️</label
+            >
+            <label
+              ><input type="radio" name="level" value="4" />4 🤔🏛️✊🏳️‍🌈📢</label
+            >
+            <label
+              ><input type="radio" name="level" value="5" />5 🎭👙🤡🍸👠</label
+            >
+          </div>
+        </fieldset>
+
+        <fieldset class="level-box dark">
+          <legend>Levels 6–0 (paid account required to view)</legend>
+          <div class="radio-group">
+            <label
+              ><input type="radio" name="level" value="6" />6 🔥🍑🍆🤤💦</label
+            >
+            <label
+              ><input type="radio" name="level" value="7" />7 🔪💏🛏️💖🧨</label
+            >
+            <label
+              ><input type="radio" name="level" value="8" />8 🍒💋🌶️🥵💥</label
+            >
+            <label
+              ><input type="radio" name="level" value="9" />9 😈🔞🧛‍♀️👅😻</label
+            >
+            <label
+              ><input type="radio" name="level" value="0" />0 🕳️☠️🤯👺👹</label
+            >
+          </div>
+        </fieldset>
+
+        <!-- Images -->
+        <div class="form-group">
+          <label for="images">Select Images (3–200) *</label>
+          <input
+            type="file"
+            id="images"
+            name="images"
+            accept="image/*"
+            multiple
+            required
+          />
+          <div id="images-error" class="error-text"></div>
+        </div>
+
+        <!-- Preview thumbnails -->
+        <div id="preview"></div>
+
+        <button type="submit" id="submit-btn">Create Set</button>
+      </form>
+    </div>
+
+    <script>
+      const API = "https://aibarf-auth.coryzuber.workers.dev";
+      const form = document.getElementById("create-set-form");
+      const titleEl = document.getElementById("title");
+      const descEl = document.getElementById("description");
+      const imagesInput = document.getElementById("images");
+      const preview = document.getElementById("preview");
+      const titleErr = document.getElementById("title-error");
+      const descErr = document.getElementById("description-error");
+      const imagesErr = document.getElementById("images-error");
+      const globalErr = document.getElementById("global-error");
+      const submitBtn = document.getElementById("submit-btn");
+      const titleCounter = document.getElementById("title-counter");
+      const descCounter = document.getElementById("description-counter");
+
+      function updateCounter(el, counter) {
+        counter.textContent = `${el.value.length} / ${el.maxLength}`;
+      }
+      titleEl.addEventListener("input", () =>
+        updateCounter(titleEl, titleCounter)
+      );
+      descEl.addEventListener("input", () =>
+        updateCounter(descEl, descCounter)
+      );
+
+      imagesInput.addEventListener("change", () => {
+        preview.innerHTML = "";
+        const files = imagesInput.files;
+        imagesErr.textContent =
+          files.length < 3 || files.length > 200
+            ? "Select between 3 and 200 images."
+            : "";
+        Array.from(files).forEach((file) => {
+          const url = URL.createObjectURL(file);
+          const img = document.createElement("img");
+          img.src = url;
+          img.onload = () => URL.revokeObjectURL(url);
+          preview.appendChild(img);
+        });
+      });
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        [titleErr, descErr, imagesErr].forEach((el) => (el.textContent = ""));
+        globalErr.style.display = "none";
+
+        let valid = true;
+        if (!titleEl.value.trim()) {
+          titleErr.textContent = "Title is required.";
+          valid = false;
+        }
+        if (!descEl.value.trim()) {
+          descErr.textContent = "Description is required.";
+          valid = false;
+        }
+        const count = imagesInput.files.length;
+        if (count < 3 || count > 200) {
+          imagesErr.textContent = "Select between 3 and 200 images.";
+          valid = false;
+        }
+        if (!valid) return;
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Creating…";
+        try {
+          const fd = new FormData(form);
+          const res = await fetch(`${API}/sets`, {
+            method: "POST",
+            credentials: "include",
+            body: fd,
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || "Failed to create set.");
+          location.href = `/sets/${data.id}`;
+        } catch (err) {
+          globalErr.textContent = err.message;
+          globalErr.style.display = "block";
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Create Set";
+        }
+      });
+
+      // initialize counters on load
+      updateCounter(titleEl, titleCounter);
+      updateCounter(descEl, descCounter);
+    </script>
+  </body>
+</html>
