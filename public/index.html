@@ -137,6 +137,41 @@
         font-weight: 500;
         margin-left: 0.25rem;
       }
+      /* “Create Set” circle‑plus button */
+      .btn-add {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        margin-right: 0.75rem;
+        border-radius: 50%;
+        background: none;
+        border: 2px solid var(--accent);
+        color: var(--accent);
+        font-size: 1.25rem;
+        cursor: pointer;
+        position: relative;
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+      }
+      .btn-add:hover {
+        box-shadow: 0 0 8px 4px var(--accent-glow);
+        transform: scale(1.1);
+      }
+      /* simple tooltip */
+      .btn-add[data-tooltip]:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        top: -1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--fg);
+        color: var(--bg);
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        border-radius: var(--radius);
+        white-space: nowrap;
+      }
     </style>
   </head>
   <body>
@@ -179,9 +214,13 @@
         .then((data) => {
           if (data.user) {
             navRight.innerHTML = `
-              <span>Hello, ${data.user.name}</span>
-              <button id="logout-btn">Log Out</button>
-            `;
+        <button class="btn-add" data-tooltip="Create Set"
+                onclick="location.href='create-set.html'">
+          ＋
+        </button>
+        <span>Hello, ${data.user.name}</span>
+        <button id="logout-btn">Log Out</button>
+      `;
             document
               .getElementById("logout-btn")
               .addEventListener("click", () => {
