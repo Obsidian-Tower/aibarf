@@ -392,9 +392,9 @@
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        [titleErr, descErr, imagesErr].forEach((el) => (el.textContent = ""));
+        [titleErr, descErr, imagesErr].forEach(el => (el.textContent = ""));
         globalErr.style.display = "none";
-
+      
         let valid = true;
         if (!titleEl.value.trim()) {
           titleErr.textContent = "Title is required.";
@@ -410,7 +410,7 @@
           valid = false;
         }
         if (!valid) return;
-
+      
         submitBtn.disabled = true;
         submitBtn.textContent = "Creating…";
         try {
@@ -422,7 +422,8 @@
           });
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || "Failed to create set.");
-          location.href = `/sets/${data.id}`;
+          // redirect to your new detail page
+          location.href = `/set.html?id=${encodeURIComponent(data.id)}`;
         } catch (err) {
           globalErr.textContent = err.message;
           globalErr.style.display = "block";
@@ -431,6 +432,7 @@
           submitBtn.textContent = "Create Set";
         }
       });
+
 
       // initialize counters on load
       updateCounter(titleEl, titleCounter);
