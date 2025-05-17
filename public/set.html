@@ -101,44 +101,45 @@
   </footer>
 
   <script>
-    const API     = "https://aibarf-auth.coryzuber.workers.dev";
-    const params  = new URLSearchParams(location.search);
-    const setId   = params.get("id");
-    const status  = document.getElementById("status");
-    const view    = document.getElementById("set-view");
-    const titleEl = document.getElementById("set-title");
-    const descEl  = document.getElementById("set-desc");
-    const grid    = document.getElementById("images-grid");
+  const API     = "https://aibarf-auth.coryzuber.workers.dev";
+  const params  = new URLSearchParams(location.search);
+  const setId   = params.get("id");
+  const status  = document.getElementById("status");
+  const view    = document.getElementById("set-view");
+  const titleEl = document.getElementById("set-title");
+  const descEl  = document.getElementById("set-desc");
+  const grid    = document.getElementById("images-grid");
 
-    if (!setId) {
-      status.textContent = "No set ID provided.";
-    } else {
-      fetch(`${API}/sets/${setId}`, {
-        credentials: "include",
-        mode: "cors"
-      })
-      .then(res => {
-        if (!res.ok) throw new Error("Set not found");
-        return res.json();
-      })
-      .then(data => {
-        status.style.display = "none";
-        view.style.display   = "block";
+  if (!setId) {
+    status.textContent = "No set ID provided.";
+  } else {
+    fetch(`${API}/set?id=${encodeURIComponent(setId)}`, {
+      credentials: "include",
+      mode: "cors"
+    })
+    .then(res => {
+      if (!res.ok) throw new Error(res.status === 403 ? "Forbidden" : "Set not found");
+      return res.json();
+    })
+    .then(data => {
+      status.style.display = "none";
+      view.style.display   = "block";
 
-        titleEl.textContent = data.title;
-        descEl.textContent  = data.description;
+      titleEl.textContent = data.title;
+      descEl.textContent  = data.description;
 
-        data.images.forEach((fileName, idx) => {
-          const img = document.createElement("img");
-          img.src = `${API}/images/sets/${setId}/${fileName}`;
-          img.alt = `${data.title} — Image ${idx+1}`;
-          grid.appendChild(img);
-        });
-      })
-      .catch(err => {
-        status.textContent = err.message;
+      data.images.forEach((fileName, idx) => {
+        const img = document.createElement("img");
+        img.src = `${API}/images/sets/${setId}/${fileName}`;
+        img.alt = `${data.title} — Image ${idx+1}`;
+        grid.appendChild(img);
       });
-    }
-  </script>
+    })
+    .catch(err => {
+      status.textContent = err.message;
+    });
+  }
+</script>
+
 </body>
 </html>
