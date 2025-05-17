@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>aibarf | Home</title>
+    <title>aibarf | Home</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
       rel="stylesheet"
@@ -14,7 +14,6 @@
         --fg: #cccccc;
         --accent: rgb(56, 136, 255);
         --accent-glow: rgba(56, 136, 255, 0.7);
-        /* purple is now purely a starting value, animation will override */
         --purple: hsl(0, 100%, 50%);
         --radius: 0.5rem;
       }
@@ -69,34 +68,17 @@
         box-shadow: 0 0 60px 4px var(--accent-glow);
       }
 
-      /* Sign Up — hue‑shifting text + glow from currentColor */
+      /* Sign Up — hue‑shifting text + glow */
       @keyframes hueShift {
-        0% {
-          color: hsl(0, 100%, 50%);
-        }
-        14% {
-          color: hsl(30, 100%, 50%);
-        }
-        28% {
-          color: hsl(60, 100%, 50%);
-        }
-        43% {
-          color: hsl(120, 100%, 50%);
-        }
-        57% {
-          color: hsl(240, 100%, 50%);
-        }
-        71% {
-          color: hsl(275, 100%, 50%);
-        }
-        86% {
-          color: hsl(300, 100%, 50%);
-        }
-        100% {
-          color: hsl(360, 100%, 50%);
-        }
+        0% { color: hsl(0,100%,50%); }
+        14% { color: hsl(30,100%,50%); }
+        28% { color: hsl(60,100%,50%); }
+        43% { color: hsl(120,100%,50%); }
+        57% { color: hsl(240,100%,50%); }
+        71% { color: hsl(275,100%,50%); }
+        86% { color: hsl(300,100%,50%); }
+        100% { color: hsl(360,100%,50%); }
       }
-
       button.btn-signup {
         margin-left: 1rem;
         padding: 0.5rem 1rem;
@@ -106,15 +88,12 @@
         cursor: pointer;
         font-weight: 500;
         font-size: 1rem;
-        /* start at purple but get overridden by the animation */
         color: var(--purple);
         animation: hueShift 25s linear infinite;
-        /* use currentColor for the glow */
         box-shadow: 0 0 2px 2px currentColor;
         transition: box-shadow 0.3s ease;
       }
       button.btn-signup:hover {
-        /* now the glow *size* can grow, and will use the current hue */
         box-shadow: 0 0 60px 4px currentColor;
       }
 
@@ -137,19 +116,21 @@
         font-weight: 500;
         margin-left: 0.25rem;
       }
+
       /* “Create Set” circle‑plus button */
       .btn-add {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 2rem;
-        height: 2rem;
+        width: 2.5rem;
+        height: 2.5rem;
         margin-right: 0.75rem;
         border-radius: 50%;
         background: none;
         border: 2px solid var(--accent);
         color: var(--accent);
-        font-size: 1.25rem;
+        font-size: 1.75rem;       /* ↑ Bigger plus */
+        line-height: 1;          /* ensure perfect centering */
         cursor: pointer;
         position: relative;
         transition: box-shadow 0.2s ease, transform 0.2s ease;
@@ -158,11 +139,11 @@
         box-shadow: 0 0 8px 4px var(--accent-glow);
         transform: scale(1.1);
       }
-      /* simple tooltip */
+      /* tooltip now appears below */
       .btn-add[data-tooltip]:hover::after {
         content: attr(data-tooltip);
         position: absolute;
-        top: -1.5rem;
+        top: calc(100% + 0.25rem);  /* ↓ below the circle */
         left: 50%;
         transform: translateX(-50%);
         background: var(--fg);
@@ -171,6 +152,28 @@
         font-size: 0.75rem;
         border-radius: var(--radius);
         white-space: nowrap;
+      }
+
+      /* Hello + Log Out spacing & styling */
+      #nav-right span {
+        margin-left: 0.5rem;
+        font-weight: 500;
+      }
+      button#logout-btn {
+        margin-left: 1rem;       /* space from username */
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: var(--radius);
+        background: none;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 1rem;
+        color: var(--accent);
+        box-shadow: 0 0 2px 2px var(--accent-glow);
+        transition: box-shadow 0.3s ease;
+      }
+      button#logout-btn:hover {
+        box-shadow: 0 0 60px 4px var(--accent-glow);
       }
     </style>
   </head>
@@ -214,13 +217,13 @@
         .then((data) => {
           if (data.user) {
             navRight.innerHTML = `
-        <button class="btn-add" data-tooltip="Create Set"
-                onclick="location.href='create-image-set.html'">
-          ＋
-        </button>
-        <span>Hello, ${data.user.name}</span>
-        <button id="logout-btn">Log Out</button>
-      `;
+              <button class="btn-add" data-tooltip="Create Set"
+                      onclick="location.href='create-image-set.html'">
+                ＋
+              </button>
+              <span>Hello, ${data.user.name}</span>
+              <button id="logout-btn">Log Out</button>
+            `;
             document
               .getElementById("logout-btn")
               .addEventListener("click", () => {
