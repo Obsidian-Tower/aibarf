@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>aibarf | View Set</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --fg: #cccccc;
+      --accent: rgb(56, 136, 255);
+      --accent-glow: rgba(56, 136, 255, 0.7);
+      --radius: 0.5rem;
+      --card-bg: #1a1a1a;
+      --muted: #aaa;
+      --overlay: rgba(0,0,0,0.7);
+    }
+    * { box-sizing: border-box; margin:0; padding:0; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: "Poppins", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1rem 2rem;
+    }
+    nav a.logo { display: flex; align-items: center; }
+
+    button#back-btn {
+      margin-left: 1rem; padding: 0.5rem 1rem;
+      border:none; border-radius:var(--radius);
+      background:none; cursor:pointer;
+      font-weight:500; font-size:1rem;
+      color:var(--accent);
+      box-shadow:0 0 2px 2px var(--accent-glow);
+      transition:box-shadow 0.3s ease;
+    }
+    button#back-btn:hover {
+      box-shadow:0 0 60px 4px var(--accent-glow);
+    }
+
+    .container { width:100%; max-width:1200px; margin:0 auto; padding:1rem; }
+    h1#set-title { font-size:2rem; margin-bottom:0.5rem; }
+    p#set-desc { color:var(--muted); font-size:1rem; margin-bottom:1rem; }
+    .grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+      gap:1rem;
+    }
+    .grid img {
+      width:100%; aspect-ratio:1/1;
+      object-fit:cover; border-radius:var(--radius);
+      box-shadow:0 2px 10px rgba(0,0,0,0.3);
+      transition:transform 0.2s ease;
+    }
+    .grid img:hover {
+      transform:scale(1.05);
+    }
+
+    #status {
+      text-align:center; color:var(--muted); margin:2rem 0;
+    }
+
+    footer {
+      margin-top:auto; text-align:center; padding:1rem;
+      font-size:0.8rem; color:#777;
+    }
+    footer a.z532 {
+      color:#00ff84; text-decoration:none; font-weight:500; margin-left:0.25rem;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="logo">
+      <img src="/images/aibarf-logo-1.jpeg" alt="aibarf Logo" height="32" />
+    </a>
+    <button id="back-btn" onclick="history.back()">← Back</button>
+  </nav>
+
+  <main class="container">
+    <div id="status">Loading set…</div>
+    <div id="set-view" style="display:none;">
+      <h1 id="set-title"></h1>
+      <p id="set-desc"></p>
+      <div id="images-grid" class="grid"></div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 aibarf. All images synthetic. All minds welcome.
+    <a href="https://z532.ai" class="z532">A Z532 product.</a>
+  </footer>
+
+  <script>
+    const API     = "https://aibarf-auth.coryzuber.workers.dev";
+    const params  = new URLSearchParams(location.search);
+    const setId   = params.get("id");
+    const status  = document.getElementById("status");
+    const view    = document.getElementById("set-view");
+    const titleEl = document.getElementById("set-title");
+    const descEl  = document.getElementById("set-desc");
+    const grid    = document.getElementById("images-grid");
+
+    if (!setId) {
+      status.textContent = "No set ID provided.";
+    } else {
+      fetch(`${API}/sets/${setId}`, {
+        credentials: "include",
+        mode: "cors"
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Set not found");
+        return res.json();
+      })
+      .then(data => {
+        status.style.display = "none";
+        view.style.display   = "block";
+
+        titleEl.textContent = data.title;
+        descEl.textContent  = data.description;
+
+        data.images.forEach((fileName, idx) => {
+          const img = document.createElement("img");
+          img.src = `${API}/images/sets/${setId}/${fileName}`;
+          img.alt = `${data.title} — Image ${idx+1}`;
+          grid.appendChild(img);
+        });
+      })
+      .catch(err => {
+        status.textContent = err.message;
+      });
+    }
+  </script>
+</body>
+</html>
