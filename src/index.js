@@ -477,6 +477,74 @@ export default {
         { status: 200, headers }
       );
     }
+    // —————— Create a new image Set ——————
+    if (pathname === "/sets" && request.method === "POST") {
+      // 1️⃣ authenticate
+      const cookie = request.headers.get("Cookie") || "";
+      const m      = cookie.match(/session=([^;]+)/);
+      const payload = m && await verifyJWT(m[1], env.SESSION_SECRET);
+      if (!payload) {
+        return new Response(JSON.stringify({ error: "Not authenticated" }), {
+          status: 401, headers
+        });
+      }
+      const userId = payload.sub;
+
+      // 2️⃣ parse formData
+      const form = await request.formData();
+      const title       = form.get("title");
+      const description = form.get("description");
+      const level       = form.get("level");
+      const files       = form.getAll("images"); // array of File
+
+      if (!title || !description || files.length < 3) {
+        return new Response(JSON.stringify({
+          error: "Missing title/description or too few images"
+        }), { status: 400, headers });
+      }
+
+      // 3️⃣ insert into 'sets'
+      const setId = crypto.randomUUID();
+      const now   = Date.now();
+      await env.DB.prepare(
+        `INSERT INTO sets
+          (id,title,description,level,created_at,created_by)
+        VALUES (?,?,?,?,?,?)`
+      )
+      .bind(setId, title, description, Number(level), now, userId)
+      .run();
+
+      // 4️⃣ upload each image to R2 + record in 'images'
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        // derive a clean key: e.g. sets/{setId}/1.jpg
+        const ext = file.name.split(".").pop().toLowerCase();
+        const key = `sets/${setId}/${i+1}.${ext}`;
+
+        // ← use your USER_IMAGES binding here
+        await env.USER_IMAGES.put(
+          key,
+          await file.arrayBuffer(),
+          { httpMetadata: { contentType: file.type } }
+        );
+        const url = `https://${env.USER_IMAGES.name}.r2.cloudflarestorage.com/${key}`;
+
+        // insert into images table
+        await env.DB.prepare(
+          `INSERT INTO images
+            (id,set_id,file_name,url,created_at)
+          VALUES (?,?,?,?,?)`
+        )
+        .bind(crypto.randomUUID(), setId, file.name, url, now)
+        .run();
+      }
+
+      // 5️⃣ respond with the new set ID
+      return new Response(JSON.stringify({ id: setId }), {
+        status: 201, headers
+      });
+    }
+
 
     // —————— Fallback 404 ——————
     return new Response(
