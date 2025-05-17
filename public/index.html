@@ -242,7 +242,8 @@
         // build each card
         sets.forEach(s => {
           const a = document.createElement("a");
-          a.href = `/sets/${s.id}`;
+          // new (singular + query‑param)
+          a.href = `/set.html?id=${s.id}`;
           a.className = "card";
 
           const img = document.createElement("img");
