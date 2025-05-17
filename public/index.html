@@ -34,6 +34,43 @@
     }
     nav a.logo { display: flex; align-items: center; }
     #nav-right { display: flex; align-items: center; }
+
+    /* ——— Create‑Set circle plus button ——— */
+    .btn-add {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      margin-right: 0.75rem;
+      border-radius: 50%;
+      background: none;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      font-size: 1.5rem;
+      cursor: pointer;
+      position: relative;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    .btn-add:hover {
+      box-shadow: 0 0 8px 4px var(--accent-glow);
+      transform: scale(1.1);
+    }
+    .btn-add[data-tooltip]:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(0.5rem);
+      background: var(--fg);
+      color: var(--bg);
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      border-radius: var(--radius);
+      white-space: nowrap;
+      z-index: 10;
+    }
+
     button.btn-login, button#logout-btn {
       margin-left: 1rem; padding: 0.5rem 1rem;
       border:none; border-radius:var(--radius);
@@ -47,6 +84,7 @@
     button#logout-btn:hover {
       box-shadow:0 0 60px 4px var(--accent-glow);
     }
+
     @keyframes hueShift {
       0%{color:hsl(0,100%,50%)}14%{color:hsl(30,100%,50%)}28%{color:hsl(60,100%,50%)}
       43%{color:hsl(120,100%,50%)}57%{color:hsl(240,100%,50%)}71%{color:hsl(275,100%,50%)}
@@ -63,6 +101,7 @@
     button.btn-signup:hover {
       box-shadow:0 0 60px 4px currentColor;
     }
+
     #hero {
       flex:1; display:flex; align-items:center; justify-content:center;
       padding:2rem 1rem;
@@ -70,6 +109,7 @@
     }
     .hero h2 { font-size:2rem; font-weight:600; margin-bottom:1rem; }
     .hero p  { color:var(--muted); font-size:1rem; }
+
     /* grid & cards */
     .container { width:100%; max-width:1200px; margin:0 auto; padding:1rem; }
     .grid {
@@ -105,10 +145,12 @@
     .card-stats {
       margin-top:0.25rem; font-size:0.75rem; color:var(--muted);
     }
+
     /* loading / error */
     #grid-status {
       text-align:center; color:var(--muted); margin:2rem 0;
     }
+
     footer {
       text-align:center; padding:1rem; font-size:0.8rem; color:#777;
     }
