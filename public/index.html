@@ -16,6 +16,10 @@
         --accent-glow: rgba(56, 136, 255, 0.7);
         --purple: hsl(0, 100%, 50%);
         --radius: 0.5rem;
+        /* grid colors */
+        --card-bg: #1a1a1a;
+        --muted: #aaa;
+        --overlay: rgba(0,0,0,0.7);
       }
 
       * {
@@ -50,8 +54,8 @@
         align-items: center;
       }
 
-      /* Log In */
-      button.btn-login {
+      button.btn-login,
+      button#logout-btn {
         margin-left: 1rem;
         padding: 0.5rem 1rem;
         border: none;
@@ -64,11 +68,11 @@
         box-shadow: 0 0 2px 2px var(--accent-glow);
         transition: box-shadow 0.3s ease;
       }
-      button.btn-login:hover {
+      button.btn-login:hover,
+      button#logout-btn:hover {
         box-shadow: 0 0 60px 4px var(--accent-glow);
       }
 
-      /* Sign Up — hue‑shifting text + glow */
       @keyframes hueShift {
         0% { color: hsl(0,100%,50%); }
         14% { color: hsl(30,100%,50%); }
@@ -104,6 +108,65 @@
         justify-content: center;
       }
 
+      /* —— GRID & CARDS —— */
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1.5rem;
+      }
+      .card {
+        position: relative;
+        display: block;
+        width: 100%;
+        aspect-ratio: 1/1;
+        overflow: hidden;
+        border-radius: var(--radius);
+        background: var(--card-bg);
+        text-decoration: none;
+        color: inherit;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+      }
+      .thumbnail {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: var(--overlay);
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+      }
+      .card:hover .overlay {
+        transform: translateY(0);
+      }
+      .overlay h2 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0;
+      }
+      .card-stats {
+        margin-top: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
       footer {
         text-align: center;
         padding: 1rem;
@@ -116,67 +179,10 @@
         font-weight: 500;
         margin-left: 0.25rem;
       }
-
-      /* “Create Set” circle‑plus button */
-      .btn-add {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 2.5rem;
-        height: 2.5rem;
-        margin-right: 0.75rem;
-        border-radius: 50%;
-        background: none;
-        border: 2px solid var(--accent);
-        color: var(--accent);
-        font-size: 1.75rem;       /* ↑ Bigger plus */
-        line-height: 1;          /* ensure perfect centering */
-        cursor: pointer;
-        position: relative;
-        transition: box-shadow 0.2s ease, transform 0.2s ease;
-      }
-      .btn-add:hover {
-        box-shadow: 0 0 8px 4px var(--accent-glow);
-        transform: scale(1.1);
-      }
-      /* tooltip now appears below */
-      .btn-add[data-tooltip]:hover::after {
-        content: attr(data-tooltip);
-        position: absolute;
-        top: calc(100% + 0.25rem);  /* ↓ below the circle */
-        left: 50%;
-        transform: translateX(-50%);
-        background: var(--fg);
-        color: var(--bg);
-        padding: 0.25rem 0.5rem;
-        font-size: 0.75rem;
-        border-radius: var(--radius);
-        white-space: nowrap;
-      }
-
-      /* Hello + Log Out spacing & styling */
-      #nav-right span {
-        margin-left: 0.5rem;
-        font-weight: 500;
-      }
-      button#logout-btn {
-        margin-left: 1rem;       /* space from username */
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: var(--radius);
-        background: none;
-        cursor: pointer;
-        font-weight: 500;
-        font-size: 1rem;
-        color: var(--accent);
-        box-shadow: 0 0 2px 2px var(--accent-glow);
-        transition: box-shadow 0.3s ease;
-      }
-      button#logout-btn:hover {
-        box-shadow: 0 0 60px 4px var(--accent-glow);
-      }
+      /* —— end grid styles —— */
     </style>
   </head>
+
   <body>
     <nav>
       <a href="index.html" class="logo">
@@ -186,8 +192,40 @@
     </nav>
 
     <section id="hero">
-      <!-- hero content -->
+      <!-- your existing hero content -->
     </section>
+
+    <!-- —— Level 1–5 Sets Grid —— -->
+    <main class="container grid">
+      <!-- Example card; duplicate or generate via JS -->
+      <a href="view-set.html?setId=123" class="card">
+        <img
+          class="thumbnail"
+          src="/images/example-thumb.jpg"
+          alt="Sunset Landscapes"
+        />
+        <div class="overlay">
+          <h2>Sunset Landscapes</h2>
+          <div class="card-stats">
+            <span>12 Images</span>
+          </div>
+        </div>
+      </a>
+      <a href="view-set.html?setId=456" class="card">
+        <img
+          class="thumbnail"
+          src="/images/example-thumb2.jpg"
+          alt="Abstract Shapes"
+        />
+        <div class="overlay">
+          <h2>Abstract Shapes</h2>
+          <div class="card-stats">
+            <span>8 Images</span>
+          </div>
+        </div>
+      </a>
+      <!-- …more cards… -->
+    </main>
 
     <footer>
       &copy; 2025 aibarf. All images synthetic. All minds welcome.
