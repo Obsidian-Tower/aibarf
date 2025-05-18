@@ -18,9 +18,7 @@
         --card-bg: #1a1a1a;
         --muted: #aaa;
         --overlay: rgba(0, 0, 0, 0.7);
-
-        /* slider‑controlled minimum card width */
-        --min-card-width: 60px;
+        --columns: 6;
       }
       * {
         box-sizing: border-box;
@@ -31,23 +29,41 @@
         background: var(--bg);
         color: var(--fg);
         font-family: "Poppins", sans-serif;
+        padding-top: 80px;
       }
       nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 80px;
+        padding: 1rem 2rem;
+        background: rgba(10, 10, 10, 0.9);
+        backdrop-filter: blur(8px);
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 1rem 2rem;
+        z-index: 1000;
+        transition: padding 0.3s ease, height 0.3s ease, background 0.3s ease;
       }
+
+      nav.scrolled {
+        height: 60px;
+        padding: 0.5rem 1rem;
+        background: rgba(10, 10, 10, 0.95);
+      }
+
       nav a.logo {
         display: flex;
         align-items: center;
       }
+
       #nav-right {
         display: flex;
         align-items: center;
       }
 
-      /* ——— Create‑Set circle plus button ——— */
+      /* ——— Create‑Set & adjust buttons ——— */
       .btn-add {
         display: inline-flex;
         align-items: center;
@@ -161,24 +177,6 @@
         margin-bottom: 1rem;
       }
 
-      /* slider controls */
-      #slider-container {
-        width: 100%;
-        max-width: 600px;
-        margin: 0 auto 2rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      #col-slider {
-        flex: 1;
-      }
-      #slider-value {
-        width: 3rem;
-        text-align: right;
-        color: var(--fg);
-      }
-
       /* grid & cards */
       .container {
         width: 100%;
@@ -188,14 +186,12 @@
       }
       .grid {
         display: grid;
-        grid-template-columns: repeat(
-          auto-fill,
-          minmax(var(--min-card-width), 1fr)
-        );
+        grid-template-columns: repeat(var(--columns), 1fr);
         gap: 2px;
-        justify-content: start; /* Ensures top-left alignment */
-        align-content: start; /* Critical for multi-row top-bias */
+        justify-content: start;
+        align-content: start;
       }
+
       .card {
         position: relative;
         display: block;
@@ -241,6 +237,12 @@
         margin-top: 0.25rem;
         font-size: 0.75rem;
         color: var(--muted);
+        text-align: left;
+      }
+      .creator-name {
+        text-align: right;
+        font-size: 0.75rem;
+        color: var(--muted);
       }
 
       /* loading / error */
@@ -248,6 +250,13 @@
         text-align: center;
         color: var(--muted);
         margin: 2rem 0;
+      }
+
+      #nav-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem; /* space between − and ＋ */
+        margin-left: 1rem; /* space from the logo */
       }
 
       footer {
@@ -262,22 +271,6 @@
         font-weight: 500;
         margin-left: 0.25rem;
       }
-      .overlay {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between; /* Ensures top-bottom distribution */
-        height: 100%;
-      }
-
-      .card-stats {
-        text-align: left;
-      }
-
-      .creator-name {
-        text-align: right;
-        font-size: 0.75rem;
-        color: var(--muted);
-      }
     </style>
   </head>
   <body>
@@ -285,6 +278,11 @@
       <a href="index.html" class="logo">
         <img src="/images/aibarf-logo-1.jpeg" alt="aibarf Logo" height="32" />
       </a>
+
+      <!-- NEW: container for − / ＋ buttons -->
+      <div id="nav-controls"></div>
+
+      <!-- existing container for login/signup or create+hello -->
       <div id="nav-right"></div>
     </nav>
 
@@ -292,24 +290,10 @@
       <div class="container">
         <h2>AIBARF</h2>
         <p>AI Generated, Human Curated</p>
-
-        <!-- slider to adjust card width -->
-        <div id="slider-container">
-          <label for="col-slider">Card width:</label>
-          <input
-            type="range"
-            id="col-slider"
-            min="20"
-            max="400"
-            step="5"
-            value="60"
-          />
-          <span id="slider-value">60px</span>
-        </div>
+        <!-- Slider removed and replaced by buttons in nav -->
       </div>
     </section>
 
-    <!-- dynamic grid -->
     <main class="container">
       <div id="grid-status">Loading sets…</div>
       <div id="sets-grid" class="grid" style="display: none"></div>
@@ -322,28 +306,60 @@
 
     <script>
       const API = "https://aibarf-auth.coryzuber.workers.dev";
+      const navControls = document.getElementById("nav-controls");
       const navRight = document.getElementById("nav-right");
 
-      // render nav
-      function renderGuest() {
-        navRight.innerHTML = `
-        <button class="btn-login" onclick="location.href='login.html'">Log In</button>
-        <button class="btn-signup" onclick="location.href='signup.html'">Sign Up</button>
+      // HTML for our new controls
+      const controlsHTML = `
+        <button id="decrease-btn" class="btn-add" data-tooltip="Smaller tiles (more columns)">−</button>
+        <button id="increase-btn" class="btn-add" data-tooltip="Larger tiles (fewer columns)">＋</button>
       `;
+
+      // Adjust the --columns CSS variable by delta (+1 or -1)
+      function adjustCols(delta) {
+        const root = document.documentElement;
+        let cols = parseInt(
+          getComputedStyle(root).getPropertyValue("--columns"),
+          10
+        );
+        cols = Math.max(1, cols + delta);
+        root.style.setProperty("--columns", cols);
       }
 
+      // Wire up our −/+ buttons to call adjustCols
+      function attachControlListeners() {
+        const dec = document.getElementById("decrease-btn");
+        const inc = document.getElementById("increase-btn");
+        if (dec) dec.addEventListener("click", () => adjustCols(+1));
+        if (inc) inc.addEventListener("click", () => adjustCols(-1));
+      }
+
+      // Render nav controls for a guest
+      function renderGuest() {
+        navControls.innerHTML = controlsHTML;
+        navRight.innerHTML = `
+          <button class="btn-login" onclick="location.href='login.html'">Log In</button>
+          <button class="btn-signup" onclick="location.href='signup.html'">Sign Up</button>
+        `;
+        attachControlListeners();
+      }
+
+      // On load, fetch auth state and build nav
       fetch(`${API}/me`, { credentials: "include", mode: "cors" })
         .then((r) => r.json())
         .then((data) => {
+          // Always inject our −/+ controls
+          navControls.innerHTML = controlsHTML;
+
           if (data.user) {
             navRight.innerHTML = `
-            <button class="btn-add" data-tooltip="Create Set"
-                    onclick="location.href='create-image-set.html'">＋</button>
-            <span style="margin-left:0.5rem;font-weight:500;">
-              Hello, ${data.user.name}
-            </span>
-            <button id="logout-btn">Log Out</button>
-          `;
+              <button class="btn-add" data-tooltip="Create Set"
+                      onclick="location.href='create-image-set.html'">＋</button>
+              <span style="margin-left:0.5rem;font-weight:500;">
+                Hello, ${data.user.name}
+              </span>
+              <button id="logout-btn">Log Out</button>
+            `;
             document
               .getElementById("logout-btn")
               .addEventListener("click", () => {
@@ -353,31 +369,21 @@
                   mode: "cors",
                 }).then(() => location.reload());
               });
+            attachControlListeners();
           } else {
             renderGuest();
           }
         })
         .catch(renderGuest);
 
-      // slider logic
-      const slider = document.getElementById("col-slider");
-      const sliderValue = document.getElementById("slider-value");
-      slider.addEventListener("input", (e) => {
-        const w = e.target.value + "px";
-        document.documentElement.style.setProperty("--min-card-width", w);
-        sliderValue.textContent = w;
-      });
-      // Sync on page load to match initial slider value
-      document.addEventListener("DOMContentLoaded", () => {
-        const initialWidth = slider.value + "px";
-        document.documentElement.style.setProperty(
-          "--min-card-width",
-          initialWidth
-        );
-        sliderValue.textContent = initialWidth;
+      // Top nav scroll behavior
+      window.addEventListener("scroll", () => {
+        const nav = document.querySelector("nav");
+        if (window.scrollY > 50) nav.classList.add("scrolled");
+        else nav.classList.remove("scrolled");
       });
 
-      // fetch and render Level 1–5 sets
+      // Fetch and render Level 1–5 sets
       async function loadSets() {
         const status = document.getElementById("grid-status");
         const grid = document.getElementById("sets-grid");
@@ -410,14 +416,9 @@
             ov.className = "overlay";
             ov.innerHTML = `
               <h2>${s.title}</h2>
-              <div class="card-stats">
-                ${s.imageCount} Images
-              </div>
-              <div class="creator-name">
-                by ${s.createdBy}
-              </div>
+              <div class="card-stats">${s.imageCount} Images</div>
+              <div class="creator-name">by ${s.createdBy}</div>
             `;
-
             a.appendChild(ov);
 
             grid.appendChild(a);
