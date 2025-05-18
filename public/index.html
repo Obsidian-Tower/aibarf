@@ -1,244 +1,333 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>aibarf | Home</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
-    rel="stylesheet"
-  />
-  <style>
-    :root {
-      --bg: #0a0a0a;
-      --fg: #cccccc;
-      --accent: rgb(56, 136, 255);
-      --accent-glow: rgba(56, 136, 255, 0.7);
-      --radius: 0.5rem;
-      --card-bg: #1a1a1a;
-      --muted: #aaa;
-      --overlay: rgba(0,0,0,0.7);
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>aibarf | Home</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #cccccc;
+        --accent: rgb(56, 136, 255);
+        --accent-glow: rgba(56, 136, 255, 0.7);
+        --radius: 0.5rem;
+        --card-bg: #1a1a1a;
+        --muted: #aaa;
+        --overlay: rgba(0, 0, 0, 0.7);
 
-      /* slider‑controlled minimum card width */
-      --min-card-width: 220px;
-    }
-    * { box-sizing: border-box; margin:0; padding:0; }
-    body {
-      background: var(--bg);
-      color: var(--fg);
-      font-family: "Poppins", sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    nav {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 1rem 2rem;
-    }
-    nav a.logo { display: flex; align-items: center; }
-    #nav-right { display: flex; align-items: center; }
+        /* slider‑controlled minimum card width */
+        --min-card-width: 220px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Poppins", sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+      }
+      nav a.logo {
+        display: flex;
+        align-items: center;
+      }
+      #nav-right {
+        display: flex;
+        align-items: center;
+      }
 
-    /* ——— Create‑Set circle plus button ——— */
-    .btn-add {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 2.5rem;
-      height: 2.5rem;
-      margin-right: 0.75rem;
-      border-radius: 50%;
-      background: none;
-      border: 2px solid var(--accent);
-      color: var(--accent);
-      font-size: 1.5rem;
-      cursor: pointer;
-      position: relative;
-      transition: box-shadow 0.2s ease, transform 0.2s ease;
-    }
-    .btn-add:hover {
-      box-shadow: 0 0 8px 4px var(--accent-glow);
-      transform: scale(1.1);
-    }
-    .btn-add[data-tooltip]:hover::after {
-      content: attr(data-tooltip);
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%) translateY(0.5rem);
-      background: var(--fg);
-      color: var(--bg);
-      padding: 0.25rem 0.5rem;
-      font-size: 0.75rem;
-      border-radius: var(--radius);
-      white-space: nowrap;
-      z-index: 10;
-    }
+      /* ——— Create‑Set circle plus button ——— */
+      .btn-add {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        margin-right: 0.75rem;
+        border-radius: 50%;
+        background: none;
+        border: 2px solid var(--accent);
+        color: var(--accent);
+        font-size: 1.5rem;
+        cursor: pointer;
+        position: relative;
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+      }
+      .btn-add:hover {
+        box-shadow: 0 0 8px 4px var(--accent-glow);
+        transform: scale(1.1);
+      }
+      .btn-add[data-tooltip]:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%) translateY(0.5rem);
+        background: var(--fg);
+        color: var(--bg);
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        border-radius: var(--radius);
+        white-space: nowrap;
+        z-index: 10;
+      }
 
-    button.btn-login, button#logout-btn {
-      margin-left: 1rem; padding: 0.5rem 1rem;
-      border:none; border-radius:var(--radius);
-      background:none; cursor:pointer;
-      font-weight:500; font-size:1rem;
-      color:var(--accent);
-      box-shadow:0 0 2px 2px var(--accent-glow);
-      transition:box-shadow 0.3s ease;
-    }
-    button.btn-login:hover,
-    button#logout-btn:hover {
-      box-shadow:0 0 60px 4px var(--accent-glow);
-    }
+      button.btn-login,
+      button#logout-btn {
+        margin-left: 1rem;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: var(--radius);
+        background: none;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 1rem;
+        color: var(--accent);
+        box-shadow: 0 0 2px 2px var(--accent-glow);
+        transition: box-shadow 0.3s ease;
+      }
+      button.btn-login:hover,
+      button#logout-btn:hover {
+        box-shadow: 0 0 60px 4px var(--accent-glow);
+      }
 
-    @keyframes hueShift {
-      0%{color:hsl(0,100%,50%)}14%{color:hsl(30,100%,50%)}28%{color:hsl(60,100%,50%)}
-      43%{color:hsl(120,100%,50%)}57%{color:hsl(240,100%,50%)}71%{color:hsl(275,100%,50%)}
-      86%{color:hsl(300,100%,50%)}100%{color:hsl(360,100%,50%)}
-    }
-    button.btn-signup {
-      margin-left:1rem; padding:0.5rem 1rem; border:none; border-radius:var(--radius);
-      background:none; cursor:pointer; font-weight:500; font-size:1rem;
-      color:hsl(0,100%,50%);
-      animation:hueShift 25s linear infinite;
-      box-shadow:0 0 2px 2px currentColor;
-      transition:box-shadow 0.3s ease;
-    }
-    button.btn-signup:hover {
-      box-shadow:0 0 60px 4px currentColor;
-    }
+      @keyframes hueShift {
+        0% {
+          color: hsl(0, 100%, 50%);
+        }
+        14% {
+          color: hsl(30, 100%, 50%);
+        }
+        28% {
+          color: hsl(60, 100%, 50%);
+        }
+        43% {
+          color: hsl(120, 100%, 50%);
+        }
+        57% {
+          color: hsl(240, 100%, 50%);
+        }
+        71% {
+          color: hsl(275, 100%, 50%);
+        }
+        86% {
+          color: hsl(300, 100%, 50%);
+        }
+        100% {
+          color: hsl(360, 100%, 50%);
+        }
+      }
+      button.btn-signup {
+        margin-left: 1rem;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: var(--radius);
+        background: none;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 1rem;
+        color: hsl(0, 100%, 50%);
+        animation: hueShift 25s linear infinite;
+        box-shadow: 0 0 2px 2px currentColor;
+        transition: box-shadow 0.3s ease;
+      }
+      button.btn-signup:hover {
+        box-shadow: 0 0 60px 4px currentColor;
+      }
 
-    #hero {
-      flex:1; display:flex; align-items:center; justify-content:center;
-      padding:2rem 1rem;
-      text-align:center;
-    }
-    .hero h2 { font-size:2rem; font-weight:600; margin-bottom:0.5rem; }
-    .hero p  { color:var(--muted); font-size:1rem; margin-bottom:1rem; }
+      #hero {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+        text-align: center;
+      }
+      .hero h2 {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+      .hero p {
+        color: var(--muted);
+        font-size: 1rem;
+        margin-bottom: 1rem;
+      }
 
-    /* slider controls */
-    #slider-container {
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto 2rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    #col-slider {
-      flex: 1;
-    }
-    #slider-value {
-      width: 3rem;
-      text-align: right;
-      color: var(--fg);
-    }
+      /* slider controls */
+      #slider-container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      #col-slider {
+        flex: 1;
+      }
+      #slider-value {
+        width: 3rem;
+        text-align: right;
+        color: var(--fg);
+      }
 
-    /* grid & cards */
-    .container { width:100%; max-width:1200px; margin:0 auto; padding:1rem; }
-    .grid {
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(var(--min-card-width),1fr));
-      gap:2px;
-      justify-content: start; /* Ensures top-left alignment */
-      align-content: start;   /* Critical for multi-row top-bias */
-    }
-    .card {
-      position:relative; display:block; width:100%; aspect-ratio:1/1;
-      overflow:hidden; border-radius:var(--radius); background:var(--card-bg);
-      text-decoration:none; color:inherit;
-      box-shadow:0 4px 20px rgba(0,0,0,0.3);
-      transition:transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .card:hover {
-      transform:translateY(-5px);
-      box-shadow:0 8px 30px rgba(0,0,0,0.4);
-    }
-    .thumbnail {
-      width:100%; height:100%; object-fit:cover; display:block;
-    }
-    .overlay {
-      position:absolute; bottom:0; left:0; width:100%;
-      padding:0.75rem 1rem; background:var(--overlay);
-      transform:translateY(100%); transition:transform 0.3s ease;
-    }
-    .card:hover .overlay {
-      transform:translateY(0);
-    }
-    .overlay h2 {
-      font-size:1rem; font-weight:600; margin:0;
-    }
-    .card-stats {
-      margin-top:0.25rem; font-size:0.75rem; color:var(--muted);
-    }
+      /* grid & cards */
+      .container {
+        width: 100%;
+        max-width: none;
+        margin: 0 auto;
+        padding: 1rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(
+          auto-fill,
+          minmax(var(--min-card-width), 1fr)
+        );
+        gap: 2px;
+        justify-content: start; /* Ensures top-left alignment */
+        align-content: start; /* Critical for multi-row top-bias */
+      }
+      .card {
+        position: relative;
+        display: block;
+        width: 100%;
+        aspect-ratio: 1/1;
+        overflow: hidden;
+        border-radius: var(--radius);
+        background: var(--card-bg);
+        text-decoration: none;
+        color: inherit;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      }
+      .thumbnail {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: var(--overlay);
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+      }
+      .card:hover .overlay {
+        transform: translateY(0);
+      }
+      .overlay h2 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0;
+      }
+      .card-stats {
+        margin-top: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
 
-    /* loading / error */
-    #grid-status {
-      text-align:center; color:var(--muted); margin:2rem 0;
-    }
+      /* loading / error */
+      #grid-status {
+        text-align: center;
+        color: var(--muted);
+        margin: 2rem 0;
+      }
 
-    footer {
-      text-align:center; padding:1rem; font-size:0.8rem; color:#777;
-    }
-    footer a.z532 {
-      color:#00ff84; text-decoration:none; font-weight:500; margin-left:0.25rem;
-    }
-  </style>
-</head>
-<body>
-  <nav>
-    <a href="index.html" class="logo">
-      <img src="/images/aibarf-logo-1.jpeg" alt="aibarf Logo" height="32" />
-    </a>
-    <div id="nav-right"></div>
-  </nav>
+      footer {
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.8rem;
+        color: #777;
+      }
+      footer a.z532 {
+        color: #00ff84;
+        text-decoration: none;
+        font-weight: 500;
+        margin-left: 0.25rem;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="index.html" class="logo">
+        <img src="/images/aibarf-logo-1.jpeg" alt="aibarf Logo" height="32" />
+      </a>
+      <div id="nav-right"></div>
+    </nav>
 
-  <section id="hero" class="hero">
-    <div class="container">
-      <h2>AIBARF</h2>
-      <p>AI Generated, Human Curated</p>
+    <section id="hero" class="hero">
+      <div class="container">
+        <h2>AIBARF</h2>
+        <p>AI Generated, Human Curated</p>
 
-      <!-- slider to adjust card width -->
-      <div id="slider-container">
-        <label for="col-slider">Card width:</label>
-        <input
-          type="range"
-          id="col-slider"
-          min="20"
-          max="400"
-          step="10"
-          value="220"
-        />
-        <span id="slider-value">220px</span>
+        <!-- slider to adjust card width -->
+        <div id="slider-container">
+          <label for="col-slider">Card width:</label>
+          <input
+            type="range"
+            id="col-slider"
+            min="20"
+            max="400"
+            step="10"
+            value="220"
+          />
+          <span id="slider-value">220px</span>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- dynamic grid -->
-  <main class="container">
-    <div id="grid-status">Loading sets…</div>
-    <div id="sets-grid" class="grid" style="display:none;"></div>
-  </main>
+    <!-- dynamic grid -->
+    <main class="container">
+      <div id="grid-status">Loading sets…</div>
+      <div id="sets-grid" class="grid" style="display: none"></div>
+    </main>
 
-  <footer>
-    &copy; 2025 aibarf. All images synthetic. All minds welcome.
-    <a href="https://z532.ai" class="z532">A Z532 product.</a>
-  </footer>
+    <footer>
+      &copy; 2025 aibarf. All images synthetic. All minds welcome.
+      <a href="https://z532.ai" class="z532">A Z532 product.</a>
+    </footer>
 
-  <script>
-    const API = "https://aibarf-auth.coryzuber.workers.dev";
-    const navRight = document.getElementById("nav-right");
+    <script>
+      const API = "https://aibarf-auth.coryzuber.workers.dev";
+      const navRight = document.getElementById("nav-right");
 
-    // render nav
-    function renderGuest() {
-      navRight.innerHTML = `
+      // render nav
+      function renderGuest() {
+        navRight.innerHTML = `
         <button class="btn-login" onclick="location.href='login.html'">Log In</button>
         <button class="btn-signup" onclick="location.href='signup.html'">Sign Up</button>
       `;
-    }
+      }
 
-    fetch(`${API}/me`, { credentials:"include", mode:"cors" })
-      .then(r => r.json())
-      .then(data => {
-        if (data.user) {
-          navRight.innerHTML = `
+      fetch(`${API}/me`, { credentials: "include", mode: "cors" })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.user) {
+            navRight.innerHTML = `
             <button class="btn-add" data-tooltip="Create Set"
                     onclick="location.href='create-image-set.html'">＋</button>
             <span style="margin-left:0.5rem;font-weight:500;">
@@ -246,71 +335,75 @@
             </span>
             <button id="logout-btn">Log Out</button>
           `;
-          document.getElementById("logout-btn")
-            .addEventListener("click", () => {
-              fetch(`${API}/logout`, { method:"POST", credentials:"include", mode:"cors" })
-                .then(() => location.reload());
-            });
-        } else {
-          renderGuest();
-        }
-      })
-      .catch(renderGuest);
+            document
+              .getElementById("logout-btn")
+              .addEventListener("click", () => {
+                fetch(`${API}/logout`, {
+                  method: "POST",
+                  credentials: "include",
+                  mode: "cors",
+                }).then(() => location.reload());
+              });
+          } else {
+            renderGuest();
+          }
+        })
+        .catch(renderGuest);
 
-    // slider logic
-    const slider = document.getElementById("col-slider");
-    const sliderValue = document.getElementById("slider-value");
-    slider.addEventListener("input", e => {
-      const w = e.target.value + "px";
-      document.documentElement.style.setProperty("--min-card-width", w);
-      sliderValue.textContent = w;
-    });
+      // slider logic
+      const slider = document.getElementById("col-slider");
+      const sliderValue = document.getElementById("slider-value");
+      slider.addEventListener("input", (e) => {
+        const w = e.target.value + "px";
+        document.documentElement.style.setProperty("--min-card-width", w);
+        sliderValue.textContent = w;
+      });
 
-    // fetch and render Level 1–5 sets
-    async function loadSets() {
-      const status = document.getElementById("grid-status");
-      const grid   = document.getElementById("sets-grid");
-      try {
-        const res = await fetch(`${API}/public-sets`, {
-          credentials: "include",
-          mode: "cors"
-        });
-        if (!res.ok) throw new Error("Failed to fetch sets");
-        const { sets } = await res.json();
-        if (!sets.length) {
-          status.textContent = "No image sets to display.";
-          return;
-        }
-        status.style.display = "none";
-        grid.style.display   = "grid";
+      // fetch and render Level 1–5 sets
+      async function loadSets() {
+        const status = document.getElementById("grid-status");
+        const grid = document.getElementById("sets-grid");
+        try {
+          const res = await fetch(`${API}/public-sets`, {
+            credentials: "include",
+            mode: "cors",
+          });
+          if (!res.ok) throw new Error("Failed to fetch sets");
+          const { sets } = await res.json();
+          if (!sets.length) {
+            status.textContent = "No image sets to display.";
+            return;
+          }
+          status.style.display = "none";
+          grid.style.display = "grid";
 
-        sets.forEach(s => {
-          const a = document.createElement("a");
-          a.href = `/set.html?id=${s.id}`;
-          a.className = "card";
+          sets.forEach((s) => {
+            const a = document.createElement("a");
+            a.href = `/set.html?id=${s.id}`;
+            a.className = "card";
 
-          const img = document.createElement("img");
-          img.src = s.mainImageUrl;
-          img.alt = s.title;
-          img.className = "thumbnail";
-          a.appendChild(img);
+            const img = document.createElement("img");
+            img.src = s.mainImageUrl;
+            img.alt = s.title;
+            img.className = "thumbnail";
+            a.appendChild(img);
 
-          const ov = document.createElement("div");
-          ov.className = "overlay";
-          ov.innerHTML = `
+            const ov = document.createElement("div");
+            ov.className = "overlay";
+            ov.innerHTML = `
             <h2>${s.title}</h2>
             <div class="card-stats">${s.imageCount} Images</div>
           `;
-          a.appendChild(ov);
+            a.appendChild(ov);
 
-          grid.appendChild(a);
-        });
-      } catch (err) {
-        status.textContent = err.message;
+            grid.appendChild(a);
+          });
+        } catch (err) {
+          status.textContent = err.message;
+        }
       }
-    }
 
-    loadSets();
-  </script>
-</body>
+      loadSets();
+    </script>
+  </body>
 </html>
