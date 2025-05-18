@@ -262,6 +262,22 @@
         font-weight: 500;
         margin-left: 0.25rem;
       }
+      .overlay {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* Ensures top-bottom distribution */
+        height: 100%;
+      }
+
+      .card-stats {
+        text-align: left;
+      }
+
+      .creator-name {
+        text-align: right;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
     </style>
   </head>
   <body>
@@ -384,9 +400,15 @@
             const ov = document.createElement("div");
             ov.className = "overlay";
             ov.innerHTML = `
-            <h2>${s.title}</h2>
-            <div class="card-stats">${s.imageCount} Images</div>
-          `;
+              <h2>${s.title}</h2>
+              <div class="card-stats">
+                ${s.imageCount} Images
+              </div>
+              <div class="creator-name">
+                by ${s.createdBy}
+              </div>
+            `;
+
             a.appendChild(ov);
 
             grid.appendChild(a);
