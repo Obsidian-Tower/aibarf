@@ -367,6 +367,15 @@
         document.documentElement.style.setProperty("--min-card-width", w);
         sliderValue.textContent = w;
       });
+      // Sync on page load to match initial slider value
+      document.addEventListener("DOMContentLoaded", () => {
+        const initialWidth = slider.value + "px";
+        document.documentElement.style.setProperty(
+          "--min-card-width",
+          initialWidth
+        );
+        sliderValue.textContent = initialWidth;
+      });
 
       // fetch and render Level 1–5 sets
       async function loadSets() {
