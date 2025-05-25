@@ -35,6 +35,7 @@
         color: var(--fg);
         font-family: "Poppins", sans-serif;
         padding-top: 80px;
+        padding-bottom: 60px; /* Reserve space for bottom nav */
       }
       nav {
         position: fixed;
@@ -264,6 +265,24 @@
         font-weight: 500;
         margin-left: 0.25rem;
       }
+      /* ——— New Bottom Nav ——— */
+      .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        padding: 0.5rem 1rem;
+        background: rgba(10, 10, 10, 0.95);
+        backdrop-filter: blur(8px);
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        z-index: 1000;
+      }
+      .bottom-nav .btn-add {
+        margin-right: 0;
+      }
     </style>
   </head>
   <body>
@@ -299,14 +318,14 @@
 
     <script>
       const API = "https://aibarf-auth.coryzuber.workers.dev";
-      const navControls = document.getElementById("nav-controls");
+      const bottomNavControls = document.getElementById("bottom-nav-controls");
       const navRight = document.getElementById("nav-right");
 
-      // HTML for our new controls
+      // HTML for +/− grid controls
       const controlsHTML = `
-        <button id="decrease-btn" class="btn-add" data-tooltip="Smaller tiles (more columns)">−</button>
-        <button id="increase-btn" class="btn-add" data-tooltip="Larger tiles (fewer columns)">＋</button>
-      `;
+    <button id="decrease-btn" class="btn-add" data-tooltip="Smaller tiles (more columns)">−</button>
+    <button id="increase-btn" class="btn-add" data-tooltip="Larger tiles (fewer columns)">＋</button>
+  `;
 
       // Adjust the --columns CSS variable by delta (+1 or -1)
       function adjustCols(delta) {
@@ -329,11 +348,11 @@
 
       // Render nav controls for a guest
       function renderGuest() {
-        navControls.innerHTML = controlsHTML;
+        bottomNavControls.innerHTML = controlsHTML;
         navRight.innerHTML = `
-          <button class="btn-login" onclick="location.href='login.html'">Log In</button>
-          <button class="btn-signup" onclick="location.href='signup.html'">Sign Up</button>
-        `;
+      <button class="btn-login" onclick="location.href='login.html'">Log In</button>
+      <button class="btn-signup" onclick="location.href='signup.html'">Sign Up</button>
+    `;
         attachControlListeners();
       }
 
@@ -341,18 +360,18 @@
       fetch(`${API}/me`, { credentials: "include", mode: "cors" })
         .then((r) => r.json())
         .then((data) => {
-          // Always inject our −/+ controls
-          navControls.innerHTML = controlsHTML;
+          // Always inject our −/+ controls into bottom nav
+          bottomNavControls.innerHTML = controlsHTML;
 
           if (data.user) {
             navRight.innerHTML = `
-              <button class="btn-add" data-tooltip="Create Set"
-                      onclick="location.href='create-image-set.html'">＋</button>
-              <span style="margin-left:0.5rem;font-weight:500;">
-                Hello, ${data.user.name}
-              </span>
-              <button id="logout-btn">Log Out</button>
-            `;
+          <button class="btn-add" data-tooltip="Create Set"
+                  onclick="location.href='create-image-set.html'">＋</button>
+          <span style="margin-left:0.5rem;font-weight:500;">
+            Hello, ${data.user.name}
+          </span>
+          <button id="logout-btn">Log Out</button>
+        `;
             document
               .getElementById("logout-btn")
               .addEventListener("click", () => {
@@ -408,10 +427,10 @@
             const ov = document.createElement("div");
             ov.className = "overlay";
             ov.innerHTML = `
-              <h2>${s.title}</h2>
-              <div class="card-stats">${s.imageCount} Images</div>
-              <div class="creator-name">by ${s.createdBy}</div>
-            `;
+          <h2>${s.title}</h2>
+          <div class="card-stats">${s.imageCount} Images</div>
+          <div class="creator-name">by ${s.createdBy}</div>
+        `;
             a.appendChild(ov);
 
             grid.appendChild(a);
