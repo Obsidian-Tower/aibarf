@@ -1,242 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>aibarf | View Set</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg: #0a0a0a;
-      --fg: #cccccc;
-      --accent: rgb(56, 136, 255);
-      --accent-glow: rgba(56, 136, 255, 0.7);
-      --radius: 0.5rem;
-      --card-bg: #1a1a1a;
-      --muted: #aaa;
-      --overlay: rgba(0, 0, 0, 0.7);
-      --min-card-width: 60px;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: var(--bg);
-      color: var(--fg);
-      font-family: "Poppins", sans-serif;
-    }
-    nav {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 1rem 2rem;
-    }
-    nav a.logo { display: flex; align-items: center; }
-    button#back-btn {
-      margin-left: 1rem; padding: 0.5rem 1rem;
-      border: none; border-radius: var(--radius);
-      background: none; cursor: pointer;
-      font-weight: 500; font-size: 1rem;
-      color: var(--accent);
-      box-shadow: 0 0 2px 2px var(--accent-glow);
-      transition: box-shadow 0.3s ease;
-    }
-    button#back-btn:hover {
-      box-shadow: 0 0 60px 4px var(--accent-glow);
-    }
-    #hero {
-      padding: 2rem 1rem;
-      text-align: center;
-    }
-    .hero h2 {
-      font-size: 2rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-    .hero p {
-      color: var(--muted);
-      font-size: 1rem;
-      margin-bottom: 1rem;
-    }
-    #slider-container {
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto 2rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    #col-slider {
-      flex: 1;
-    }
-    #slider-value {
-      width: 3rem;
-      text-align: right;
-      color: var(--fg);
-    }
-    .container {
-      width: 100%;
-      max-width: none;
-      margin: 0 auto;
-      padding: 1rem;
-    }
-    h1#set-title {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-    p#set-desc {
-      color: var(--muted);
-      font-size: 1rem;
-      margin-bottom: 1rem;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(var(--min-card-width), 1fr));
-      gap: 2px;
-      justify-content: start;
-      align-content: start;
-    }
-    .grid img {
-      width: 100%; aspect-ratio: 1/1;
-      object-fit: cover; border-radius: var(--radius);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      transition: transform 0.2s ease;
-      cursor: pointer;
-    }
-    .grid img:hover {
-      transform: scale(1.05);
-    }
-    #status {
-      text-align: center; color: var(--muted); margin: 2rem 0;
-    }
-    .lightbox-overlay {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: var(--overlay); display: none;
-      justify-content: center; align-items: center; z-index: 1000;
-    }
-    .lightbox-content {
-      position: relative; width: 90%; height: 90%;
-    }
-    .lightbox-content img {
-      width: 100%; height: 100%; object-fit: contain;
-      border-radius: var(--radius);
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    }
-    .lightbox-close {
-      position: absolute; top: 0.5rem; right: 0.5rem;
-      background: rgba(0,0,0,0.6); color: #fff; border: none;
-      font-size: 1.5rem; line-height: 1; padding: 0.25rem 0.5rem;
-      border-radius: var(--radius); cursor: pointer;
-    }
-    footer {
-      margin-top: auto; text-align: center; padding: 1rem;
-      font-size: 0.8rem; color: #777;
-    }
-    footer a.z532 {
-      color: #00ff84; text-decoration: none; font-weight: 500; margin-left: 0.25rem;
-    }
-  </style>
-</head>
-<body>
-  <nav>
-    <a href="index.html" class="logo">
-      <img src="/images/aibarf-logo-1.jpeg" alt="aibarf Logo" height="32" />
-    </a>
-    <button id="back-btn" onclick="history.back()">← Back</button>
-  </nav>
-
-  <section id="hero" class="hero">
-    <div class="container">
-      <h2>AIBARF</h2>
-      <p>AI Generated, Human Curated</p>
-      <div id="slider-container">
-        <label for="col-slider">Card width:</label>
-        <input type="range" id="col-slider" min="20" max="400" step="10" value="60" />
-        <span id="slider-value">60px</span>
-      </div>
-    </div>
-  </section>
-
-  <main class="container">
-    <div id="status">Loading set…</div>
-    <div id="set-view" style="display:none;">
-      <h1 id="set-title"></h1>
-      <p id="set-desc"></p>
-      <div id="images-grid" class="grid"></div>
-    </div>
-  </main>
-
-  <div class="lightbox-overlay" id="lightbox">
-    <div class="lightbox-content">
-      <button class="lightbox-close" id="lightbox-close">×</button>
-      <img src="" alt="Full Size Image" id="lightbox-image" />
-    </div>
-  </div>
-
-  <footer>
-    &copy; 2025 aibarf. All images synthetic. All minds welcome.
-    <a href="https://z532.ai" class="z532">A Z532 product.</a>
-  </footer>
-
-  <script>
-    const API = "https://aibarf-auth.coryzuber.workers.dev";
-    const params = new URLSearchParams(location.search);
-    const setId = params.get("id");
-    const status = document.getElementById("status");
-    const view = document.getElementById("set-view");
-    const titleEl = document.getElementById("set-title");
-    const descEl = document.getElementById("set-desc");
-    const grid = document.getElementById("images-grid");
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImage = document.getElementById('lightbox-image');
-    const lightboxClose = document.getElementById('lightbox-close');
-
-    if (!setId) {
-      status.textContent = "No set ID provided.";
-    } else {
-      fetch(`${API}/set?id=${encodeURIComponent(setId)}`, {
-        credentials: "include",
-        mode: "cors"
-      })
-      .then(res => {
-        if (!res.ok) throw new Error(res.status === 403 ? "Forbidden" : "Set not found");
-        return res.json();
-      })
-      .then(data => {
-        status.style.display = "none";
-        view.style.display = "block";
-        titleEl.textContent = data.title;
-        descEl.textContent = data.description;
-
-        data.images.forEach((fileName, idx) => {
-          const img = document.createElement("img");
-          img.src = `${API}/images/sets/${setId}/${fileName}`;
-          img.alt = `${data.title} — Image ${idx+1}`;
-          img.addEventListener('click', () => {
-            lightboxImage.src = img.src;
-            lightbox.style.display = 'flex';
-          });
-          grid.appendChild(img);
-        });
-      })
-      .catch(err => {
-        status.textContent = err.message;
-      });
-    }
-
-    lightboxClose.addEventListener('click', () => {
-      lightbox.style.display = 'none';
-      lightboxImage.src = '';
-    });
-    lightbox.addEventListener('click', (e) => {
-      if (e.target === lightbox) {
-        lightboxClose.click();
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>aibarf | View Set</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #cccccc;
+        --accent: rgb(56, 136, 255);
+        --accent-glow: rgba(56, 136, 255, 0.7);
+        --radius: 0.5rem;
+        --card-bg: #1a1a1a;
+        --muted: #aaa;
+        --overlay: rgba(0, 0, 0, 0.7);
+        --columns: 6;
       }
-    });
 
-    const slider = document.getElementById("col-slider");
-    const sliderValue = document.getElementById("slider-value");
-    slider.addEventListener("input", (e) => {
-      const w = e.target.value + "px";
-      document.documentElement.style.setProperty("--min-card-width", w);
-      sliderValue.textContent = w;
-    });
-  </script>
-</body>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Poppins", sans-serif;
+        padding-top: 80px;
+      }
+
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 80px;
+        padding: 1rem 2rem;
+        background: rgba(10, 10, 10, 0.9);
+        backdrop-filter: blur(8px);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      nav a.logo {
+        display: flex;
+        align-items: center;
+      }
+
+      #nav-controls {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .btn-add {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        border: 2px solid var(--accent);
+        background: none;
+        color: var(--accent);
+        cursor: pointer;
+        font-size: 1.5rem;
+        position: relative;
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+      }
+
+      .btn-add:hover {
+        box-shadow: 0 0 8px 4px var(--accent-glow);
+        transform: scale(1.1);
+      }
+
+      .container {
+        padding: 1rem;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(var(--columns), 1fr);
+        gap: 2px;
+      }
+
+      .grid img {
+        width: 100%;
+        aspect-ratio: 1/1;
+        object-fit: cover;
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+
+      .grid img:hover {
+        transform: scale(1.05);
+      }
+
+      #status {
+        text-align: center;
+        color: var(--muted);
+        margin: 2rem 0;
+      }
+
+      footer {
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.8rem;
+        color: #777;
+      }
+
+      footer a.z532 {
+        color: #00ff84;
+        text-decoration: none;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="index.html" class="logo">
+        <img src="/images/aibarf-logo-1.jpeg" alt="aibarf Logo" height="32" />
+      </a>
+
+      <div id="nav-controls">
+        <button id="decrease-btn" class="btn-add">−</button>
+        <button id="increase-btn" class="btn-add">＋</button>
+      </div>
+    </nav>
+
+    <main class="container">
+      <div id="status">Loading set…</div>
+      <div id="set-view" style="display: none">
+        <h1 id="set-title"></h1>
+        <p id="set-desc"></p>
+        <div id="images-grid" class="grid"></div>
+      </div>
+    </main>
+
+    <footer>
+      &copy; 2025 aibarf. All images synthetic. All minds welcome.
+      <a href="https://z532.ai" class="z532">A Z532 product.</a>
+    </footer>
+
+    <script>
+      const API = "https://aibarf-auth.coryzuber.workers.dev";
+      const params = new URLSearchParams(location.search);
+      const setId = params.get("id");
+      const status = document.getElementById("status");
+      const view = document.getElementById("set-view");
+      const titleEl = document.getElementById("set-title");
+      const descEl = document.getElementById("set-desc");
+      const grid = document.getElementById("images-grid");
+
+      if (!setId) status.textContent = "No set ID provided.";
+      else
+        fetch(`${API}/set?id=${encodeURIComponent(setId)}`)
+          .then((res) =>
+            res.ok ? res.json() : Promise.reject("Set not found")
+          )
+          .then((data) => {
+            status.style.display = "none";
+            view.style.display = "block";
+            titleEl.textContent = data.title;
+            descEl.textContent = data.description;
+            data.images.forEach((fileName) => {
+              const img = document.createElement("img");
+              img.src = `${API}/images/sets/${setId}/${fileName}`;
+              grid.appendChild(img);
+            });
+          })
+          .catch((err) => (status.textContent = err));
+
+      function adjustCols(delta) {
+        const root = document.documentElement;
+        let cols = parseInt(
+          getComputedStyle(root).getPropertyValue("--columns"),
+          10
+        );
+        cols = Math.max(1, cols + delta);
+        root.style.setProperty("--columns", cols);
+      }
+
+      document.getElementById("decrease-btn").onclick = () => adjustCols(1);
+      document.getElementById("increase-btn").onclick = () => adjustCols(-1);
+    </script>
+  </body>
 </html>
