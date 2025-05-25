@@ -35,7 +35,7 @@
         color: var(--fg);
         font-family: "Poppins", sans-serif;
         padding-top: 80px;
-        padding-bottom: 60px; /* Reserve space for bottom nav */
+        padding-bottom: 60px; /* space for bottom nav */
       }
       nav {
         position: fixed;
@@ -64,8 +64,6 @@
       #nav-right {
         display: flex;
         align-items: center;
-        flex-wrap: wrap;
-        gap: 0.5rem;
       }
       /* ——— Create‑Set & adjust buttons ——— */
       .btn-add {
@@ -253,19 +251,6 @@
         gap: 0.5rem;
         margin-left: 1rem;
       }
-      footer {
-        text-align: center;
-        padding: 1rem;
-        font-size: 0.8rem;
-        color: #777;
-      }
-      footer a.z532 {
-        color: #00ff84;
-        text-decoration: none;
-        font-weight: 500;
-        margin-left: 0.25rem;
-      }
-      /* ——— New Bottom Nav ——— */
       .bottom-nav {
         position: fixed;
         bottom: 0;
@@ -283,6 +268,18 @@
       .bottom-nav .btn-add {
         margin-right: 0;
       }
+      footer {
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.8rem;
+        color: #777;
+      }
+      footer a.z532 {
+        color: #00ff84;
+        text-decoration: none;
+        font-weight: 500;
+        margin-left: 0.25rem;
+      }
     </style>
   </head>
   <body>
@@ -290,19 +287,17 @@
       <a href="index.html" class="logo">
         <img src="/images/aibarf-logo-1.jpeg" alt="aibarf Logo" height="32" />
       </a>
-
-      <!-- NEW: container for − / ＋ buttons -->
-      <div id="nav-controls"></div>
-
-      <!-- existing container for login/signup or create+hello -->
       <div id="nav-right"></div>
+    </nav>
+
+    <nav class="bottom-nav">
+      <div id="bottom-nav-controls"></div>
     </nav>
 
     <section id="hero" class="hero">
       <div class="container">
         <h2>AIBARF</h2>
         <p>AI Generated, Human Curated</p>
-        <!-- Slider removed and replaced by buttons in nav -->
       </div>
     </section>
 
@@ -321,13 +316,11 @@
       const bottomNavControls = document.getElementById("bottom-nav-controls");
       const navRight = document.getElementById("nav-right");
 
-      // HTML for +/− grid controls
       const controlsHTML = `
-    <button id="decrease-btn" class="btn-add" data-tooltip="Smaller tiles (more columns)">−</button>
-    <button id="increase-btn" class="btn-add" data-tooltip="Larger tiles (fewer columns)">＋</button>
-  `;
+        <button id="decrease-btn" class="btn-add" data-tooltip="Smaller tiles (more columns)">−</button>
+        <button id="increase-btn" class="btn-add" data-tooltip="Larger tiles (fewer columns)">＋</button>
+      `;
 
-      // Adjust the --columns CSS variable by delta (+1 or -1)
       function adjustCols(delta) {
         const root = document.documentElement;
         let cols = parseInt(
@@ -338,7 +331,6 @@
         root.style.setProperty("--columns", cols);
       }
 
-      // Wire up our −/+ buttons to call adjustCols
       function attachControlListeners() {
         const dec = document.getElementById("decrease-btn");
         const inc = document.getElementById("increase-btn");
@@ -346,32 +338,29 @@
         if (inc) inc.addEventListener("click", () => adjustCols(-1));
       }
 
-      // Render nav controls for a guest
       function renderGuest() {
         bottomNavControls.innerHTML = controlsHTML;
         navRight.innerHTML = `
-      <button class="btn-login" onclick="location.href='login.html'">Log In</button>
-      <button class="btn-signup" onclick="location.href='signup.html'">Sign Up</button>
-    `;
+          <button class="btn-login" onclick="location.href='login.html'">Log In</button>
+          <button class="btn-signup" onclick="location.href='signup.html'">Sign Up</button>
+        `;
         attachControlListeners();
       }
 
-      // On load, fetch auth state and build nav
       fetch(`${API}/me`, { credentials: "include", mode: "cors" })
         .then((r) => r.json())
         .then((data) => {
-          // Always inject our −/+ controls into bottom nav
           bottomNavControls.innerHTML = controlsHTML;
 
           if (data.user) {
             navRight.innerHTML = `
-          <button class="btn-add" data-tooltip="Create Set"
-                  onclick="location.href='create-image-set.html'">＋</button>
-          <span style="margin-left:0.5rem;font-weight:500;">
-            Hello, ${data.user.name}
-          </span>
-          <button id="logout-btn">Log Out</button>
-        `;
+              <button class="btn-add" data-tooltip="Create Set"
+                      onclick="location.href='create-image-set.html'">＋</button>
+              <span style="margin-left:0.5rem;font-weight:500;">
+                Hello, ${data.user.name}
+              </span>
+              <button id="logout-btn">Log Out</button>
+            `;
             document
               .getElementById("logout-btn")
               .addEventListener("click", () => {
@@ -388,14 +377,12 @@
         })
         .catch(renderGuest);
 
-      // Top nav scroll behavior
       window.addEventListener("scroll", () => {
         const nav = document.querySelector("nav");
         if (window.scrollY > 50) nav.classList.add("scrolled");
         else nav.classList.remove("scrolled");
       });
 
-      // Fetch and render Level 1–5 sets
       async function loadSets() {
         const status = document.getElementById("grid-status");
         const grid = document.getElementById("sets-grid");
@@ -427,10 +414,10 @@
             const ov = document.createElement("div");
             ov.className = "overlay";
             ov.innerHTML = `
-          <h2>${s.title}</h2>
-          <div class="card-stats">${s.imageCount} Images</div>
-          <div class="creator-name">by ${s.createdBy}</div>
-        `;
+              <h2>${s.title}</h2>
+              <div class="card-stats">${s.imageCount} Images</div>
+              <div class="creator-name">by ${s.createdBy}</div>
+            `;
             a.appendChild(ov);
 
             grid.appendChild(a);
