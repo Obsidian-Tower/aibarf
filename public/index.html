@@ -20,17 +20,21 @@
         --overlay: rgba(0, 0, 0, 0.7);
         --columns: 6;
       }
+
       * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
       }
+
       body {
         background: var(--bg);
         color: var(--fg);
         font-family: "Poppins", sans-serif;
         padding-top: 80px;
+        overflow-x: hidden;
       }
+
       nav {
         position: fixed;
         top: 0;
@@ -56,52 +60,45 @@
       nav a.logo {
         display: flex;
         align-items: center;
+        max-width: 100%;
+      }
+
+      #nav-controls {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        overflow: hidden;
       }
 
       #nav-right {
         display: flex;
         align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        overflow: hidden;
       }
 
-      /* ——— Create‑Set & adjust buttons ——— */
       .btn-add {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
         width: 2.5rem;
         height: 2.5rem;
-        margin-right: 0.75rem;
         border-radius: 50%;
-        background: none;
         border: 2px solid var(--accent);
+        background: none;
         color: var(--accent);
-        font-size: 1.5rem;
         cursor: pointer;
+        font-size: 1.5rem;
         position: relative;
         transition: box-shadow 0.2s ease, transform 0.2s ease;
       }
+
       .btn-add:hover {
         box-shadow: 0 0 8px 4px var(--accent-glow);
         transform: scale(1.1);
       }
-      .btn-add[data-tooltip]:hover::after {
-        content: attr(data-tooltip);
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        transform: translateX(-50%) translateY(0.5rem);
-        background: var(--fg);
-        color: var(--bg);
-        padding: 0.25rem 0.5rem;
-        font-size: 0.75rem;
-        border-radius: var(--radius);
-        white-space: nowrap;
-        z-index: 10;
-      }
 
-      button.btn-login,
-      button#logout-btn {
-        margin-left: 1rem;
+      button#back-btn {
         padding: 0.5rem 1rem;
         border: none;
         border-radius: var(--radius);
@@ -113,150 +110,85 @@
         box-shadow: 0 0 2px 2px var(--accent-glow);
         transition: box-shadow 0.3s ease;
       }
-      button.btn-login:hover,
-      button#logout-btn:hover {
+
+      button#back-btn:hover {
         box-shadow: 0 0 60px 4px var(--accent-glow);
       }
 
-      @keyframes hueShift {
-        0% {
-          color: hsl(0, 100%, 50%);
-        }
-        14% {
-          color: hsl(30, 100%, 50%);
-        }
-        28% {
-          color: hsl(60, 100%, 50%);
-        }
-        43% {
-          color: hsl(120, 100%, 50%);
-        }
-        57% {
-          color: hsl(240, 100%, 50%);
-        }
-        71% {
-          color: hsl(275, 100%, 50%);
-        }
-        86% {
-          color: hsl(300, 100%, 50%);
-        }
-        100% {
-          color: hsl(360, 100%, 50%);
-        }
-      }
-      button.btn-signup {
-        margin-left: 1rem;
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: var(--radius);
-        background: none;
-        cursor: pointer;
-        font-weight: 500;
-        font-size: 1rem;
-        color: hsl(0, 100%, 50%);
-        animation: hueShift 25s linear infinite;
-        box-shadow: 0 0 2px 2px currentColor;
-        transition: box-shadow 0.3s ease;
-      }
-      button.btn-signup:hover {
-        box-shadow: 0 0 60px 4px currentColor;
-      }
-
-      #hero {
-        padding: 2rem 1rem;
-        text-align: center;
-      }
-      .hero h2 {
-        font-size: 2rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-      }
-      .hero p {
-        color: var(--muted);
-        font-size: 1rem;
-        margin-bottom: 1rem;
-      }
-
-      /* grid & cards */
       .container {
-        width: 100%;
-        max-width: none;
-        margin: 0 auto;
         padding: 1rem;
+        max-width: 100%;
       }
+
       .grid {
         display: grid;
         grid-template-columns: repeat(var(--columns), 1fr);
         gap: 2px;
-        justify-content: start;
-        align-content: start;
+        overflow-x: hidden;
       }
 
-      .card {
-        position: relative;
-        display: block;
+      .grid img {
         width: 100%;
         aspect-ratio: 1/1;
-        overflow: hidden;
-        border-radius: var(--radius);
-        background: var(--card-bg);
-        text-decoration: none;
-        color: inherit;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-      }
-      .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-      }
-      .thumbnail {
-        width: 100%;
-        height: 100%;
         object-fit: cover;
-        display: block;
-      }
-      .overlay {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        padding: 0.75rem 1rem;
-        background: var(--overlay);
-        transform: translateY(100%);
-        transition: transform 0.3s ease;
-      }
-      .card:hover .overlay {
-        transform: translateY(0);
-      }
-      .overlay h2 {
-        font-size: 1rem;
-        font-weight: 600;
-        margin: 0;
-      }
-      .card-stats {
-        margin-top: 0.25rem;
-        font-size: 0.75rem;
-        color: var(--muted);
-        text-align: left;
-      }
-      .creator-name {
-        text-align: right;
-        font-size: 0.75rem;
-        color: var(--muted);
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: transform 0.2s ease;
       }
 
-      /* loading / error */
-      #grid-status {
+      .grid img:hover {
+        transform: scale(1.05);
+      }
+
+      #status {
         text-align: center;
         color: var(--muted);
         margin: 2rem 0;
       }
 
-      #nav-controls {
-        display: flex;
+      .set-header {
+        background: var(--card-bg);
+        padding: 1rem;
+        border-radius: var(--radius);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        margin-bottom: 1rem;
+        overflow-x: hidden;
+      }
+
+      .set-header h1 {
+        font-size: 1.8rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .set-header p {
+        font-size: 1rem;
+        color: var(--muted);
+        margin-bottom: 0.5rem;
+      }
+
+      .creator-name {
+        font-size: 0.9rem;
+        color: var(--accent);
+      }
+
+      .lightbox-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--overlay);
+        display: none;
+        justify-content: center;
         align-items: center;
-        gap: 0.5rem; /* space between − and ＋ */
-        margin-left: 1rem; /* space from the logo */
+        z-index: 2000;
+      }
+
+      .lightbox-overlay img {
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: var(--radius);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
       }
 
       footer {
@@ -265,11 +197,44 @@
         font-size: 0.8rem;
         color: #777;
       }
+
       footer a.z532 {
         color: #00ff84;
         text-decoration: none;
         font-weight: 500;
-        margin-left: 0.25rem;
+      }
+
+      /* Mobile adjustments */
+      @media (max-width: 600px) {
+        nav {
+          padding: 0.5rem 1rem !important;
+          height: 60px !important;
+        }
+
+        .btn-add {
+          width: 2rem;
+          height: 2rem;
+          font-size: 1.2rem;
+        }
+
+        #nav-right,
+        #nav-controls {
+          flex-wrap: wrap;
+          gap: 0.3rem;
+        }
+
+        button#back-btn {
+          padding: 0.4rem 0.8rem;
+          font-size: 0.9rem;
+        }
+
+        .set-header h1 {
+          font-size: 1.4rem;
+        }
+
+        .set-header p {
+          font-size: 0.9rem;
+        }
       }
     </style>
   </head>
