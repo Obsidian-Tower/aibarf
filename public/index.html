@@ -406,11 +406,28 @@
 
             const ov = document.createElement("div");
             ov.className = "overlay";
+            // Level emojis map
+            const levelEmojis = {
+              1: "🧸🏞️🌿🖍️🐥",
+              2: "🎨🍭🔮🧬🌈",
+              3: "🚗🏙️🏗️🤸‍♀️🚴‍♂️",
+              4: "🤔🏛️✊🏳️‍🌈📢",
+              5: "🎭👙🤡🍸👠",
+              6: "🔥🍑🍆🤤💦",
+              7: "🔪💏🛏️💖🧨",
+              8: "🍒💋🌶️🥵💥",
+              9: "😈🔞🧛‍♀️👅😻",
+              0: "🕳️☠️🤯👺👹",
+            };
+
+            const emojiSet = levelEmojis[s.level] || "";
             ov.innerHTML = `
               <h2>${s.title}</h2>
+              <div class="card-stats">Level ${s.level} ${emojiSet}</div>
               <div class="card-stats">${s.imageCount} Images</div>
               <div class="creator-name">by ${s.createdBy}</div>
             `;
+
             a.appendChild(ov);
 
             grid.appendChild(a);
