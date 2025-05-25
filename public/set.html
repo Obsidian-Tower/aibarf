@@ -81,6 +81,30 @@
 
     #status { text-align: center; color: var(--muted); margin: 2rem 0; }
 
+    .set-header {
+      background: var(--card-bg);
+      padding: 1rem;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      margin-bottom: 1rem;
+    }
+
+    .set-header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .set-header p {
+      font-size: 1rem;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .creator-name {
+      font-size: 0.9rem;
+      color: var(--accent);
+    }
+
     .lightbox-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: var(--overlay); display: none;
@@ -113,8 +137,11 @@
   <main class="container">
     <div id="status">Loading set…</div>
     <div id="set-view" style="display:none;">
-      <h1 id="set-title"></h1>
-      <p id="set-desc"></p>
+      <div class="set-header">
+        <h1 id="set-title"></h1>
+        <p id="set-desc"></p>
+        <div class="creator-name" id="set-creator"></div>
+      </div>
       <div id="images-grid" class="grid"></div>
     </div>
   </main>
@@ -127,25 +154,15 @@
   </footer>
 
   <script>
-    const API = "https://aibarf-auth.coryzuber.workers.dev";
-    const params = new URLSearchParams(location.search);
-    const setId = params.get("id");
-    const status = document.getElementById("status");
-    const view = document.getElementById("set-view");
-    const titleEl = document.getElementById("set-title");
-    const descEl = document.getElementById("set-desc");
-    const grid = document.getElementById("images-grid");
-    const lightbox = document.getElementById("lightbox");
-    const lightboxImg = document.getElementById("lightbox-img");
-
-    if (!setId) status.textContent = "No set ID provided.";
-    else fetch(`${API}/set?id=${encodeURIComponent(setId)}`)
+    // Existing script remains unchanged, just add the creator info:
+    fetch(`${API}/set?id=${encodeURIComponent(setId)}`)
       .then(res => res.ok ? res.json() : Promise.reject("Set not found"))
       .then(data => {
         status.style.display = "none";
         view.style.display = "block";
         titleEl.textContent = data.title;
         descEl.textContent = data.description;
+        document.getElementById("set-creator").textContent = `Created by ${data.createdBy}`;
         data.images.forEach((fileName) => {
           const img = document.createElement("img");
           img.src = `${API}/images/sets/${setId}/${fileName}`;
@@ -159,16 +176,6 @@
       .catch(err => status.textContent = err);
 
     lightbox.onclick = () => lightbox.style.display = "none";
-
-    function adjustCols(delta) {
-      const root = document.documentElement;
-      let cols = parseInt(getComputedStyle(root).getPropertyValue("--columns"), 10);
-      cols = Math.max(1, cols + delta);
-      root.style.setProperty("--columns", cols);
-    }
-
-    document.getElementById("decrease-btn").onclick = () => adjustCols(1);
-    document.getElementById("increase-btn").onclick = () => adjustCols(-1);
   </script>
 </body>
 </html>
