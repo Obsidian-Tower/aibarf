@@ -24,29 +24,17 @@
       width: 400px;
       text-align: center;
     }
-    .profile-edit h1 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-    }
-    .crop-container {
-      position: relative;
-      width: 200px;
-      height: 200px;
-      margin: 0 auto 1rem;
-    }
-    #imageCropper {
-      max-width: 100%;
-      display: block;
-    }
-    .mask {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
+    .profile-pic {
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
-      box-shadow: 0 0 0 9999px rgba(0,0,0,0.6);
+      object-fit: cover;
+      margin-bottom: 1rem;
+      border: 2px solid #555;
+      cursor: pointer;
+    }
+    .profile-pic:hover {
+      outline: 2px solid #4CAF50;
     }
     .form-group {
       margin-bottom: 1rem;
@@ -65,9 +53,6 @@
       background: #333;
       color: #eee;
     }
-    input[type="file"] {
-      color: #eee;
-    }
     button {
       background: #4CAF50;
       color: white;
@@ -77,8 +62,51 @@
       cursor: pointer;
       font-weight: bold;
     }
-    button:hover {
-      background: #45a049;
+    button.pulse {
+      animation: pulse 1.5s infinite;
+      background: #2196F3;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 5px #2196F3; }
+      50% { box-shadow: 0 0 20px #2196F3; }
+      100% { box-shadow: 0 0 5px #2196F3; }
+    }
+    /* Modal Styles */
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      position: relative;
+      background: #222;
+      padding: 1rem;
+      border-radius: 0.5rem;
+    }
+    .modal-content img {
+      max-width: 300px;
+      max-height: 300px;
+    }
+    .modal-mask {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      border-radius: 50%;
+      box-shadow: 0 0 0 9999px rgba(0,0,0,0.7);
+      pointer-events: none;
+    }
+    .modal-buttons {
+      margin-top: 1rem;
+      text-align: center;
+    }
+    .modal-buttons button {
+      margin: 0 0.5rem;
     }
   </style>
 </head>
@@ -87,10 +115,7 @@
   <div class="profile-edit">
     <h1>Edit Profile</h1>
 
-    <div class="crop-container">
-      <img id="imageCropper" src="https://your-cdn-domain.com/user-images-v1/profile-images/default.jpg" alt="Profile Image" />
-      <div class="mask"></div>
-    </div>
+    <img id="profilePreview" class="profile-pic" src="https://your-cdn-domain.com/user-images-v1/profile-images/default.jpg" alt="Profile Picture" />
 
     <form id="editProfileForm" enctype="multipart/form-data">
       <div class="form-group">
@@ -101,52 +126,86 @@
         <label for="bio">Bio</label>
         <textarea id="bio" name="bio" rows="3">Tell the world about yourself...</textarea>
       </div>
-      <div class="form-group">
-        <label for="profileImage">Profile Image</label>
-        <input type="file" id="profileImage" name="profileImage" accept="image/*" />
-      </div>
-      <button type="submit">Save Changes</button>
+      <button id="saveButton" type="submit">Save Changes</button>
     </form>
   </div>
 
-  <script>
-    let cropper;
-    const imageCropper = document.getElementById('imageCropper');
-    const profileImageInput = document.getElementById('profileImage');
+  <!-- Modal for Cropping -->
+  <div id="cropModal" class="modal">
+    <div class="modal-content">
+      <input type="file" id="fileInput" accept="image/*" />
+      <img id="cropImage" />
+      <div class="modal-mask"></div>
+      <div class="modal-buttons">
+        <button id="acceptCrop">Accept</button>
+        <button id="cancelCrop">Cancel</button>
+      </div>
+    </div>
+  </div>
 
-    profileImageInput.addEventListener('change', (e) => {
+  <script>
+    let cropper = null;
+    let croppedBlob = null;
+    const profilePreview = document.getElementById('profilePreview');
+    const cropModal = document.getElementById('cropModal');
+    const fileInput = document.getElementById('fileInput');
+    const cropImage = document.getElementById('cropImage');
+    const saveButton = document.getElementById('saveButton');
+
+    profilePreview.addEventListener('click', () => {
+      cropModal.classList.add('active');
+      fileInput.value = ''; // Reset file input
+      cropImage.src = '';
+    });
+
+    fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file && file.type.startsWith('image/')) {
         const reader = new FileReader();
         reader.onload = () => {
-          imageCropper.src = reader.result;
+          cropImage.src = reader.result;
           if (cropper) cropper.destroy();
-          cropper = new Cropper(imageCropper, {
+          cropper = new Cropper(cropImage, {
             aspectRatio: 1,
             viewMode: 1,
             background: false,
-            dragMode: 'move',
           });
         };
         reader.readAsDataURL(file);
       }
     });
 
-    document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const formData = new FormData();
-      formData.append('username', document.getElementById('username').value);
-      formData.append('bio', document.getElementById('bio').value);
-
+    document.getElementById('acceptCrop').addEventListener('click', () => {
       if (cropper) {
         const canvas = cropper.getCroppedCanvas({
           width: 400,
           height: 400,
           imageSmoothingQuality: 'high'
         });
-        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.9));
-        formData.append('profileImage', blob, 'profile.webp');
+        canvas.toBlob(blob => {
+          croppedBlob = blob;
+          profilePreview.src = URL.createObjectURL(blob);
+          saveButton.classList.add('pulse');
+          cropModal.classList.remove('active');
+        }, 'image/webp', 0.9);
+      }
+    });
+
+    document.getElementById('cancelCrop').addEventListener('click', () => {
+      cropModal.classList.remove('active');
+      if (cropper) {
+        cropper.destroy();
+        cropper = null;
+      }
+    });
+
+    document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData();
+      formData.append('username', document.getElementById('username').value);
+      formData.append('bio', document.getElementById('bio').value);
+      if (croppedBlob) {
+        formData.append('profileImage', croppedBlob, 'profile.webp');
       }
 
       try {
@@ -154,9 +213,10 @@
           method: 'POST',
           body: formData
         });
-
         if (res.ok) {
           alert('Profile updated!');
+          saveButton.classList.remove('pulse');
+          croppedBlob = null;
         } else {
           alert('Error updating profile');
         }
