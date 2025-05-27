@@ -17,39 +17,60 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      margin: 0; height: 100vh; display: flex;
-      align-items: center; justify-content: center;
-      background: var(--bg); color: var(--fg);
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      color: var(--fg);
       font-family: Arial, sans-serif;
     }
     .profile-edit {
-      background: #1f1f1f; padding: 2rem;
-      border-radius: var(--radius); width: 520px;
-      box-shadow: var(--box-shadow); text-align: center;
+      background: #1f1f1f;
+      padding: 2rem;
+      border-radius: var(--radius);
+      width: 520px;
+      box-shadow: var(--box-shadow);
+      text-align: center;
     }
     .profile-edit h2 { margin-bottom: 1rem; }
     .profile-pic {
-      width: 180px; height: 180px; border-radius: 50%;
-      object-fit: cover; display: block; margin: 0 auto 1rem;
-      cursor: pointer; border: 3px solid #444;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      margin: 0 auto 1rem;
+      cursor: pointer;
+      border: 3px solid #444;
       transition: border-color 0.3s;
     }
     .profile-pic:hover { border-color: var(--accent); }
     .form-control {
-      width: 100%; padding: 0.6rem; margin-bottom: 1rem;
-      background: var(--input-bg); border: none;
-      border-radius: 8px; color: var(--fg);
+      width: 100%;
+      padding: 0.6rem;
+      margin-bottom: 1rem;
+      background: var(--input-bg);
+      border: none;
+      border-radius: 8px;
+      color: var(--fg);
       font-size: 1rem;
     }
     .form-control[readonly] {
-      background: var(--muted-bg); color: var(--muted-fg);
+      background: var(--muted-bg);
+      color: var(--muted-fg);
       cursor: not-allowed;
     }
     button {
-      background: var(--accent); color: #fff;
-      border: none; padding: 0.7rem 1.4rem;
-      border-radius: 8px; cursor: pointer;
-      font-size: 1rem; transition: background 0.3s, transform 0.2s;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s, transform 0.2s;
     }
     button:hover { background: #45a049; transform: scale(1.03); }
     button.pulse { animation: pulse 1.5s infinite; background: #2196f3; }
@@ -58,37 +79,51 @@
       50% { box-shadow: 0 0 25px #2196f3; }
     }
     .modal {
-      position: fixed; inset: 0;
+      position: fixed;
+      inset: 0;
       background: rgba(0,0,0,0.85);
-      display: none; align-items: center;
-      justify-content: center; z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
     }
     .modal.active { display: flex; }
     .modal-content {
-      background: #2b2b2b; padding: 1.5rem;
+      background: #2b2b2b;
+      padding: 1.5rem;
       border-radius: var(--radius);
       width: 90%; max-width: 700px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.5);
       text-align: center;
     }
     .crop-container {
-      position: relative; width: 400px; height: 400px;
-      margin: 1rem auto; background: #000;
+      position: relative;
+      width: 400px;
+      height: 400px;
+      margin: 1rem auto;
+      background: #000;
       overflow: hidden;
     }
     .crop-container img {
-      position: absolute; top: 0; left: 0;
-      width: 100%; height: 100%; object-fit: cover;
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
       user-select: none; -webkit-user-drag: none;
     }
     .crop-box {
-      position: absolute; border: 2px dashed #fff;
-      border-radius: 50%; cursor: move;
-      box-sizing: border-box; background: transparent;
+      position: absolute;
+      border: 2px dashed #fff;
+      border-radius: 50%;
+      cursor: move;
+      box-sizing: border-box;
+      background: transparent;
     }
     .handle {
-      position: absolute; background: #fff;
-      border: 1px solid #888; box-sizing: border-box;
+      position: absolute;
+      background: #fff;
+      border: 1px solid #888;
+      box-sizing: border-box;
       width: 12px; height: 12px;
     }
     .handle.nw { top: -6px; left: -6px; cursor: nwse-resize; }
@@ -102,8 +137,8 @@
     <h2>Edit Your Profile</h2>
     <img id="profilePic" class="profile-pic" src="" alt="Profile Picture">
     <form id="profileForm">
-      <input type="text" id="username" name="username" class="form-control" readonly placeholder="Username">
-      <textarea id="bio" name="bio" class="form-control" rows="3" placeholder="Your bio"></textarea>
+      <input type="text" id="username" name="username" class="form-control" readonly>
+      <textarea id="bio" name="bio" class="form-control" rows="3"></textarea>
       <button id="saveButton" type="submit">Save Changes</button>
     </form>
   </div>
@@ -144,6 +179,7 @@
     let box = { x: 50, y: 50, size: 300 };
     let action = null, start = {};
 
+    // Load user info and prefill
     window.addEventListener('DOMContentLoaded', async () => {
       try {
         const res = await fetch(`${API}/me`, { credentials: 'include', mode: 'cors' });
@@ -154,12 +190,102 @@
           profilePic.src       = user.profile_image_url;
           originalImageURL     = user.profile_image_url;
         }
-      } catch (e) {
-        console.error('Error loading profile:', e);
-      }
+      } catch (e) { console.error('Error loading profile:', e); }
     });
 
-    // Rest of JS untouched...
+    // Open crop modal
+    profilePic.addEventListener('click', () => {
+      modal.classList.add('active');
+      fileInput.value = '';
+      cropImg.src = originalImageURL || profilePic.src;
+      cropImg.onload = () => {
+        imgNaturalWidth  = cropImg.naturalWidth;
+        imgNaturalHeight = cropImg.naturalHeight;
+        if (savedBox) { box = {...savedBox}; updateBox(); } else resetBox();
+      };
+    });
+
+    // Handle file selection
+    fileInput.addEventListener('change', e => {
+      const file = e.target.files[0]; if (!file) return;
+      originalImageURL = URL.createObjectURL(file);
+      cropImg.onload = () => { imgNaturalWidth = cropImg.naturalWidth; imgNaturalHeight = cropImg.naturalHeight; resetBox(); };
+      cropImg.src = originalImageURL;
+    });
+
+    function resetBox() {
+      const cw = cropContainer.clientWidth;
+      const ch = cropContainer.clientHeight;
+      const side = Math.min(cw,ch)*0.8;
+      box = { x:(cw-side)/2, y:(ch-side)/2, size:side };
+      updateBox();
+    }
+    function updateBox() {
+      cropBox.style.left   = box.x+'px';
+      cropBox.style.top    = box.y+'px';
+      cropBox.style.width  = box.size+'px';
+      cropBox.style.height = box.size+'px';
+    }
+
+    // Drag & resize logic
+    cropBox.addEventListener('mousedown', e => {
+      action = e.target.classList.contains('handle') ? e.target.classList[1] : 'move';
+      start = { mx:e.clientX, my:e.clientY, box:{...box} };
+      window.addEventListener('mousemove', onDrag);
+      window.addEventListener('mouseup', stopDrag);
+      e.preventDefault();
+    });
+    function onDrag(e) {
+      const dx = e.clientX-start.mx, dy = e.clientY-start.my;
+      if(action==='move'){ box.x=start.box.x+dx; box.y=start.box.y+dy; }
+      else { let s=start.box.size; if(action==='nw'){box.size=s-dx;box.x=start.box.x+dx;box.y=start.box.y+dy;} if(action==='ne'){box.size=s+dx;box.y=start.box.y+dy;} if(action==='sw'){box.size=s+dy;box.x=start.box.x+dx;} if(action==='se'){box.size=s+Math.max(dx,dy);} }
+      const max=cropContainer.clientWidth;
+      box.size=Math.max(50,Math.min(box.size,max));
+      box.x=Math.max(0,Math.min(box.x,max-box.size));
+      box.y=Math.max(0,Math.min(box.y,max-box.size));
+      updateBox();
+    }
+    function stopDrag() { window.removeEventListener('mousemove', onDrag); window.removeEventListener('mouseup', stopDrag); action=null; }
+
+    // Accept crop
+    acceptCrop.addEventListener('click', () => {
+      const cw=cropContainer.clientWidth, ch=cropContainer.clientHeight;
+      const scaleX=imgNaturalWidth/cw, scaleY=imgNaturalHeight/ch;
+      const cropX=box.x*scaleX, cropY=box.y*scaleY;
+      const cropW=box.size*scaleX, cropH=box.size*scaleY;
+      const canvas=document.createElement('canvas'); canvas.width=cropW; canvas.height=cropH;
+      const ctx=canvas.getContext('2d');
+      ctx.drawImage(cropImg,cropX,cropY,cropW,cropH,0,0,cropW,cropH);
+      canvas.toBlob(b=>{
+        savedBlob=b;
+        profilePic.src=URL.createObjectURL(b);
+        saveButton.classList.add('pulse');
+        modal.classList.remove('active');
+        savedBox={...box};
+      },'image/png');
+    });
+    cancelCrop.addEventListener('click',()=>modal.classList.remove('active'));
+
+    // Submit updated profile
+    document.getElementById('profileForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const fd=new FormData();
+      fd.append('username', usernameField.value);
+      fd.append('bio', bioField.value);
+      if(savedBlob) fd.append('profileImage', savedBlob, 'profile.png');
+      if(savedBox) fd.append('crop', JSON.stringify(savedBox));
+      try {
+        const res=await fetch(`${API}/update-profile`,{
+          method:'POST', credentials:'include', mode:'cors', body:fd
+        });
+        if(!res.ok) throw new Error(await res.text());
+        alert('Profile updated!');
+        saveButton.classList.remove('pulse');
+      } catch(err) {
+        console.error(err);
+        alert('Save failed: '+err.message);
+      }
+    });
   </script>
 </body>
 </html>
