@@ -4,228 +4,153 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Edit Profile</title>
-  <link href="https://unpkg.com/cropperjs/dist/cropper.min.css" rel="stylesheet" />
-  <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
   <style>
-    body {
-      font-family: sans-serif;
-      background: #111;
-      color: #eee;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .profile-edit {
-      background: #1e1e1e;
-      padding: 2rem;
-      border-radius: 0.75rem;
-      width: 400px;
-      text-align: center;
-    }
-    .profile-pic {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-bottom: 1rem;
-      border: 2px solid #555;
-      cursor: pointer;
-    }
-    .profile-pic:hover {
-      outline: 2px solid #4CAF50;
-    }
-    .form-group {
-      margin-bottom: 1rem;
-      text-align: left;
-    }
-    label {
-      font-size: 0.9rem;
-      margin-bottom: 0.3rem;
-      display: block;
-    }
-    input[type="text"], textarea {
-      width: 100%;
-      padding: 0.5rem;
-      border: none;
-      border-radius: 0.4rem;
-      background: #333;
-      color: #eee;
-    }
-    button {
-      background: #4CAF50;
-      color: white;
-      padding: 0.6rem 1rem;
-      border: none;
-      border-radius: 0.4rem;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button.pulse {
-      animation: pulse 1.5s infinite;
-      background: #2196F3;
-    }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 5px #2196F3; }
-      50% { box-shadow: 0 0 20px #2196F3; }
-      100% { box-shadow: 0 0 5px #2196F3; }
-    }
-    /* Modal Styles */
-    .modal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.8);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .modal.active {
-      display: flex;
-    }
-    .modal-content {
-      position: relative;
-      background: #222;
-      padding: 1rem;
-      border-radius: 0.5rem;
-    }
-    .modal-content img {
-      max-width: 300px;
-      max-height: 300px;
-    }
-    .modal-mask {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      border-radius: 50%;
-      box-shadow: 0 0 0 9999px rgba(0,0,0,0.7);
-      pointer-events: none;
-    }
-    .modal-buttons {
-      margin-top: 1rem;
-      text-align: center;
-    }
-    .modal-buttons button {
-      margin: 0 0.5rem;
-    }
+    body { margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center; background: #121212; color: #f5f5f5; font-family: Arial, sans-serif; }
+    .profile-edit { background: #1f1f1f; padding: 2rem; border-radius: 12px; width: 520px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); text-align: center; }
+    .profile-pic { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 1rem; cursor: pointer; border: 3px solid #444; transition: border-color 0.3s; }
+    .profile-pic:hover { border-color: #4CAF50; }
+    .form-control { width: 100%; padding: 0.6rem; margin-bottom: 1rem; background: #333; border: none; border-radius: 8px; color: #f5f5f5; font-size: 1rem; }
+    .form-control:disabled { background: #555; color: #bbb; cursor: not-allowed; }
+    button { background: #4CAF50; color: #fff; border: none; padding: 0.7rem 1.4rem; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: background 0.3s, transform 0.2s; }
+    button:hover { background: #45a049; transform: scale(1.03); }
+    button.pulse { animation: pulse 1.5s infinite; background: #2196F3; }
+    @keyframes pulse { 0%, 100% { box-shadow: 0 0 10px #2196F3; } 50% { box-shadow: 0 0 25px #2196F3; } }
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .modal.active { display: flex; }
+    .modal-content { background: #2b2b2b; padding: 1.5rem; border-radius: 12px; width: 90%; max-width: 700px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); text-align: center; }
+    .crop-container { position: relative; width: 400px; height: 400px; margin: 1rem auto; background: #000; overflow: hidden; }
+    .crop-container img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; user-select: none; -webkit-user-drag: none; }
+    .crop-box { position: absolute; border: 2px dashed #fff; border-radius: 50%; cursor: move; box-sizing: border-box; background: transparent; }
+    .handle { position: absolute; background: #fff; border: 1px solid #888; box-sizing: border-box; width: 12px; height: 12px; }
+    .handle.nw { top: -6px; left: -6px; cursor: nwse-resize; }
+    .handle.ne { top: -6px; right: -6px; cursor: nesw-resize; }
+    .handle.sw { bottom: -6px; left: -6px; cursor: nesw-resize; }
+    .handle.se { bottom: -6px; right: -6px; cursor: nwse-resize; }
   </style>
 </head>
 <body>
-
   <div class="profile-edit">
-    <h1>Edit Profile</h1>
-
-    <img id="profilePreview" class="profile-pic" src="https://your-cdn-domain.com/user-images-v1/profile-images/default.jpg" alt="Profile Picture" />
-
-    <form id="editProfileForm" enctype="multipart/form-data">
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" value="coryzuber" />
-      </div>
-      <div class="form-group">
-        <label for="bio">Bio</label>
-        <textarea id="bio" name="bio" rows="3">Tell the world about yourself...</textarea>
-      </div>
+    <h2>Edit Your Profile</h2>
+    <img id="profilePic" class="profile-pic" src="https://via.placeholder.com/180?text=No+Image" alt="Profile Picture">
+    <form id="profileForm">
+      <!-- Username is read-only -->
+      <input type="text" id="username" class="form-control" placeholder="Username" disabled>
+      <textarea id="bio" class="form-control" rows="3" placeholder="Your bio"></textarea>
       <button id="saveButton" type="submit">Save Changes</button>
     </form>
   </div>
-
-  <!-- Modal for Cropping -->
-  <div id="cropModal" class="modal">
+  <div id="modal" class="modal">
     <div class="modal-content">
-      <input type="file" id="fileInput" accept="image/*" />
-      <img id="cropImage" />
-      <div class="modal-mask"></div>
-      <div class="modal-buttons">
-        <button id="acceptCrop">Accept</button>
-        <button id="cancelCrop">Cancel</button>
+      <input type="file" id="fileInput" accept="image/*"><br>
+      <div class="crop-container" id="cropContainer">
+        <img id="cropImg" src="" alt="">
+        <div class="crop-box" id="cropBox">
+          <div class="handle nw"></div>
+          <div class="handle ne"></div>
+          <div class="handle sw"></div>
+          <div class="handle se"></div>
+        </div>
       </div>
+      <button id="acceptCrop">Accept</button>
+      <button id="cancelCrop">Cancel</button>
     </div>
   </div>
-
   <script>
-    let cropper = null;
-    let croppedBlob = null;
-    const profilePreview = document.getElementById('profilePreview');
-    const cropModal = document.getElementById('cropModal');
-    const fileInput = document.getElementById('fileInput');
-    const cropImage = document.getElementById('cropImage');
-    const saveButton = document.getElementById('saveButton');
+    const profilePic    = document.getElementById('profilePic');
+    const modal         = document.getElementById('modal');
+    const fileInput     = document.getElementById('fileInput');
+    const cropContainer = document.getElementById('cropContainer');
+    const cropImg       = document.getElementById('cropImg');
+    const cropBox       = document.getElementById('cropBox');
+    const acceptCrop    = document.getElementById('acceptCrop');
+    const cancelCrop    = document.getElementById('cancelCrop');
+    const saveButton    = document.getElementById('saveButton');
 
-    profilePreview.addEventListener('click', () => {
-      cropModal.classList.add('active');
-      fileInput.value = ''; // Reset file input
-      cropImage.src = '';
-    });
+    let imgNaturalWidth, imgNaturalHeight;
+    let originalImageURL = '';
+    let savedBox = null;
+    let box = { x: 50, y: 50, size: 300 };
+    let action = null, start = {};
 
-    fileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          cropImage.src = reader.result;
-          if (cropper) cropper.destroy();
-          cropper = new Cropper(cropImage, {
-            aspectRatio: 1,
-            viewMode: 1,
-            background: false,
-          });
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    document.getElementById('acceptCrop').addEventListener('click', () => {
-      if (cropper) {
-        const canvas = cropper.getCroppedCanvas({
-          width: 400,
-          height: 400,
-          imageSmoothingQuality: 'high'
-        });
-        canvas.toBlob(blob => {
-          croppedBlob = blob;
-          profilePreview.src = URL.createObjectURL(blob);
-          saveButton.classList.add('pulse');
-          cropModal.classList.remove('active');
-        }, 'image/webp', 0.9);
-      }
-    });
-
-    document.getElementById('cancelCrop').addEventListener('click', () => {
-      cropModal.classList.remove('active');
-      if (cropper) {
-        cropper.destroy();
-        cropper = null;
-      }
-    });
-
-    document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const formData = new FormData();
-      formData.append('username', document.getElementById('username').value);
-      formData.append('bio', document.getElementById('bio').value);
-      if (croppedBlob) {
-        formData.append('profileImage', croppedBlob, 'profile.webp');
-      }
-
+    window.addEventListener('DOMContentLoaded', async () => {
       try {
-        const res = await fetch('/api/update-profile', {
-          method: 'POST',
-          body: formData
-        });
+        const res = await fetch('/api/me');
         if (res.ok) {
-          alert('Profile updated!');
-          saveButton.classList.remove('pulse');
-          croppedBlob = null;
-        } else {
-          alert('Error updating profile');
+          const { user } = await res.json();
+          if (user.profile_image_url) {
+            profilePic.src = user.profile_image_url;
+            originalImageURL = user.profile_image_url;
+          }
+          document.getElementById('username').value = user.name || '';
+          document.getElementById('bio').value      = user.bio || '';
         }
-      } catch (err) {
-        console.error(err);
-        alert('Error updating profile');
-      }
+      } catch (e) { console.error(e); }
     });
-  </script>
 
+    profilePic.addEventListener('click', () => {
+      modal.classList.add('active');
+      fileInput.value = '';
+      cropImg.src = originalImageURL || profilePic.src;
+      cropImg.onload = () => {
+        imgNaturalWidth  = cropImg.naturalWidth;
+        imgNaturalHeight = cropImg.naturalHeight;
+        if (savedBox) { box = {...savedBox}; updateBox(); }
+        else resetBox();
+      };
+    });
+
+    fileInput.addEventListener('change', e => {
+      const file = e.target.files[0]; if (!file) return;
+      const url = URL.createObjectURL(file); originalImageURL = url;
+      cropImg.onload = () => { imgNaturalWidth = cropImg.naturalWidth; imgNaturalHeight = cropImg.naturalHeight; resetBox(); };
+      cropImg.src = url;
+    });
+
+    function resetBox() {
+      const cw = cropContainer.clientWidth, ch = cropContainer.clientHeight;
+      const side = Math.min(cw, ch) * 0.8;
+      box = { x: (cw - side)/2, y: (ch - side)/2, size: side };
+      updateBox();
+    }
+    function updateBox() {
+      cropBox.style.left   = box.x + 'px';
+      cropBox.style.top    = box.y + 'px';
+      cropBox.style.width  = box.size + 'px';
+      cropBox.style.height = box.size + 'px';
+    }
+
+    cropBox.addEventListener('mousedown', e => {
+      const mx = e.clientX, my = e.clientY;
+      action = e.target.classList.contains('handle') ? e.target.classList[1] : 'move';
+      start  = { mx, my, box: {...box} };
+      window.addEventListener('mousemove', onDrag);
+      window.addEventListener('mouseup', stopDrag);
+      e.preventDefault();
+    });
+    function onDrag(e) {
+      const dx = e.clientX - start.mx, dy = e.clientY - start.my;
+      if (action === 'move') { box.x = start.box.x + dx; box.y = start.box.y + dy; }
+      else { let s = start.box.size; if (action==='nw'){box.size=s-dx;box.x=start.box.x+dx;box.y=start.box.y+dy;}if(action==='ne'){box.size=s+dx;box.y=start.box.y+dy;}if(action==='sw'){box.size=s+dy;box.x=start.box.x+dx;}if(action==='se'){box.size=s+Math.max(dx,dy);} }
+      const max = cropContainer.clientWidth;
+      box.size = Math.max(50, Math.min(box.size, max));
+      box.x    = Math.max(0, Math.min(box.x, max - box.size));
+      box.y    = Math.max(0, Math.min(box.y, max - box.size));
+      updateBox();
+    }
+    function stopDrag() { window.removeEventListener('mousemove', onDrag); window.removeEventListener('mouseup', stopDrag); action = null; }
+
+    acceptCrop.addEventListener('click', () => {
+      const cw = cropContainer.clientWidth, ch = cropContainer.clientHeight;
+      const scaleX = imgNaturalWidth / cw, scaleY = imgNaturalHeight / ch;
+      const cropX = box.x * scaleX, cropY = box.y * scaleY;
+      const cropW = box.size * scaleX, cropH = box.size * scaleY;
+      const canvas = document.createElement('canvas'); canvas.width=cropW;canvas.height=cropH;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(cropImg,cropX,cropY,cropW,cropH,0,0,cropW,cropH);
+      canvas.toBlob(b=>{const url=URL.createObjectURL(b);profilePic.src=url;saveButton.classList.add('pulse');modal.classList.remove('active');savedBox={...box};},'image/png');
+    });
+    cancelCrop.addEventListener('click',()=>{modal.classList.remove('active');});
+    document.getElementById('profileForm').addEventListener('submit',async e=>{e.preventDefault();const fd=new FormData();fd.append('username',document.getElementById('username').value);fd.append('bio',document.getElementById('bio').value);alert('Form ready to submit with updated crop.');});
+  </script>
 </body>
 </html>
