@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Edit Profile</title>
+  <link href="https://unpkg.com/cropperjs/dist/cropper.min.css" rel="stylesheet" />
+  <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
   <style>
     body {
       font-family: sans-serif;
@@ -26,13 +28,25 @@
       font-size: 1.5rem;
       margin-bottom: 1rem;
     }
-    .profile-pic {
-      width: 120px;
-      height: 120px;
+    .crop-container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 1rem;
+    }
+    #imageCropper {
+      max-width: 100%;
+      display: block;
+    }
+    .mask {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
       border-radius: 50%;
-      object-fit: cover;
-      margin-bottom: 1rem;
-      border: 2px solid #555;
+      box-shadow: 0 0 0 9999px rgba(0,0,0,0.6);
     }
     .form-group {
       margin-bottom: 1rem;
@@ -73,7 +87,10 @@
   <div class="profile-edit">
     <h1>Edit Profile</h1>
 
-    <img id="profilePreview" class="profile-pic" src="https://your-cdn-domain.com/user-images-v1/profile-images/default.jpg" alt="Profile Picture" />
+    <div class="crop-container">
+      <img id="imageCropper" src="https://your-cdn-domain.com/user-images-v1/profile-images/default.jpg" alt="Profile Image" />
+      <div class="mask"></div>
+    </div>
 
     <form id="editProfileForm" enctype="multipart/form-data">
       <div class="form-group">
@@ -93,14 +110,24 @@
   </div>
 
   <script>
+    let cropper;
+    const imageCropper = document.getElementById('imageCropper');
     const profileImageInput = document.getElementById('profileImage');
-    const profilePreview = document.getElementById('profilePreview');
 
-    profileImageInput.addEventListener('change', (event) => {
-      const file = event.target.files[0];
-      if (file) {
+    profileImageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file && file.type.startsWith('image/')) {
         const reader = new FileReader();
-        reader.onload = e => profilePreview.src = e.target.result;
+        reader.onload = () => {
+          imageCropper.src = reader.result;
+          if (cropper) cropper.destroy();
+          cropper = new Cropper(imageCropper, {
+            aspectRatio: 1,
+            viewMode: 1,
+            background: false,
+            dragMode: 'move',
+          });
+        };
         reader.readAsDataURL(file);
       }
     });
@@ -112,12 +139,16 @@
       formData.append('username', document.getElementById('username').value);
       formData.append('bio', document.getElementById('bio').value);
 
-      const file = profileImageInput.files[0];
-      if (file) {
-        formData.append('profileImage', file);
+      if (cropper) {
+        const canvas = cropper.getCroppedCanvas({
+          width: 400,
+          height: 400,
+          imageSmoothingQuality: 'high'
+        });
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.9));
+        formData.append('profileImage', blob, 'profile.webp');
       }
 
-      // Example fetch (adjust endpoint & auth as needed)
       try {
         const res = await fetch('/api/update-profile', {
           method: 'POST',
@@ -126,7 +157,6 @@
 
         if (res.ok) {
           alert('Profile updated!');
-          // Optionally reload page or redirect
         } else {
           alert('Error updating profile');
         }
