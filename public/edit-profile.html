@@ -1,27 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edit Profile</title>
   <style>
-    body { margin: 0; height: 100vh; display: flex; align-items: center; justify-content: center; background: #121212; color: #f5f5f5; font-family: Arial, sans-serif; }
-    .profile-edit { background: #1f1f1f; padding: 2rem; border-radius: 12px; width: 520px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); text-align: center; }
-    .profile-pic { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 1rem; cursor: pointer; border: 3px solid #444; transition: border-color 0.3s; }
-    .profile-pic:hover { border-color: #4CAF50; }
-    .form-control { width: 100%; padding: 0.6rem; margin-bottom: 1rem; background: #333; border: none; border-radius: 8px; color: #f5f5f5; font-size: 1rem; }
-    .form-control[readonly] { background: #555; color: #bbb; cursor: not-allowed; }
-    button { background: #4CAF50; color: #fff; border: none; padding: 0.7rem 1.4rem; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: background 0.3s, transform 0.2s; }
+    :root {
+      --bg: #121212;
+      --fg: #f5f5f5;
+      --muted-bg: #555;
+      --muted-fg: #bbb;
+      --accent: #4caf50;
+      --input-bg: #333;
+      --radius: 12px;
+      --box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      margin: 0; height: 100vh; display: flex;
+      align-items: center; justify-content: center;
+      background: var(--bg); color: var(--fg);
+      font-family: Arial, sans-serif;
+    }
+    .profile-edit {
+      background: #1f1f1f; padding: 2rem;
+      border-radius: var(--radius); width: 520px;
+      box-shadow: var(--box-shadow); text-align: center;
+    }
+    .profile-edit h2 { margin-bottom: 1rem; }
+    .profile-pic {
+      width: 180px; height: 180px; border-radius: 50%;
+      object-fit: cover; display: block; margin: 0 auto 1rem;
+      cursor: pointer; border: 3px solid #444;
+      transition: border-color 0.3s;
+    }
+    .profile-pic:hover { border-color: var(--accent); }
+    .form-control {
+      width: 100%; padding: 0.6rem; margin-bottom: 1rem;
+      background: var(--input-bg); border: none;
+      border-radius: 8px; color: var(--fg);
+      font-size: 1rem;
+    }
+    .form-control[readonly] {
+      background: var(--muted-bg); color: var(--muted-fg);
+      cursor: not-allowed;
+    }
+    button {
+      background: var(--accent); color: #fff;
+      border: none; padding: 0.7rem 1.4rem;
+      border-radius: 8px; cursor: pointer;
+      font-size: 1rem; transition: background 0.3s, transform 0.2s;
+    }
     button:hover { background: #45a049; transform: scale(1.03); }
-    button.pulse { animation: pulse 1.5s infinite; background: #2196F3; }
-    @keyframes pulse { 0%, 100% { box-shadow: 0 0 10px #2196F3; } 50% { box-shadow: 0 0 25px #2196F3; } }
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    button.pulse { animation: pulse 1.5s infinite; background: #2196f3; }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 10px #2196f3; }
+      50% { box-shadow: 0 0 25px #2196f3; }
+    }
+    .modal {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: none; align-items: center;
+      justify-content: center; z-index: 1000;
+    }
     .modal.active { display: flex; }
-    .modal-content { background: #2b2b2b; padding: 1.5rem; border-radius: 12px; width: 90%; max-width: 700px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); text-align: center; }
-    .crop-container { position: relative; width: 400px; height: 400px; margin: 1rem auto; background: #000; overflow: hidden; }
-    .crop-container img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; user-select: none; -webkit-user-drag: none; }
-    .crop-box { position: absolute; border: 2px dashed #fff; border-radius: 50%; cursor: move; box-sizing: border-box; background: transparent; }
-    .handle { position: absolute; background: #fff; border: 1px solid #888; box-sizing: border-box; width: 12px; height: 12px; }
+    .modal-content {
+      background: #2b2b2b; padding: 1.5rem;
+      border-radius: var(--radius);
+      width: 90%; max-width: 700px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+    .crop-container {
+      position: relative; width: 400px; height: 400px;
+      margin: 1rem auto; background: #000;
+      overflow: hidden;
+    }
+    .crop-container img {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%; object-fit: cover;
+      user-select: none; -webkit-user-drag: none;
+    }
+    .crop-box {
+      position: absolute; border: 2px dashed #fff;
+      border-radius: 50%; cursor: move;
+      box-sizing: border-box; background: transparent;
+    }
+    .handle {
+      position: absolute; background: #fff;
+      border: 1px solid #888; box-sizing: border-box;
+      width: 12px; height: 12px;
+    }
     .handle.nw { top: -6px; left: -6px; cursor: nwse-resize; }
     .handle.ne { top: -6px; right: -6px; cursor: nesw-resize; }
     .handle.sw { bottom: -6px; left: -6px; cursor: nesw-resize; }
@@ -31,10 +100,9 @@
 <body>
   <div class="profile-edit">
     <h2>Edit Your Profile</h2>
-    <img id="profilePic" class="profile-pic" src="https://via.placeholder.com/180?text=No+Image" alt="Profile Picture">
+    <img id="profilePic" class="profile-pic" src="" alt="Profile Picture">
     <form id="profileForm">
-      <!-- Username is readonly and displays stored value -->
-      <input type="text" id="username" class="form-control" readonly>
+      <input type="text" id="username" class="form-control" readonly placeholder="Username">
       <textarea id="bio" class="form-control" rows="3" placeholder="Your bio"></textarea>
       <button id="saveButton" type="submit">Save Changes</button>
     </form>
@@ -56,7 +124,10 @@
     </div>
   </div>
   <script>
+    const API = 'https://aibarf-auth.coryzuber.workers.dev';
     const profilePic    = document.getElementById('profilePic');
+    const usernameField = document.getElementById('username');
+    const bioField      = document.getElementById('bio');
     const modal         = document.getElementById('modal');
     const fileInput     = document.getElementById('fileInput');
     const cropContainer = document.getElementById('cropContainer');
@@ -69,27 +140,22 @@
     let imgNaturalWidth, imgNaturalHeight;
     let originalImageURL = '';
     let savedBox = null;
+    let savedBlob = null;
     let box = { x: 50, y: 50, size: 300 };
     let action = null, start = {};
 
     window.addEventListener('DOMContentLoaded', async () => {
       try {
-        const res = await fetch('/me', { credentials: 'include', mode: 'cors' });
-        if (res.ok) {
-          const data = await res.json();
-          const user = data.user || {};
-          if (user.profile_image_url) {
-            profilePic.src = user.profile_image_url;
-            originalImageURL = user.profile_image_url;
-          }
-          // Populate readonly username from server
-          document.getElementById('username').value = user.name || '';
-          document.getElementById('bio').value      = user.bio || '';
-        } else {
-          console.warn('Failed to fetch user info:', res.status);
+        const res = await fetch(`${API}/me`, { credentials: 'include', mode: 'cors' });
+        const { user = {} } = res.ok ? await res.json() : {};
+        usernameField.value = user.name || '';
+        bioField.value      = user.bio  || '';
+        if (user.profile_image_url) {
+          profilePic.src       = user.profile_image_url;
+          originalImageURL     = user.profile_image_url;
         }
       } catch (e) {
-        console.error('Error loading profile info:', e);
+        console.error('Error loading profile:', e);
       }
     });
 
@@ -107,15 +173,16 @@
 
     fileInput.addEventListener('change', e => {
       const file = e.target.files[0]; if (!file) return;
-      const url = URL.createObjectURL(file); originalImageURL = url;
+      originalImageURL = URL.createObjectURL(file);
       cropImg.onload = () => { imgNaturalWidth = cropImg.naturalWidth; imgNaturalHeight = cropImg.naturalHeight; resetBox(); };
-      cropImg.src = url;
+      cropImg.src = originalImageURL;
     });
 
     function resetBox() {
-      const cw = cropContainer.clientWidth, ch = cropContainer.clientHeight;
+      const cw = cropContainer.clientWidth;
+      const ch = cropContainer.clientHeight;
       const side = Math.min(cw, ch) * 0.8;
-      box = { x: (cw - side)/2, y: (ch - side)/2, size: side };
+      box = { x: (cw-side)/2, y: (ch-side)/2, size: side };
       updateBox();
     }
     function updateBox() {
@@ -126,37 +193,81 @@
     }
 
     cropBox.addEventListener('mousedown', e => {
-      const mx = e.clientX, my = e.clientY;
       action = e.target.classList.contains('handle') ? e.target.classList[1] : 'move';
-      start  = { mx, my, box: {...box} };
+      start  = { mx: e.clientX, my: e.clientY, box: {...box} };
       window.addEventListener('mousemove', onDrag);
       window.addEventListener('mouseup', stopDrag);
       e.preventDefault();
     });
     function onDrag(e) {
       const dx = e.clientX - start.mx, dy = e.clientY - start.my;
-      if (action === 'move') { box.x = start.box.x + dx; box.y = start.box.y + dy; }
-      else { let s = start.box.size; if (action==='nw'){box.size=s-dx;box.x=start.box.x+dx;box.y=start.box.y+dy;}if(action==='ne'){box.size=s+dx;box.y=start.box.y+dy;}if(action==='sw'){box.size=s+dy;box.x=start.box.x+dx;}if(action==='se'){box.size=s+Math.max(dx,dy);} }
+      if (action==='move') { box.x=start.box.x+dx; box.y=start.box.y+dy; }
+      else {
+        let s = start.box.size;
+        if (action==='nw') { box.size=s-dx; box.x=start.box.x+dx; box.y=start.box.y+dy; }
+        if (action==='ne') { box.size=s+dx; box.y=start.box.y+dy; }
+        if (action==='sw') { box.size=s+dy; box.x=start.box.x+dx; }
+        if (action==='se') { box.size=s+Math.max(dx,dy); }
+      }
       const max = cropContainer.clientWidth;
       box.size = Math.max(50, Math.min(box.size, max));
-      box.x    = Math.max(0, Math.min(box.x, max - box.size));
-      box.y    = Math.max(0, Math.min(box.y, max - box.size));
+      box.x    = Math.max(0, Math.min(box.x, max-box.size));
+      box.y    = Math.max(0, Math.min(box.y, max-box.size));
       updateBox();
     }
-    function stopDrag() { window.removeEventListener('mousemove', onDrag); window.removeEventListener('mouseup', stopDrag); action = null; }
+    function stopDrag() { window.removeEventListener('mousemove', onDrag); window.removeEventListener('mouseup', stopDrag); action=null; }
 
     acceptCrop.addEventListener('click', () => {
-      const cw = cropContainer.clientWidth, ch = cropContainer.clientHeight;
-      const scaleX = imgNaturalWidth / cw, scaleY = imgNaturalHeight / ch;
-      const cropX = box.x * scaleX, cropY = box.y * scaleY;
-      const cropW = box.size * scaleX, cropH = box.size * scaleY;
-      const canvas = document.createElement('canvas'); canvas.width=cropW;canvas.height=cropH;
+      const cw = cropContainer.clientWidth;
+      const ch = cropContainer.clientHeight;
+      const scaleX = imgNaturalWidth/cw;
+      const scaleY = imgNaturalHeight/ch;
+      const cropX = box.x*scaleX;
+      const cropY = box.y*scaleY;
+      const cropW = box.size*scaleX;
+      const cropH = box.size*scaleY;
+      const canvas = document.createElement('canvas');
+      canvas.width  = cropW;
+      canvas.height = cropH;
       const ctx = canvas.getContext('2d');
-      ctx.drawImage(cropImg,cropX,cropY,cropW,cropH,0,0,cropW,cropH);
-      canvas.toBlob(b=>{const url=URL.createObjectURL(b);profilePic.src=url;saveButton.classList.add('pulse');modal.classList.remove('active');savedBox={...box};},'image/png');
+      ctx.drawImage(cropImg, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+      canvas.toBlob(b => {
+        savedBlob = b;
+        const url = URL.createObjectURL(b);
+        profilePic.src    = url;
+        saveButton.classList.add('pulse');
+        modal.classList.remove('active');
+        savedBox          = {...box};
+      }, 'image/png');
     });
-    cancelCrop.addEventListener('click',()=>{modal.classList.remove('active');});
-    document.getElementById('profileForm').addEventListener('submit',async e=>{e.preventDefault();const fd=new FormData();fd.append('username',document.getElementById('username').value);fd.append('bio',document.getElementById('bio').value);alert('Form ready to submit with updated crop.');});
+    cancelCrop.addEventListener('click', ()=>{ modal.classList.remove('active'); });
+
+    document.getElementById('profileForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const fd = new FormData();
+      fd.append('username', usernameField.value);
+      fd.append('bio', bioField.value);
+      if (savedBlob) {
+        fd.append('profileImage', savedBlob, 'profile.png');
+      }
+      if (savedBox) {
+        fd.append('crop', JSON.stringify(savedBox));
+      }
+      try {
+        const res = await fetch(`${API}/update-profile`, {
+          method: 'POST',
+          credentials: 'include',
+          mode: 'cors',
+          body: fd
+        });
+        if (!res.ok) throw new Error('Update failed');
+        alert('Profile updated!');
+        saveButton.classList.remove('pulse');
+      } catch (err) {
+        console.error(err);
+        alert('Error saving profile');
+      }
+    });
   </script>
 </body>
 </html>
