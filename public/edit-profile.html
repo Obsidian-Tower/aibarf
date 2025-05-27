@@ -74,17 +74,23 @@
 
     window.addEventListener('DOMContentLoaded', async () => {
       try {
-        const res = await fetch('/api/me');
+        const res = await fetch('/api/me', { credentials: 'include', mode: 'cors' });
         if (res.ok) {
-          const { user } = await res.json();
+          const data = await res.json();
+          const user = data.user || {};
           if (user.profile_image_url) {
             profilePic.src = user.profile_image_url;
             originalImageURL = user.profile_image_url;
           }
+          // Populate readonly username from server
           document.getElementById('username').value = user.name || '';
           document.getElementById('bio').value      = user.bio || '';
+        } else {
+          console.warn('Failed to fetch user info:', res.status);
         }
-      } catch (e) { console.error(e); }
+      } catch (e) {
+        console.error('Error loading profile info:', e);
+      }
     });
 
     profilePic.addEventListener('click', () => {
