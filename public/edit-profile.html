@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Profile</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: #eee;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .profile-edit {
+      background: #1e1e1e;
+      padding: 2rem;
+      border-radius: 0.75rem;
+      width: 400px;
+      text-align: center;
+    }
+    .profile-edit h1 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .profile-pic {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 1rem;
+      border: 2px solid #555;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+    label {
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+      display: block;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 0.4rem;
+      background: #333;
+      color: #eee;
+    }
+    input[type="file"] {
+      color: #eee;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 0.4rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="profile-edit">
+    <h1>Edit Profile</h1>
+
+    <img id="profilePreview" class="profile-pic" src="https://your-cdn-domain.com/user-images-v1/profile-images/default.jpg" alt="Profile Picture" />
+
+    <form id="editProfileForm" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" value="coryzuber" />
+      </div>
+      <div class="form-group">
+        <label for="bio">Bio</label>
+        <textarea id="bio" name="bio" rows="3">Tell the world about yourself...</textarea>
+      </div>
+      <div class="form-group">
+        <label for="profileImage">Profile Image</label>
+        <input type="file" id="profileImage" name="profileImage" accept="image/*" />
+      </div>
+      <button type="submit">Save Changes</button>
+    </form>
+  </div>
+
+  <script>
+    const profileImageInput = document.getElementById('profileImage');
+    const profilePreview = document.getElementById('profilePreview');
+
+    profileImageInput.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => profilePreview.src = e.target.result;
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData();
+      formData.append('username', document.getElementById('username').value);
+      formData.append('bio', document.getElementById('bio').value);
+
+      const file = profileImageInput.files[0];
+      if (file) {
+        formData.append('profileImage', file);
+      }
+
+      // Example fetch (adjust endpoint & auth as needed)
+      try {
+        const res = await fetch('/api/update-profile', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (res.ok) {
+          alert('Profile updated!');
+          // Optionally reload page or redirect
+        } else {
+          alert('Error updating profile');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error updating profile');
+      }
+    });
+  </script>
+
+</body>
+</html>
