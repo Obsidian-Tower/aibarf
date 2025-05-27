@@ -74,7 +74,7 @@
 
     window.addEventListener('DOMContentLoaded', async () => {
       try {
-        const res = await fetch('/api/me', { credentials: 'include', mode: 'cors' });
+        const res = await fetch('/me', { credentials: 'include', mode: 'cors' });
         if (res.ok) {
           const data = await res.json();
           const user = data.user || {};
