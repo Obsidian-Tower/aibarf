@@ -266,26 +266,38 @@
     });
     cancelCrop.addEventListener('click',()=>modal.classList.remove('active'));
 
-    // Submit updated profile
+    // Submit updated profile — use the blob’s real extension!
     document.getElementById('profileForm').addEventListener('submit', async e => {
       e.preventDefault();
-      const fd=new FormData();
+      const fd = new FormData();
       fd.append('username', usernameField.value);
       fd.append('bio', bioField.value);
-      if(savedBlob) fd.append('profileImage', savedBlob, 'profile.png');
-      if(savedBox) fd.append('crop', JSON.stringify(savedBox));
+    
+      if (savedBlob) {
+        // Derive extension from blob.type
+        const ext = savedBlob.type.split('/')[1];            // e.g. 'webp'
+        fd.set('profileImage', savedBlob, `profile.${ext}`);
+      }
+      if (savedBox) {
+        fd.set('crop', JSON.stringify(savedBox));
+      }
+    
       try {
-        const res=await fetch(`${API}/update-profile`,{
-          method:'POST', credentials:'include', mode:'cors', body:fd
+        const res = await fetch(`${API}/update-profile`, {
+          method: 'POST',
+          credentials: 'include',
+          mode: 'cors',
+          body: fd
         });
-        if(!res.ok) throw new Error(await res.text());
+        if (!res.ok) throw new Error(await res.text());
         alert('Profile updated!');
         saveButton.classList.remove('pulse');
-      } catch(err) {
+      } catch (err) {
         console.error(err);
-        alert('Save failed: '+err.message);
+        alert('Save failed: ' + err.message);
       }
     });
+
   </script>
 </body>
 </html>
