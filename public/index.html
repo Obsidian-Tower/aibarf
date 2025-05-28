@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>aibarf | Home</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>aibarf | Home</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
       rel="stylesheet"
@@ -25,7 +25,8 @@
         margin: 0;
         padding: 0;
       }
-      html, body {
+      html,
+      body {
         width: 100%;
         overflow-x: hidden;
       }
@@ -56,25 +57,13 @@
         padding: 0.5rem 1rem;
         background: rgba(10, 10, 10, 0.95);
       }
-      nav.top-nav a.logo img {
-        height: 32px;
-        border-radius: var(--radius);
+      nav.top-nav a.logo {
+        display: flex;
+        align-items: center;
       }
       #nav-right {
         display: flex;
         align-items: center;
-      }
-      .profile-img {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
-        cursor: pointer;
-        box-shadow: 0 0 2px 2px var(--accent-glow);
-        transition: box-shadow 0.3s ease;
-      }
-      .profile-img:hover {
-        box-shadow: 0 0 60px 4px var(--accent-glow);
       }
       .bottom-nav {
         position: fixed;
@@ -89,6 +78,9 @@
         justify-content: flex-end;
         align-items: center;
         z-index: 999;
+      }
+      .bottom-nav .btn-add {
+        margin-right: 0;
       }
       .btn-add {
         display: inline-flex;
@@ -124,52 +116,169 @@
         white-space: nowrap;
         z-index: 10;
       }
-      .modal {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.85);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 2000;
-      }
-      .modal.active {
-        display: flex;
-      }
-      .modal-content {
-        background: #1a1a1a;
-        padding: 2rem;
+      button.btn-login,
+      button#logout-btn {
+        margin-left: 1rem;
+        padding: 0.5rem 1rem;
+        border: none;
         border-radius: var(--radius);
-        text-align: center;
-        width: 90%;
-        max-width: 400px;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        background: none;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 1rem;
+        color: var(--accent);
+        box-shadow: 0 0 2px 2px var(--accent-glow);
+        transition: box-shadow 0.3s ease;
       }
-      .modal-content h3 {
+      button.btn-login:hover,
+      button#logout-btn:hover {
+        box-shadow: 0 0 60px 4px var(--accent-glow);
+      }
+      @keyframes hueShift {
+        0% {
+          color: hsl(0, 100%, 50%);
+        }
+        14% {
+          color: hsl(30, 100%, 50%);
+        }
+        28% {
+          color: hsl(60, 100%, 50%);
+        }
+        43% {
+          color: hsl(120, 100%, 50%);
+        }
+        57% {
+          color: hsl(240, 100%, 50%);
+        }
+        71% {
+          color: hsl(275, 100%, 50%);
+        }
+        86% {
+          color: hsl(300, 100%, 50%);
+        }
+        100% {
+          color: hsl(360, 100%, 50%);
+        }
+      }
+      button.btn-signup {
+        margin-left: 1rem;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: var(--radius);
+        background: none;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 1rem;
+        color: hsl(0, 100%, 50%);
+        animation: hueShift 25s linear infinite;
+        box-shadow: 0 0 2px 2px currentColor;
+        transition: box-shadow 0.3s ease;
+      }
+      button.btn-signup:hover {
+        box-shadow: 0 0 60px 4px currentColor;
+      }
+      #hero {
+        padding: 2rem 1rem;
+        text-align: center;
+      }
+      .hero h2 {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+      .hero p {
+        color: var(--muted);
+        font-size: 1rem;
         margin-bottom: 1rem;
       }
-      .modal-content button {
-        margin-top: 1rem;
+      .container {
+        width: 100%;
+        max-width: none;
+        margin: 0 auto;
+        padding: 1rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(var(--columns), 1fr);
+        gap: 2px;
+        justify-content: start;
+        align-content: start;
+      }
+      .card {
+        position: relative;
         display: block;
         width: 100%;
-        padding: 0.75rem;
+        aspect-ratio: 1/1;
+        overflow: hidden;
         border-radius: var(--radius);
-        border: none;
-        background: var(--accent);
-        color: #fff;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background 0.3s;
+        background: var(--card-bg);
+        text-decoration: none;
+        color: inherit;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
-      .modal-content button:hover {
-        background: rgba(56, 136, 255, 0.8);
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      }
+      .thumbnail {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: var(--overlay);
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+      }
+      .card:hover .overlay {
+        transform: translateY(0);
+      }
+      .overlay h2 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0;
+      }
+      .card-stats {
+        margin-top: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--muted);
+        text-align: left;
+      }
+      .creator-name {
+        text-align: right;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+      #grid-status {
+        text-align: center;
+        color: var(--muted);
+        margin: 2rem 0;
+      }
+      footer {
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.8rem;
+        color: #777;
+      }
+      footer a.z532 {
+        color: #00ff84;
+        text-decoration: none;
+        font-weight: 500;
+        margin-left: 0.25rem;
       }
     </style>
   </head>
   <body>
     <nav class="top-nav">
       <a href="index.html" class="logo">
-        <img src="/images/aibarf-logo-1.jpeg" alt="aibarf Logo" />
+        <img src="/images/aibarf-logo-1.jpeg" alt="aibarf Logo" height="32" />
       </a>
       <div id="nav-right"></div>
     </nav>
@@ -195,27 +304,15 @@
       <a href="https://z532.ai" class="z532">A Z532 product.</a>
     </footer>
 
-    <div id="profileModal" class="modal">
-      <div class="modal-content">
-        <h3 id="modalUsername"></h3>
-        <button onclick="location.href='edit-profile.html'">Edit Profile</button>
-        <button id="logoutButton">Log Out</button>
-        <button onclick="document.getElementById('profileModal').classList.remove('active')">Close</button>
-      </div>
-    </div>
-
     <script>
       const API = "https://aibarf-auth.coryzuber.workers.dev";
       const bottomNavControls = document.getElementById("bottom-nav-controls");
       const navRight = document.getElementById("nav-right");
-      const profileModal = document.getElementById("profileModal");
-      const modalUsername = document.getElementById("modalUsername");
-      const logoutButton = document.getElementById("logoutButton");
 
-      const controlsHTML = `
+      const controlsHTML = 
         <button id="decrease-btn" class="btn-add" data-tooltip="Smaller tiles (more columns)">−</button>
         <button id="increase-btn" class="btn-add" data-tooltip="Larger tiles (fewer columns)">＋</button>
-      `;
+      ;
 
       function adjustCols(delta) {
         const root = document.documentElement;
@@ -236,36 +333,36 @@
 
       function renderGuest() {
         bottomNavControls.innerHTML = controlsHTML;
-        navRight.innerHTML = `
-          <button class="btn-login" onclick="location.href='login.html'">Log In</button>
-          <button class="btn-signup" onclick="location.href='signup.html'">Sign Up</button>
-        `;
+        navRight.innerHTML = 
+          <button class="btn-login" onclick="location.href='login.html'">Log In</button>
+          <button class="btn-signup" onclick="location.href='signup.html'">Sign Up</button>
+        ;
         attachControlListeners();
       }
 
-      fetch(`${API}/me`, { credentials: "include", mode: "cors" })
+      fetch(${API}/me, { credentials: "include", mode: "cors" })
         .then((r) => r.json())
         .then((data) => {
           bottomNavControls.innerHTML = controlsHTML;
-          if (data.user && data.user.profile_image_url) {
-            const img = document.createElement("img");
-            img.src = data.user.profile_image_url;
-            img.alt = "Profile";
-            img.className = "profile-img";
-            img.addEventListener("click", () => {
-              profileModal.classList.add("active");
-              modalUsername.textContent = data.user.name || "User";
-            });
-            navRight.appendChild(img);
 
-            logoutButton.addEventListener("click", () => {
-              fetch(`${API}/logout`, {
-                method: "POST",
-                credentials: "include",
-                mode: "cors",
-              }).then(() => location.reload());
-            });
-
+          if (data.user) {
+            navRight.innerHTML = 
+              <button class="btn-add" data-tooltip="Create Set"
+                      onclick="location.href='create-image-set.html'">＋</button>
+              <span style="margin-left:0.5rem;font-weight:500;">
+                Hello, ${data.user.name}
+              </span>
+              <button id="logout-btn">Log Out</button>
+            ;
+            document
+              .getElementById("logout-btn")
+              .addEventListener("click", () => {
+                fetch(${API}/logout, {
+                  method: "POST",
+                  credentials: "include",
+                  mode: "cors",
+                }).then(() => location.reload());
+              });
             attachControlListeners();
           } else {
             renderGuest();
@@ -283,7 +380,7 @@
         const status = document.getElementById("grid-status");
         const grid = document.getElementById("sets-grid");
         try {
-          const res = await fetch(`${API}/public-sets`, {
+          const res = await fetch(${API}/public-sets, {
             credentials: "include",
             mode: "cors",
           });
@@ -298,7 +395,7 @@
 
           sets.forEach((s) => {
             const a = document.createElement("a");
-            a.href = `/set.html?id=${s.id}`;
+            a.href = /set.html?id=${s.id};
             a.className = "card";
 
             const img = document.createElement("img");
@@ -309,6 +406,7 @@
 
             const ov = document.createElement("div");
             ov.className = "overlay";
+            // Level emojis map
             const levelEmojis = {
               1: "🧸🏞️🌿🖍️🐥",
               2: "🎨🍭🔮🧬🌈",
@@ -321,14 +419,17 @@
               9: "😈🔞🧛‍♀️👅😻",
               0: "🕳️☠️🤯👺👹",
             };
+
             const emojiSet = levelEmojis[s.level] || "";
-            ov.innerHTML = `
+            ov.innerHTML = 
               <h2>${s.title}</h2>
               <div class="card-stats">Level ${s.level} ${emojiSet}</div>
               <div class="card-stats">${s.imageCount} Images</div>
               <div class="creator-name">by ${s.createdBy}</div>
-            `;
+            ;
+
             a.appendChild(ov);
+
             grid.appendChild(a);
           });
         } catch (err) {
