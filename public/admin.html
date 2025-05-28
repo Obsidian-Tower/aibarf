@@ -62,10 +62,10 @@
     <div class="status" id="status"></div>
   </form>
 
-  <script>
+    <script>
     const form = document.getElementById('uploadForm');
     const statusDiv = document.getElementById('status');
-
+  
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const filePath = document.getElementById('filePath').value.trim();
@@ -75,13 +75,13 @@
         statusDiv.classList.add('error');
         return;
       }
-
+  
       const formData = new FormData();
       formData.append('filePath', filePath);
       formData.append('file', fileInput);
       statusDiv.textContent = 'Uploading...';
       statusDiv.classList.remove('error');
-
+  
       try {
         const res = await fetch('/admin/upload', { method: 'POST', body: formData });
         const json = await res.json();
@@ -97,5 +97,6 @@
       }
     });
   </script>
+
 </body>
 </html>
