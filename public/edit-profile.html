@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Edit Profile</title>
   <style>
     :root {
@@ -10,7 +10,7 @@
       --fg: #f5f5f5;
       --muted-bg: #555;
       --muted-fg: #bbb;
-      --accent: #4caf50;
+      --blue: #2196f3;
       --input-bg: #333;
       --radius: 12px;
       --box-shadow: 0 8px 16px rgba(0,0,0,0.4);
@@ -35,7 +35,7 @@
       cursor: pointer; border: 3px solid #444;
       transition: border-color 0.3s;
     }
-    .profile-pic:hover { border-color: var(--accent); }
+    .profile-pic:hover { border-color: var(--blue); }
     .form-control {
       width: 100%; padding: 0.6rem; margin-bottom: 1rem;
       background: var(--input-bg); border: none;
@@ -47,17 +47,16 @@
       cursor: not-allowed;
     }
     button {
-      background: var(--accent); color: #fff;
+      background: var(--blue); color: #fff;
       border: none; padding: 0.7rem 1.4rem;
       border-radius: 8px; cursor: pointer;
       font-size: 1rem; transition: background 0.3s, transform 0.2s;
     }
-    button:hover { background: #45a049; transform: scale(1.03); }
-    button.pulse { animation: pulse 1.5s infinite; background: #2196f3; }
-    @keyframes pulse {
-      0%,100% { box-shadow: 0 0 10px #2196f3; }
-      50% { box-shadow: 0 0 25px #2196f3; }
+    button:disabled {
+      background: var(--muted-bg); color: var(--muted-fg);
+      cursor: not-allowed;
     }
+    button:hover:enabled { background: #1976d2; transform: scale(1.03); }
     .modal {
       position: fixed; inset: 0; background: rgba(0,0,0,0.85);
       display: none; align-items: center; justify-content: center;
@@ -98,19 +97,19 @@
 <body>
   <div class="profile-edit">
     <h2>Edit Your Profile</h2>
-    <img id="profilePic" class="profile-pic" src="" alt="Profile Picture" />
+    <img id="profilePic" class="profile-pic" src="" alt="Profile Picture">
     <form id="profileForm">
-      <input type="text" id="username" name="username" class="form-control" readonly />
+      <input type="text" id="username" name="username" class="form-control" readonly>
       <textarea id="bio" name="bio" class="form-control" rows="3"></textarea>
-      <button id="saveButton" type="submit">Save Changes</button>
+      <button id="saveButton" type="submit" disabled>Save Changes</button>
     </form>
   </div>
 
   <div id="modal" class="modal">
     <div class="modal-content">
-      <input type="file" id="fileInput" accept="image/*" /><br />
+      <input type="file" id="fileInput" accept="image/*"><br>
       <div class="crop-container" id="cropContainer">
-        <img id="cropImg" src="" alt="" />
+        <img id="cropImg" src="" alt="">
         <div class="crop-box" id="cropBox">
           <div class="handle nw"></div>
           <div class="handle ne"></div>
@@ -128,137 +127,67 @@
     const profilePic    = document.getElementById('profilePic');
     const usernameField = document.getElementById('username');
     const bioField      = document.getElementById('bio');
-    const modal         = document.getElementById('modal');
-    const fileInput     = document.getElementById('fileInput');
-    const cropContainer = document.getElementById('cropContainer');
-    const cropImg       = document.getElementById('cropImg');
-    const cropBox       = document.getElementById('cropBox');
-    const acceptCrop    = document.getElementById('acceptCrop');
-    const cancelCrop    = document.getElementById('cancelCrop');
     const saveButton    = document.getElementById('saveButton');
-
-    let imgNaturalWidth, imgNaturalHeight;
-    let cropSource = ''; // Tracks current image in crop modal
-    let box = { x: 50, y: 50, size: 300 };
-    let savedBlob = null;
-    let savedExt = 'png';
+    let savedBlob = null, savedExt = 'png', originalBio = '', originalImage = '';
 
     window.addEventListener('DOMContentLoaded', async () => {
-      try {
-        const res = await fetch(`${API}/me`, { credentials: 'include', mode: 'cors' });
-        const { user = {} } = res.ok ? await res.json() : {};
-        usernameField.value = user.name || '';
-        bioField.value = user.bio || '';
-        profilePic.src = user.profile_image_url || `${API}/assets/images/initial-profile-image-v1.png`;
-        cropSource = profilePic.src;
-      } catch (e) { console.error(e); }
+      const res = await fetch(`${API}/me`, { credentials: 'include' });
+      const { user = {} } = res.ok ? await res.json() : {};
+      usernameField.value = user.name || '';
+      bioField.value = user.bio || '';
+      originalBio = user.bio || '';
+      originalImage = user.profile_image_url || '';
+      profilePic.src = originalImage;
+    });
+
+    bioField.addEventListener('input', () => {
+      saveButton.disabled = (bioField.value === originalBio && !savedBlob);
     });
 
     profilePic.addEventListener('click', () => {
-      modal.classList.add('active');
-      cropImg.src = cropSource;
-      cropImg.onload = () => {
-        imgNaturalWidth = cropImg.naturalWidth;
-        imgNaturalHeight = cropImg.naturalHeight;
-        resetBox();
-      };
+      document.getElementById('modal').classList.add('active');
+      document.getElementById('cropImg').src = profilePic.src;
     });
 
-    fileInput.addEventListener('change', e => {
+    document.getElementById('fileInput').addEventListener('change', e => {
       const file = e.target.files[0];
       if (!file) return;
-      cropSource = URL.createObjectURL(file);
       savedExt = file.type.split('/')[1] || 'png';
-      cropImg.src = cropSource;
-      cropImg.onload = () => {
-        imgNaturalWidth = cropImg.naturalWidth;
-        imgNaturalHeight = cropImg.naturalHeight;
-        resetBox();
-      };
+      document.getElementById('cropImg').src = URL.createObjectURL(file);
     });
 
-    function resetBox() {
-      const cw = cropContainer.clientWidth, ch = cropContainer.clientHeight;
-      const side = Math.min(cw, ch) * 0.8;
-      box = { x: (cw - side) / 2, y: (ch - side) / 2, size: side };
-      updateBox();
-    }
-    function updateBox() {
-      cropBox.style.left = box.x + 'px';
-      cropBox.style.top = box.y + 'px';
-      cropBox.style.width = box.size + 'px';
-      cropBox.style.height = box.size + 'px';
-    }
-
-    let action = null, start = {};
-    cropBox.addEventListener('mousedown', e => {
-      action = e.target.classList.contains('handle') ? e.target.classList[1] : 'move';
-      start = { mx: e.clientX, my: e.clientY, box: { ...box } };
-      window.addEventListener('mousemove', onDrag);
-      window.addEventListener('mouseup', stopDrag);
-      e.preventDefault();
-    });
-    function onDrag(e) {
-      const dx = e.clientX - start.mx;
-      const dy = e.clientY - start.my;
-      if (action === 'move') { box.x = start.box.x + dx; box.y = start.box.y + dy; }
-      else {
-        let s = start.box.size;
-        if (action === 'nw') { box.size = s - dx; box.x = start.box.x + dx; box.y = start.box.y + dy; }
-        if (action === 'ne') { box.size = s + dx; box.y = start.box.y + dy; }
-        if (action === 'sw') { box.size = s + dy; box.x = start.box.x + dx; }
-        if (action === 'se') { box.size = s + Math.max(dx, dy); }
-      }
-      const max = cropContainer.clientWidth;
-      box.size = Math.max(50, Math.min(box.size, max));
-      box.x = Math.max(0, Math.min(box.x, max - box.size));
-      box.y = Math.max(0, Math.min(box.y, max - box.size));
-      updateBox();
-    }
-    function stopDrag() {
-      window.removeEventListener('mousemove', onDrag);
-      window.removeEventListener('mouseup', stopDrag);
-      action = null;
-    }
-
-    acceptCrop.addEventListener('click', () => {
-      const cw = cropContainer.clientWidth, ch = cropContainer.clientHeight;
-      const scaleX = imgNaturalWidth / cw;
-      const scaleY = imgNaturalHeight / ch;
-      const cropX = box.x * scaleX, cropY = box.y * scaleY;
-      const cropW = box.size * scaleX, cropH = box.size * scaleY;
-
+    document.getElementById('acceptCrop').addEventListener('click', () => {
       const canvas = document.createElement('canvas');
-      canvas.width = canvas.height = Math.max(cropW, cropH);
       const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(cropImg, cropX, cropY, cropW, cropH, 0, 0, canvas.width, canvas.height);
-
+      const img = document.getElementById('cropImg');
+      canvas.width = canvas.height = 300;
+      ctx.drawImage(img, 0, 0, 300, 300);
       canvas.toBlob(blob => {
         savedBlob = blob;
-        savedExt = blob.type.split('/')[1] || 'png';
         profilePic.src = URL.createObjectURL(blob);
-        saveButton.classList.add('pulse');
-        modal.classList.remove('active');
-      }, 'image/png');
+        saveButton.disabled = false;
+      }, `image/${savedExt}`);
+      document.getElementById('modal').classList.remove('active');
     });
 
-    cancelCrop.addEventListener('click', () => modal.classList.remove('active'));
+    document.getElementById('cancelCrop').addEventListener('click', () => {
+      document.getElementById('modal').classList.remove('active');
+    });
 
     document.getElementById('profileForm').addEventListener('submit', async e => {
       e.preventDefault();
       const fd = new FormData();
       fd.append('username', usernameField.value);
       fd.append('bio', bioField.value);
-      if (savedBlob) fd.set('profileImage', savedBlob, `profile.${savedExt}`);
-      try {
-        const res = await fetch(`${API}/update-profile`, { method: 'POST', credentials: 'include', mode: 'cors', body: fd });
-        if (!res.ok) throw new Error(await res.text());
+      if (savedBlob) fd.append('profileImage', savedBlob, `profile.${savedExt}`);
+      const res = await fetch(`${API}/update-profile`, {
+        method: 'POST', credentials: 'include', body: fd
+      });
+      if (res.ok) {
         alert('Profile updated!');
-        saveButton.classList.remove('pulse');
-      } catch (err) {
-        console.error(err);
-        alert('Save failed: ' + err.message);
+        saveButton.disabled = true;
+      } else {
+        alert('Failed to save.');
       }
     });
   </script>
