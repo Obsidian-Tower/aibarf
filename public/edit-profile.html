@@ -66,8 +66,7 @@
     .modal.active { display: flex; }
     .modal-content {
       background: #2b2b2b; padding: 1.5rem;
-      border-radius: var(--radius);
-      width: 90%; max-width: 700px;
+      border-radius: var(--radius); width: 90%; max-width: 700px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.5);
       text-align: center;
     }
@@ -146,35 +145,33 @@
     let box = { x: 50, y: 50, size: 300 };
     let action = null, start = {};
 
-    // Fetch and prefill
+    // Prefill from Worker
     window.addEventListener('DOMContentLoaded', async () => {
       try {
         const res = await fetch(`${API}/me`, { credentials: 'include', mode: 'cors' });
         const { user = {} } = res.ok ? await res.json() : {};
-        usernameField.value = user.name || '';
+        usernameField.value = user.name || '';  
         bioField.value      = user.bio  || '';
         if (user.profile_image_url) {
-          profilePic.src       = user.profile_image_url;
-          originalImageURL     = user.profile_image_url;
+          profilePic.src   = user.profile_image_url;
+          originalImageURL = user.profile_image_url;
         }
-      } catch (e) {
-        console.error('Error loading profile:', e);
-      }
+      } catch (e) { console.error(e); }
     });
 
-    // Open modal
+    // Open crop modal
     profilePic.addEventListener('click', () => {
       modal.classList.add('active');
-      fileInput.value = '';
       cropImg.src = originalImageURL || profilePic.src;
       cropImg.onload = () => {
         imgNaturalWidth  = cropImg.naturalWidth;
         imgNaturalHeight = cropImg.naturalHeight;
-        savedBox ? (box = {...savedBox}, updateBox()) : resetBox();
+        if (savedBox) { box = { ...savedBox }; updateBox(); }
+        else resetBox();
       };
     });
 
-    // File select
+    // File input change
     fileInput.addEventListener('change', e => {
       const file = e.target.files[0];
       if (!file) return;
@@ -188,11 +185,11 @@
       cropImg.src = originalImageURL;
     });
 
-    // Box helpers
     function resetBox() {
-      const cw = cropContainer.clientWidth, ch = cropContainer.clientHeight;
+      const cw = cropContainer.clientWidth;
+      const ch = cropContainer.clientHeight;
       const side = Math.min(cw, ch) * 0.8;
-      box = { x: (cw-side)/2, y: (ch-side)/2, size: side };
+      box = { x: (cw - side) / 2, y: (ch - side) / 2, size: side };
       updateBox();
     }
     function updateBox() {
@@ -202,17 +199,17 @@
       cropBox.style.height = box.size + 'px';
     }
 
-    // Drag/resize
+    // Drag & resize
     cropBox.addEventListener('mousedown', e => {
-      action = e.target.classList.contains('handle')
-        ? e.target.classList[1] : 'move';
-      start = { mx: e.clientX, my: e.clientY, box: {...box} };
+      action = e.target.classList.contains('handle') ? e.target.classList[1] : 'move';
+      start = { mx: e.clientX, my: e.clientY, box: { ...box } };
       window.addEventListener('mousemove', onDrag);
       window.addEventListener('mouseup', stopDrag);
       e.preventDefault();
     });
     function onDrag(e) {
-      const dx = e.clientX - start.mx, dy = e.clientY - start.my;
+      const dx = e.clientX - start.mx;
+      const dy = e.clientY - start.my;
       if (action === 'move') {
         box.x = start.box.x + dx;
         box.y = start.box.y + dy;
@@ -235,12 +232,16 @@
       action = null;
     }
 
-    // Accept crop
+    // Accept crop (always works, no file requirement)
     acceptCrop.addEventListener('click', () => {
-      const cw = cropContainer.clientWidth, ch = cropContainer.clientHeight;
-      const scaleX = imgNaturalWidth / cw, scaleY = imgNaturalHeight / ch;
-      const cropX = box.x * scaleX, cropY = box.y * scaleY;
-      const cropW = box.size * scaleX, cropH = box.size * scaleY;
+      const cw = cropContainer.clientWidth;
+      const ch = cropContainer.clientHeight;
+      const scaleX = imgNaturalWidth / cw;
+      const scaleY = imgNaturalHeight / ch;
+      const cropX = box.x * scaleX;
+      const cropY = box.y * scaleY;
+      const cropW = box.size * scaleX;
+      const cropH = box.size * scaleY;
       const canvas = document.createElement('canvas');
       canvas.width = cropW;
       canvas.height = cropH;
@@ -249,19 +250,18 @@
 
       canvas.toBlob(blob => {
         savedBlob = blob;
+        savedExt = blob.type.split('/')[1] || 'png';
         profilePic.src = URL.createObjectURL(blob);
         saveButton.classList.add('pulse');
-        savedBox = {...box};
-        modal.classList.remove('active');  // fully hide overlay
-      }, `image/${savedExt}` );
+        savedBox = { ...box };
+        modal.classList.remove('active');
+      }, blob.type);
     });
 
-    // Cancel
-    cancelCrop.addEventListener('click', () => {
-      modal.classList.remove('active');
-    });
+    // Cancel crop
+    cancelCrop.addEventListener('click', () => modal.classList.remove('active'));
 
-    // Submit
+    // Submit form: only the cropped blob is sent
     document.getElementById('profileForm').addEventListener('submit', async e => {
       e.preventDefault();
       const fd = new FormData();
