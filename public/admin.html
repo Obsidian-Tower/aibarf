@@ -62,41 +62,61 @@
     <div class="status" id="status"></div>
   </form>
 
-    <script>
-    const form = document.getElementById('uploadForm');
-    const statusDiv = document.getElementById('status');
-  
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const filePath = document.getElementById('filePath').value.trim();
-      const fileInput = document.getElementById('fileInput').files[0];
-      if (!filePath || !fileInput) {
-        statusDiv.textContent = 'Missing file or file path!';
-        statusDiv.classList.add('error');
-        return;
+  <script>
+  const API = 'https://aibarf-auth.coryzuber.workers.dev';  // Single Worker entry point
+
+  const form = document.getElementById('uploadForm');
+  const statusDiv = document.getElementById('status');
+  const profilePic = document.getElementById('profilePic');
+  const usernameField = document.getElementById('username');
+  const bioField = document.getElementById('bio');
+
+  // Fetch user info on load
+  window.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const res = await fetch(`${API}/me`, { credentials: 'include', mode: 'cors' });
+      const { user = {} } = res.ok ? await res.json() : {};
+      usernameField.value = user.name || '';
+      bioField.value = user.bio || '';
+      if (user.profile_image_url) {
+        profilePic.src = user.profile_image_url;
       }
-  
-      const formData = new FormData();
-      formData.append('filePath', filePath);
-      formData.append('file', fileInput);
-      statusDiv.textContent = 'Uploading...';
-      statusDiv.classList.remove('error');
-  
-      try {
-        const res = await fetch('/admin/upload', { method: 'POST', body: formData });
-        const json = await res.json();
-        if (!res.ok) {
-          statusDiv.textContent = `Error: ${json.message}`;
-          statusDiv.classList.add('error');
-        } else {
-          statusDiv.textContent = json.message || 'Upload complete.';
-        }
-      } catch (err) {
-        statusDiv.textContent = 'Upload failed.';
+    } catch (e) {
+      console.error(e);
+    }
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const filePath = document.getElementById('filePath').value.trim();
+    const fileInput = document.getElementById('fileInput').files[0];
+    if (!filePath || !fileInput) {
+      statusDiv.textContent = 'Missing file or file path!';
+      statusDiv.classList.add('error');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('filePath', filePath);
+    formData.append('file', fileInput);
+    statusDiv.textContent = 'Uploading...';
+    statusDiv.classList.remove('error');
+
+    try {
+      const res = await fetch(`${API}/admin/upload`, { method: 'POST', body: formData });
+      const json = await res.json();
+      if (!res.ok) {
+        statusDiv.textContent = `Error: ${json.message}`;
         statusDiv.classList.add('error');
+      } else {
+        statusDiv.textContent = json.message || 'Upload complete.';
       }
-    });
-  </script>
+    } catch (err) {
+      statusDiv.textContent = 'Upload failed.';
+      statusDiv.classList.add('error');
+    }
+  });
+</script>
 
 </body>
 </html>
