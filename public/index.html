@@ -1,443 +1,375 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>aibarf | Home</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --bg: #0a0a0a;
-        --fg: #cccccc;
-        --accent: rgb(56, 136, 255);
-        --accent-glow: rgba(56, 136, 255, 0.7);
-        --radius: 0.5rem;
-        --card-bg: #1a1a1a;
-        --muted: #aaa;
-        --overlay: rgba(0, 0, 0, 0.7);
-        --columns: 3;
-      }
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      html,
-      body {
-        width: 100%;
-        overflow-x: hidden;
-      }
-      body {
-        background: var(--bg);
-        color: var(--fg);
-        font-family: "Poppins", sans-serif;
-        padding-top: 80px;
-        padding-bottom: 60px; /* for bottom nav */
-      }
-      nav.top-nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 80px;
-        padding: 1rem 2rem;
-        background: rgba(10, 10, 10, 0.9);
-        backdrop-filter: blur(8px);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        z-index: 1000;
-        transition: padding 0.3s ease, height 0.3s ease, background 0.3s ease;
-      }
-      nav.top-nav.scrolled {
-        height: 60px;
-        padding: 0.5rem 1rem;
-        background: rgba(10, 10, 10, 0.95);
-      }
-      nav.top-nav a.logo {
-        display: flex;
-        align-items: center;
-      }
-      #nav-right {
-        display: flex;
-        align-items: center;
-      }
-      .bottom-nav {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 60px;
-        padding: 0.5rem 1rem;
-        background: rgba(10, 10, 10, 0.95);
-        backdrop-filter: blur(8px);
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        z-index: 999;
-      }
-      .bottom-nav .btn-add {
-        margin-right: 0;
-      }
-      .btn-add {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 2.5rem;
-        height: 2.5rem;
-        margin-right: 0.75rem;
-        border-radius: 50%;
-        background: none;
-        border: 2px solid var(--accent);
-        color: var(--accent);
-        font-size: 1.5rem;
-        cursor: pointer;
-        position: relative;
-        transition: box-shadow 0.2s ease, transform 0.2s ease;
-      }
-      .btn-add:hover {
-        box-shadow: 0 0 8px 4px var(--accent-glow);
-        transform: scale(1.1);
-      }
-      .btn-add[data-tooltip]:hover::after {
-        content: attr(data-tooltip);
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        transform: translateX(-50%) translateY(0.5rem);
-        background: var(--fg);
-        color: var(--bg);
-        padding: 0.25rem 0.5rem;
-        font-size: 0.75rem;
-        border-radius: var(--radius);
-        white-space: nowrap;
-        z-index: 10;
-      }
-      button.btn-login,
-      button#logout-btn {
-        margin-left: 1rem;
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: var(--radius);
-        background: none;
-        cursor: pointer;
-        font-weight: 500;
-        font-size: 1rem;
-        color: var(--accent);
-        box-shadow: 0 0 2px 2px var(--accent-glow);
-        transition: box-shadow 0.3s ease;
-      }
-      button.btn-login:hover,
-      button#logout-btn:hover {
-        box-shadow: 0 0 60px 4px var(--accent-glow);
-      }
-      @keyframes hueShift {
-        0% {
-          color: hsl(0, 100%, 50%);
-        }
-        14% {
-          color: hsl(30, 100%, 50%);
-        }
-        28% {
-          color: hsl(60, 100%, 50%);
-        }
-        43% {
-          color: hsl(120, 100%, 50%);
-        }
-        57% {
-          color: hsl(240, 100%, 50%);
-        }
-        71% {
-          color: hsl(275, 100%, 50%);
-        }
-        86% {
-          color: hsl(300, 100%, 50%);
-        }
-        100% {
-          color: hsl(360, 100%, 50%);
-        }
-      }
-      button.btn-signup {
-        margin-left: 1rem;
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: var(--radius);
-        background: none;
-        cursor: pointer;
-        font-weight: 500;
-        font-size: 1rem;
-        color: hsl(0, 100%, 50%);
-        animation: hueShift 25s linear infinite;
-        box-shadow: 0 0 2px 2px currentColor;
-        transition: box-shadow 0.3s ease;
-      }
-      button.btn-signup:hover {
-        box-shadow: 0 0 60px 4px currentColor;
-      }
-      #hero {
-        padding: 2rem 1rem;
-        text-align: center;
-      }
-      .hero h2 {
-        font-size: 2rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-      }
-      .hero p {
-        color: var(--muted);
-        font-size: 1rem;
-        margin-bottom: 1rem;
-      }
-      .container {
-        width: 100%;
-        max-width: none;
-        margin: 0 auto;
-        padding: 1rem;
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(var(--columns), 1fr);
-        gap: 2px;
-        justify-content: start;
-        align-content: start;
-      }
-      .card {
-        position: relative;
-        display: block;
-        width: 100%;
-        aspect-ratio: 1/1;
-        overflow: hidden;
-        border-radius: var(--radius);
-        background: var(--card-bg);
-        text-decoration: none;
-        color: inherit;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-      }
-      .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-      }
-      .thumbnail {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-      }
-      .overlay {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        padding: 0.75rem 1rem;
-        background: var(--overlay);
-        transform: translateY(100%);
-        transition: transform 0.3s ease;
-      }
-      .card:hover .overlay {
-        transform: translateY(0);
-      }
-      .overlay h2 {
-        font-size: 1rem;
-        font-weight: 600;
-        margin: 0;
-      }
-      .card-stats {
-        margin-top: 0.25rem;
-        font-size: 0.75rem;
-        color: var(--muted);
-        text-align: left;
-      }
-      .creator-name {
-        text-align: right;
-        font-size: 0.75rem;
-        color: var(--muted);
-      }
-      #grid-status {
-        text-align: center;
-        color: var(--muted);
-        margin: 2rem 0;
-      }
-      footer {
-        text-align: center;
-        padding: 1rem;
-        font-size: 0.8rem;
-        color: #777;
-      }
-      footer a.z532 {
-        color: #00ff84;
-        text-decoration: none;
-        font-weight: 500;
-        margin-left: 0.25rem;
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="top-nav">
-      <a href="index.html" class="logo">
-        <img src="/images/aibarf-logo-1.jpeg" alt="aibarf Logo" height="32" />
-      </a>
-      <div id="nav-right"></div>
-    </nav>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>aibarf | Home</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --fg: #cccccc;
+      --accent: rgb(56, 136, 255);
+      --accent-glow: rgba(56, 136, 255, 0.7);
+      --radius: 0.5rem;
+      --card-bg: #1a1a1a;
+      --muted: #aaa;
+      --overlay: rgba(0, 0, 0, 0.7);
+      --columns: 3;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width:100%; overflow-x:hidden; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: "Poppins", sans-serif;
+      padding-top: 80px;
+      padding-bottom: 60px;
+    }
 
-    <nav class="bottom-nav">
-      <div id="bottom-nav-controls"></div>
-    </nav>
+    /* ——— Navigation & Buttons ——— */
+    nav.top-nav {
+      position: fixed; top: 0; left: 0; width: 100%; height: 80px;
+      padding: 1rem 2rem; background: rgba(10,10,10,0.9);
+      backdrop-filter: blur(8px);
+      display:flex; justify-content:space-between; align-items:center;
+      z-index:1000;
+      transition: padding 0.3s, height 0.3s, background 0.3s;
+    }
+    nav.top-nav.scrolled {
+      height:60px; padding:0.5rem 1rem;
+      background: rgba(10,10,10,0.95);
+    }
+    nav.top-nav a.logo { display:flex; align-items:center; }
+    #nav-right { display:flex; align-items:center; }
 
-    <section id="hero" class="hero">
-      <div class="container">
-        <h2>AIBARF</h2>
-        <p>AI Generated, Human Curated</p>
-      </div>
-    </section>
+    .bottom-nav {
+      position:fixed; bottom:0; left:0; width:100%; height:60px;
+      padding:0.5rem 1rem; background:rgba(10,10,10,0.95);
+      backdrop-filter:blur(8px);
+      display:flex; justify-content:flex-end; align-items:center;
+      z-index:999;
+    }
+    .btn-add {
+      display:inline-flex; align-items:center; justify-content:center;
+      width:2.5rem; height:2.5rem; margin-right:0.75rem;
+      border-radius:50%; background:none;
+      border:2px solid var(--accent);
+      color:var(--accent); font-size:1.5rem; cursor:pointer;
+      position:relative; transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .btn-add:hover {
+      box-shadow:0 0 8px 4px var(--accent-glow);
+      transform:scale(1.1);
+    }
+    .btn-add[data-tooltip]:hover::after {
+      content:attr(data-tooltip);
+      position:absolute; top:100%; left:50%;
+      transform:translateX(-50%) translateY(0.5rem);
+      background:var(--fg); color:var(--bg);
+      padding:0.25rem 0.5rem; font-size:0.75rem;
+      border-radius:var(--radius); white-space:nowrap; z-index:10;
+    }
 
-    <main class="container">
-      <div id="grid-status">Loading sets…</div>
-      <div id="sets-grid" class="grid" style="display: none"></div>
-    </main>
+    button.btn-login, button#logout-btn {
+      margin-left:1rem; padding:0.5rem 1rem;
+      border:none; border-radius:var(--radius);
+      background:none; cursor:pointer; font-weight:500;
+      font-size:1rem; color:var(--accent);
+      box-shadow:0 0 2px 2px var(--accent-glow);
+      transition: box-shadow 0.3s;
+    }
+    button.btn-login:hover,
+    button#logout-btn:hover {
+      box-shadow:0 0 60px 4px var(--accent-glow);
+    }
 
-    <footer>
-      &copy; 2025 aibarf. All images synthetic. All minds welcome.
-      <a href="https://z532.ai" class="z532">A Z532 product.</a>
-    </footer>
+    @keyframes hueShift {
+      0%,100% { color:hsl(0,100%,50%); }
+      14% { color:hsl(30,100%,50%); }
+      28% { color:hsl(60,100%,50%); }
+      43% { color:hsl(120,100%,50%); }
+      57% { color:hsl(240,100%,50%); }
+      71% { color:hsl(275,100%,50%); }
+      86% { color:hsl(300,100%,50%); }
+    }
+    button.btn-signup {
+      margin-left:1rem; padding:0.5rem 1rem;
+      border:none; border-radius:var(--radius);
+      background:none; cursor:pointer; font-weight:500;
+      font-size:1rem; animation:hueShift 25s linear infinite;
+      box-shadow:0 0 2px 2px currentColor;
+      transition: box-shadow 0.3s;
+    }
+    button.btn-signup:hover {
+      box-shadow:0 0 60px 4px currentColor;
+    }
 
-    <script>
-      const API = "https://aibarf-auth.coryzuber.workers.dev";
-      const bottomNavControls = document.getElementById("bottom-nav-controls");
-      const navRight = document.getElementById("nav-right");
+    /* —— Profile image as button —— */
+    .profile-btn {
+      width:2.5rem; height:2.5rem; padding:0; margin-left:1rem;
+      border:none; background:none; border-radius:50%;
+      overflow:hidden; cursor:pointer;
+      animation:hueShift 25s linear infinite;
+      box-shadow:0 0 2px 2px currentColor;
+      transition: box-shadow 0.3s;
+    }
+    .profile-btn:hover {
+      box-shadow:0 0 60px 4px currentColor;
+    }
+    .profile-btn img {
+      width:100%; height:100%; object-fit:cover;
+      display:block;
+    }
 
-      const controlsHTML = 
-        <button id="decrease-btn" class="btn-add" data-tooltip="Smaller tiles (more columns)">−</button>
-        <button id="increase-btn" class="btn-add" data-tooltip="Larger tiles (fewer columns)">＋</button>
-      ;
+    /* ——— Hero & Grid ——— */
+    #hero { padding:2rem 1rem; text-align:center; }
+    .hero h2 { font-size:2rem; font-weight:600; margin-bottom:0.5rem; }
+    .hero p { color:var(--muted); font-size:1rem; margin-bottom:1rem; }
+    .container { width:100%; margin:0 auto; padding:1rem; }
+    .grid {
+      display:grid;
+      grid-template-columns:repeat(var(--columns),1fr);
+      gap:2px; justify-content:start; align-content:start;
+    }
+    .card {
+      position:relative; display:block; width:100%;
+      aspect-ratio:1/1; overflow:hidden; border-radius:var(--radius);
+      background:var(--card-bg); text-decoration:none; color:inherit;
+      box-shadow:0 4px 20px rgba(0,0,0,0.3);
+      transition:transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      transform:translateY(-5px);
+      box-shadow:0 8px 30px rgba(0,0,0,0.4);
+    }
+    .thumbnail {
+      width:100%; height:100%; object-fit:cover; display:block;
+    }
+    .overlay {
+      position:absolute; bottom:0; left:0; width:100%;
+      padding:0.75rem 1rem; background:var(--overlay);
+      transform:translateY(100%); transition:transform 0.3s;
+    }
+    .card:hover .overlay { transform:translateY(0); }
+    .overlay h2 { font-size:1rem; font-weight:600; margin:0; }
+    .card-stats {
+      margin-top:0.25rem; font-size:0.75rem; color:var(--muted);
+      text-align:left;
+    }
+    .creator-name {
+      text-align:right; font-size:0.75rem; color:var(--muted);
+    }
+    #grid-status {
+      text-align:center; color:var(--muted); margin:2rem 0;
+    }
 
-      function adjustCols(delta) {
-        const root = document.documentElement;
-        let cols = parseInt(
-          getComputedStyle(root).getPropertyValue("--columns"),
-          10
-        );
-        cols = Math.max(1, cols + delta);
-        root.style.setProperty("--columns", cols);
-      }
+    footer {
+      text-align:center; padding:1rem; font-size:0.8rem; color:#777;
+    }
+    footer a.z532 {
+      color:#00ff84; text-decoration:none; font-weight:500; margin-left:0.25rem;
+    }
 
-      function attachControlListeners() {
-        const dec = document.getElementById("decrease-btn");
-        const inc = document.getElementById("increase-btn");
-        if (dec) dec.addEventListener("click", () => adjustCols(+1));
-        if (inc) inc.addEventListener("click", () => adjustCols(-1));
-      }
+    /* ——— Profile Modal ——— */
+    #profile-modal {
+      position:fixed; top:80px; right:2rem;
+      background:var(--card-bg); border-radius:var(--radius);
+      box-shadow:0 4px 20px rgba(0,0,0,0.5); padding:1rem;
+      display:none; z-index:1001;
+    }
+    #profile-modal.show {
+      display:block;
+    }
+    #profile-modal p {
+      color:var(--fg); font-weight:500; margin-bottom:0.5rem;
+    }
+    #profile-modal button {
+      width:100%; margin-top:0.5rem;
+      padding:0.5rem; border:none; border-radius:var(--radius);
+      background:none; cursor:pointer; color:var(--accent);
+      box-shadow:0 0 2px 2px var(--accent-glow);
+      transition:box-shadow 0.3s;
+      font-size:1rem;
+    }
+    #profile-modal button:hover {
+      box-shadow:0 0 60px 4px var(--accent-glow);
+    }
+  </style>
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="index.html" class="logo">
+      <img src="/images/aibarf-logo-1.jpeg" alt="aibarf Logo" height="32" />
+    </a>
+    <div id="nav-right"></div>
+  </nav>
 
-      function renderGuest() {
+  <nav class="bottom-nav">
+    <div id="bottom-nav-controls"></div>
+  </nav>
+
+  <section id="hero">
+    <div class="container">
+      <h2>AIBARF</h2>
+      <p>AI Generated, Human Curated</p>
+    </div>
+  </section>
+
+  <main class="container">
+    <div id="grid-status">Loading sets…</div>
+    <div id="sets-grid" class="grid" style="display:none"></div>
+  </main>
+
+  <!-- Profile Modal -->
+  <div id="profile-modal">
+    <p id="modal-username"></p>
+    <button id="modal-edit">Edit Profile</button>
+    <button id="modal-logout">Log Out</button>
+  </div>
+
+  <footer>
+    &copy; 2025 aibarf. All images synthetic. All minds welcome.
+    <a href="https://z532.ai" class="z532">A Z532 product.</a>
+  </footer>
+
+  <script>
+    const API = "https://aibarf-auth.coryzuber.workers.dev";
+    const bottomNavControls = document.getElementById("bottom-nav-controls");
+    const navRight = document.getElementById("nav-right");
+    const profileModal = document.getElementById("profile-modal");
+    const modalUsername = document.getElementById("modal-username");
+    const modalEdit = document.getElementById("modal-edit");
+    const modalLogout = document.getElementById("modal-logout");
+
+    const controlsHTML = `
+      <button id="decrease-btn" class="btn-add" data-tooltip="Smaller tiles (more columns)">−</button>
+      <button id="increase-btn" class="btn-add" data-tooltip="Larger tiles (fewer columns)">＋</button>
+    `;
+
+    function adjustCols(delta) {
+      const root = document.documentElement;
+      let cols = parseInt(getComputedStyle(root).getPropertyValue("--columns"), 10);
+      cols = Math.max(1, cols + delta);
+      root.style.setProperty("--columns", cols);
+    }
+
+    function attachControlListeners() {
+      document.getElementById("decrease-btn")?.addEventListener("click", () => adjustCols(+1));
+      document.getElementById("increase-btn")?.addEventListener("click", () => adjustCols(-1));
+    }
+
+    function renderGuest() {
+      bottomNavControls.innerHTML = controlsHTML;
+      navRight.innerHTML = `
+        <button class="btn-login" onclick="location.href='login.html'">Log In</button>
+        <button class="btn-signup" onclick="location.href='signup.html'">Sign Up</button>
+      `;
+      attachControlListeners();
+    }
+
+    fetch(`${API}/me`, { credentials: "include", mode: "cors" })
+      .then(r => r.json())
+      .then(data => {
         bottomNavControls.innerHTML = controlsHTML;
-        navRight.innerHTML = 
-          <button class="btn-login" onclick="location.href='login.html'">Log In</button>
-          <button class="btn-signup" onclick="location.href='signup.html'">Sign Up</button>
-        ;
-        attachControlListeners();
-      }
 
-      fetch(${API}/me, { credentials: "include", mode: "cors" })
-        .then((r) => r.json())
-        .then((data) => {
-          bottomNavControls.innerHTML = controlsHTML;
+        if (data.user) {
+          // Logged-in view: glowing profile image
+          navRight.innerHTML = `
+            <button id="profile-btn" class="profile-btn">
+              <img src="${data.user.profile_image_url || '/assets/images/initial-profile-image-v1.png'}" alt="Profile">
+            </button>
+          `;
+          attachControlListeners();
 
-          if (data.user) {
-            navRight.innerHTML = 
-              <button class="btn-add" data-tooltip="Create Set"
-                      onclick="location.href='create-image-set.html'">＋</button>
-              <span style="margin-left:0.5rem;font-weight:500;">
-                Hello, ${data.user.name}
-              </span>
-              <button id="logout-btn">Log Out</button>
-            ;
-            document
-              .getElementById("logout-btn")
-              .addEventListener("click", () => {
-                fetch(${API}/logout, {
-                  method: "POST",
-                  credentials: "include",
-                  mode: "cors",
-                }).then(() => location.reload());
-              });
-            attachControlListeners();
-          } else {
-            renderGuest();
-          }
-        })
-        .catch(renderGuest);
+          const profileBtn = document.getElementById("profile-btn");
+          // Fill modal with username
+          modalUsername.textContent = data.user.name;
 
-      window.addEventListener("scroll", () => {
-        const nav = document.querySelector(".top-nav");
-        if (window.scrollY > 50) nav.classList.add("scrolled");
-        else nav.classList.remove("scrolled");
-      });
-
-      async function loadSets() {
-        const status = document.getElementById("grid-status");
-        const grid = document.getElementById("sets-grid");
-        try {
-          const res = await fetch(${API}/public-sets, {
-            credentials: "include",
-            mode: "cors",
+          // Toggle modal
+          profileBtn.addEventListener("click", () => {
+            profileModal.classList.toggle("show");
           });
-          if (!res.ok) throw new Error("Failed to fetch sets");
-          const { sets } = await res.json();
-          if (!sets.length) {
-            status.textContent = "No image sets to display.";
-            return;
-          }
-          status.style.display = "none";
-          grid.style.display = "grid";
 
-          sets.forEach((s) => {
-            const a = document.createElement("a");
-            a.href = /set.html?id=${s.id};
-            a.className = "card";
-
-            const img = document.createElement("img");
-            img.src = s.mainImageUrl;
-            img.alt = s.title;
-            img.className = "thumbnail";
-            a.appendChild(img);
-
-            const ov = document.createElement("div");
-            ov.className = "overlay";
-            // Level emojis map
-            const levelEmojis = {
-              1: "🧸🏞️🌿🖍️🐥",
-              2: "🎨🍭🔮🧬🌈",
-              3: "🚗🏙️🏗️🤸‍♀️🚴‍♂️",
-              4: "🤔🏛️✊🏳️‍🌈📢",
-              5: "🎭👙🤡🍸👠",
-              6: "🔥🍑🍆🤤💦",
-              7: "🔪💏🛏️💖🧨",
-              8: "🍒💋🌶️🥵💥",
-              9: "😈🔞🧛‍♀️👅😻",
-              0: "🕳️☠️🤯👺👹",
-            };
-
-            const emojiSet = levelEmojis[s.level] || "";
-            ov.innerHTML = 
-              <h2>${s.title}</h2>
-              <div class="card-stats">Level ${s.level} ${emojiSet}</div>
-              <div class="card-stats">${s.imageCount} Images</div>
-              <div class="creator-name">by ${s.createdBy}</div>
-            ;
-
-            a.appendChild(ov);
-
-            grid.appendChild(a);
+          // Edit Profile
+          modalEdit.addEventListener("click", () => {
+            window.location.href = "edit-profile.html";
           });
-        } catch (err) {
-          status.textContent = err.message;
+
+          // Log Out
+          modalLogout.addEventListener("click", () => {
+            fetch(`${API}/logout`, { method: "POST", credentials: "include", mode: "cors" })
+              .then(() => location.reload());
+          });
+        } else {
+          renderGuest();
         }
-      }
+      })
+      .catch(renderGuest);
 
-      loadSets();
-    </script>
-  </body>
+    window.addEventListener("scroll", () => {
+      document.querySelector(".top-nav")
+        .classList.toggle("scrolled", window.scrollY > 50);
+    });
+
+    async function loadSets() {
+      const status = document.getElementById("grid-status");
+      const grid = document.getElementById("sets-grid");
+      try {
+        const res = await fetch(`${API}/public-sets`, { credentials: "include", mode: "cors" });
+        if (!res.ok) throw new Error("Failed to fetch sets");
+        const { sets } = await res.json();
+        if (!sets.length) {
+          status.textContent = "No image sets to display.";
+          return;
+        }
+        status.style.display = "none";
+        grid.style.display = "grid";
+
+        sets.forEach(s => {
+          const a = document.createElement("a");
+          a.href = `/set.html?id=${s.id}`;
+          a.className = "card";
+
+          const img = document.createElement("img");
+          img.src = s.mainImageUrl;
+          img.alt = s.title;
+          img.className = "thumbnail";
+          a.appendChild(img);
+
+          const ov = document.createElement("div");
+          ov.className = "overlay";
+          const levelEmojis = {
+            1: "🧸🏞️🌿🖍️🐥",
+            2: "🎨🍭🔮🧬🌈",
+            3: "🚗🏙️🏗️🤸‍♀️🚴‍♂️",
+            4: "🤔🏛️✊🏳️‍🌈📢",
+            5: "🎭👙🤡🍸👠",
+            6: "🔥🍑🍆🤤💦",
+            7: "🔪💏🛏️💖🧨",
+            8: "🍒💋🌶️🥵💥",
+            9: "😈🔞🧛‍♀️👅😻",
+            0: "🕳️☠️🤯👺👹",
+          };
+          const emojiSet = levelEmojis[s.level] || "";
+          ov.innerHTML = `
+            <h2>${s.title}</h2>
+            <div class="card-stats">Level ${s.level} ${emojiSet}</div>
+            <div class="card-stats">${s.imageCount} Images</div>
+            <div class="creator-name">by ${s.createdBy}</div>
+          `;
+          a.appendChild(ov);
+          grid.appendChild(a);
+        });
+      } catch (err) {
+        status.textContent = err.message;
+      }
+    }
+
+    loadSets();
+  </script>
+</body>
 </html>
