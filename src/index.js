@@ -9,6 +9,7 @@ import { handleUser, handleUserPage } from './routes/user.js';
 
 export default {
   async fetch(request, env) {
+    console.log('🐛 🦊 fetch', request.method, new URL(request.url).pathname);
     // 1️⃣ Compute CORS headers
     const corsHeaders = getCorsHeaders(request);
 
