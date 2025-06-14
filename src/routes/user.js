@@ -1,6 +1,8 @@
-// src/routes/user.js
 import { verifyJWT } from '../utils/jwt.js';
 
+/**
+ * Handles the API route /api/u/:username
+ */
 export async function handleUser(request, env, pathname, corsHeaders) {
   // Only handle /api/u/:username
   const userMatch = pathname.match(/^\/api\/u\/([^\/]+)$/);
@@ -55,7 +57,6 @@ export async function handleUser(request, env, pathname, corsHeaders) {
       mainImageUrl: `https://aibarf-auth.coryzuber.workers.dev/images/sets/${row.id}/${row.firstFile}`
     }));
 
-    // Respond with user and their public sets
     return new Response(JSON.stringify({
       user: {
         name: userRow.name,
@@ -75,4 +76,24 @@ export async function handleUser(request, env, pathname, corsHeaders) {
       headers
     });
   }
+}
+
+/**
+ * Handles the fallback route /u/:username and serves the user.html page
+ */
+export async function handleUserPage(request, env, pathname, corsHeaders) {
+  if (!pathname.startsWith('/u/')) return null;
+
+  const assetUrl = new URL('/user.html', request.url);
+  const assetRequest = new Request(assetUrl.toString(), request);
+
+  const assetResponse = await env.ASSETS.fetch(assetRequest);
+  if (!assetResponse.ok) {
+    return new Response('User page not found', { status: 404, headers: corsHeaders });
+  }
+
+  return new Response(await assetResponse.text(), {
+    status: 200,
+    headers: { 'Content-Type': 'text/html', ...corsHeaders }
+  });
 }

@@ -7,7 +7,7 @@ import { handleProfile } from './routes/profile.js';
 import { handleSets } from './routes/sets.js';
 import { handleImages } from './routes/images.js';
 import { handleAdmin } from './routes/admin.js';
-import { handleUser } from './routes/user.js';
+import { handleUser, handleUserPage } from './routes/user.js';
 
 export default {
   async fetch(request, env) {
@@ -28,7 +28,8 @@ export default {
       handleSets,
       handleImages,
       handleAdmin,
-      handleUser,
+      handleUser,      // API: /api/u/:username
+      handleUserPage,  // Fallback: /u/:username → user.html
     ];
 
     for (const handler of handlers) {
