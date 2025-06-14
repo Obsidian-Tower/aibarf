@@ -273,7 +273,7 @@
           navRight.innerHTML = `
             <button id="create-btn" class="btn-add" data-tooltip="Create Set">＋</button>
             <button id="profile-btn" class="profile-btn">
-              <img src="/assets/images/initial-profile-image-v1.png" alt="Profile">
+              <img src="${data.user.profile_image_url || '/images/initial-profile-image-v1.png'}" alt="Profile">
             </button>
           `;
           attachControlListeners();
