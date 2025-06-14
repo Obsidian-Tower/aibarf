@@ -1,20 +1,21 @@
-name               = "aibarf-auth"
+name               = "aibarf"
 main               = "src/index.js"
-compatibility_date = "2025-06-13"
+compatibility_date = "2025-06-13"        # today’s date
 account_id         = "e311884653d907a208aec107614e8f02"
 workers_dev        = true
 
-# D1 bindings
+# — D1 (SQLite-compatible) database for users, sets, images metadata
 [[d1_databases]]
 binding       = "DB"
-database_name = "aibarf-core-v1"
+database_name = "aibarf-core-v1"         # your D1 database name
 database_id   = "d4aad340-2cb5-4dd5-a998-4d80f7adc8d8"
 
-# R2 bucket
+# — R2 bucket for user-uploaded images
 [[r2_buckets]]
 binding     = "USER_IMAGES"
 bucket_name = "user-images-v1"
 
-# Static assets served from /public via env.ASSETS.fetch()
+# — Static assets (HTML/CSS/JS under /public)
 [assets]
 directory = "./public"
+binding   = "ASSETS"
