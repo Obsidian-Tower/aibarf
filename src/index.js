@@ -43,14 +43,20 @@ export default {
     }
 
     // 5️⃣ Attempt to serve any other static file from `public/`
-    // (you must have [assets] configured in wrangler.toml with binding "ASSETS")
     try {
+      console.log('🦊 Attempting to serve static asset:', pathname);
       const assetResponse = await env.ASSETS.fetch(request);
+      console.log('🦊 Asset response status:', assetResponse.status);
+      console.log('🦊 Asset response headers:', [...assetResponse.headers.entries()]);
+      
       if (assetResponse.ok) {
+        console.log('🦊 Successfully serving asset:', pathname);
         return assetResponse;
+      } else {
+        console.log('🦊 Asset response not ok:', assetResponse.status, assetResponse.statusText);
       }
     } catch (e) {
-      // ignore; fall through to 404
+      console.error('🦊 Asset fetch error for', pathname, ':', e.message);
     }
 
     // 6️⃣ Nothing matched? Return JSON 404
