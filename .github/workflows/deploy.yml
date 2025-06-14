@@ -1,0 +1,23 @@
+name: Deploy Aibarf Worker
+
+on:
+  push:
+    branches:
+      - main    # Auto-deploy on push to main branch
+
+jobs:
+  deploy:
+    name: Publish to Cloudflare Workers
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Publish with Wrangler
+        uses: cloudflare/wrangler-action@2
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        env:
+          MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
