@@ -82,39 +82,14 @@ export async function handleUserPage(request, env, pathname, corsHeaders) {
   const userMatch = pathname.match(/^\/u\/([^\/]+)$/);
   if (!userMatch || request.method !== 'GET') return null;
 
-  console.log('🦊 handleUserPage: Attempting to serve /user.html for', pathname);
+  // Serve the HTML content directly
+  return new Response(getUserHtmlContent(), {
+    status: 200,
+    headers: { 'Content-Type': 'text/html' }
+  });
+}
 
-  try {
-    if (!env.ASSETS) {
-      console.error('🦊 handleUserPage: env.ASSETS is undefined');
-      return new Response('Server configuration error: Assets binding missing', {
-        status: 500,
-        headers: { 'Content-Type': 'text/html' }
-      });
-    }
-
-    const assetUrl = new URL('/user.html', request.url);
-    const assetRequest = new Request(assetUrl.toString(), request);
-    console.log('🦊 handleUserPage: Fetching asset', assetUrl.toString());
-    const assetResponse = await env.ASSETS.fetch(assetRequest);
-
-    if (!assetResponse.ok) {
-      console.error('🦊 handleUserPage: Asset fetch failed with status', assetResponse.status);
-      return new Response('User page not found', {
-        status: 404,
-        headers: { 'Content-Type': 'text/html' }
-      });
-    }
-
-    return new Response(await assetResponse.text(), {
-      status: 200,
-      headers: { 'Content-Type': 'text/html' }
-    });
-  } catch (err) {
-    console.error('🦊 handleUserPage: Error serving user.html:', err.stack);
-    return new Response('Internal server error', {
-      status: 500,
-      headers: { 'Content-Type': 'text/html' }
-    });
-  }
+// Fallback function with your HTML content
+function getUserHtmlContent() {
+  return `<!DOCTYPE html>... [your user.html content here]`;
 }
