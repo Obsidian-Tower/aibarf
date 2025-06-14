@@ -105,7 +105,7 @@ export async function handleAuth(request, env, pathname, corsHeaders) {
       status: 200,
       headers: {
         ...headers,
-        'Set-Cookie': `session=${token}; Domain=.coryzuber.workers.dev; Path=/; HttpOnly; Secure; SameSite=None`,
+        'Set-Cookie': `session=${token}; Path=/; HttpOnly; Secure; SameSite=None`
       },
     });
   }
