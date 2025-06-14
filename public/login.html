@@ -219,7 +219,7 @@
 
     <script>
       // Point to your auth Worker’s domain
-      const API = "https://aibarf.coryzuber.workers.dev";
+      const API = window.location.origin;
 
       const qs = (id) => document.getElementById(id);
       const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
