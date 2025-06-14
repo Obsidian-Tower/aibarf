@@ -3,7 +3,7 @@ name: Deploy Aibarf Worker
 on:
   push:
     branches:
-      - main    # Auto-deploy on push to main branch
+      - main  # Auto-deploy on push to main branch
 
 jobs:
   deploy:
@@ -14,10 +14,17 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Publish with Wrangler
-        uses: cloudflare/wrangler-action@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          node-version: 20
+
+      - name: Install Wrangler v4
+        run: npm install -g wrangler@4
+
+      - name: Publish with Wrangler v4
+        run: wrangler deploy
         env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
