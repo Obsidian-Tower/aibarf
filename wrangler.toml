@@ -6,9 +6,6 @@ account_id         = "e311884653d907a208aec107614e8f02"
 workers_dev        = false
 route = { pattern = "aibarf.com/*", zone_name = "aibarf.com"}
 
-[build]
-upload.format = "modules"
-
 [[d1_databases]]
 binding       = "DB"
 database_name = "aibarf-core-v1"
