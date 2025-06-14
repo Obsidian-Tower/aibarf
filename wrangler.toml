@@ -1,4 +1,4 @@
-name               = "aibarf-auth"
+name = "aibarf"
 main               = "src/index.js"
 compatibility_date = "2025-06-13"
 account_id         = "e311884653d907a208aec107614e8f02"
