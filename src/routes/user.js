@@ -4,7 +4,6 @@ import { verifyJWT } from '../utils/jwt.js';
  * Handles the API route /api/u/:username
  */
 export async function handleUser(request, env, pathname, corsHeaders) {
-  // Only handle /api/u/:username
   const userMatch = pathname.match(/^\/api\/u\/([^\/]+)$/);
   if (!userMatch || request.method !== 'GET') return null;
 
@@ -12,7 +11,6 @@ export async function handleUser(request, env, pathname, corsHeaders) {
   const headers = { 'Content-Type': 'application/json', ...corsHeaders };
 
   try {
-    // Look up user by name
     const userRow = await env.DB.prepare(`
       SELECT id, name, email, bio, profile_image_url
       FROM users
@@ -26,7 +24,6 @@ export async function handleUser(request, env, pathname, corsHeaders) {
       });
     }
 
-    // Look up public sets created by user (level 1-5)
     const rows = await env.DB.prepare(`
       SELECT
         s.id,
@@ -82,18 +79,31 @@ export async function handleUser(request, env, pathname, corsHeaders) {
  * Handles the route /u/:username and serves the user.html page
  */
 export async function handleUserPage(request, env, pathname, corsHeaders) {
-  // Only handle /u/:username (e.g., /u/coryzuber)
   const userMatch = pathname.match(/^\/u\/([^\/]+)$/);
   if (!userMatch || request.method !== 'GET') return null;
 
+  console.log('🦊 handleUserPage: Attempting to serve /user.html for', pathname);
+
   try {
-    // Fetch user.html from assets
+    if (!env.ASSETS) {
+      console.error('🦊 handleUserPage: env.ASSETS is undefined');
+      return new Response('Server configuration error: Assets binding missing', {
+        status: 500,
+        headers: { 'Content-Type': 'text/html' }
+      });
+    }
+
     const assetUrl = new URL('/user.html', request.url);
     const assetRequest = new Request(assetUrl.toString(), request);
+    console.log('🦊 handleUserPage: Fetching asset', assetUrl.toString());
     const assetResponse = await env.ASSETS.fetch(assetRequest);
 
     if (!assetResponse.ok) {
-      return new Response('User page not found', { status: 404, headers: { 'Content-Type': 'text/html' } });
+      console.error('🦊 handleUserPage: Asset fetch failed with status', assetResponse.status);
+      return new Response('User page not found', {
+        status: 404,
+        headers: { 'Content-Type': 'text/html' }
+      });
     }
 
     return new Response(await assetResponse.text(), {
@@ -101,7 +111,10 @@ export async function handleUserPage(request, env, pathname, corsHeaders) {
       headers: { 'Content-Type': 'text/html' }
     });
   } catch (err) {
-    console.error('Error serving user.html:', err.message);
-    return new Response('Internal server error', { status: 500, headers: { 'Content-Type': 'text/html' } });
+    console.error('🦊 handleUserPage: Error serving user.html:', err.stack);
+    return new Response('Internal server error', {
+      status: 500,
+      headers: { 'Content-Type': 'text/html' }
+    });
   }
 }
