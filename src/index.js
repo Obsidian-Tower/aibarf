@@ -27,13 +27,14 @@ export default {
 
     // 4️⃣ Run your modular route handlers
     const handlers = [
+      handleUserPage,    // Page: /u/:username → user.html
       handleAuth,       // /login, /signup, /me, /logout, /forgot-password, /reset-password, etc.
       handleProfile,    // /update-profile, /check-email, /check-username
       handleSets,       // /sets, /public-sets, /set
       handleImages,     // /images/sets/*, /assets/images/*
       handleAdmin,      // /admin/upload
       handleUser,       // API: /api/u/:username
-      handleUserPage    // Page: /u/:username → user.html
+      
     ];
 
     for (const handler of handlers) {

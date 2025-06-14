@@ -33,7 +33,49 @@
       z-index:1000;
     }
     nav.top-nav a.logo { display:flex; align-items:center; }
-
+    #nav-right { display:flex; align-items:center; }
+    button.btn-login, button.btn-signup, button#logout-btn {
+      margin-left:1rem; padding:0.5rem 1rem;
+      border:none; border-radius:var(--radius);
+      background:none; cursor:pointer; font-weight:500;
+      font-size:1rem; color:var(--accent);
+      box-shadow:0 0 2px 2px var(--accent-glow);
+      transition: box-shadow 0.3s;
+    }
+    button.btn-login:hover, button#logout-btn:hover {
+      box-shadow:0 0 60px 4px var(--accent-glow);
+    }
+    @keyframes hueShift {
+      0%,100% { color:hsl(0,100%,50%); }
+      14% { color:hsl(30,100%,50%); }
+      28% { color:hsl(60,100%,50%); }
+      43% { color:hsl(120,100%,50%); }
+      57% { color:hsl(240,100%,50%); }
+      71% { color:hsl(275,100%,50%); }
+      86% { color:hsl(300,100%,50%); }
+    }
+    button.btn-signup {
+      animation:hueShift 25s linear infinite;
+      box-shadow:0 0 2px 2px currentColor;
+    }
+    button.btn-signup:hover {
+      box-shadow:0 0 60px 4px currentColor;
+    }
+    .profile-btn {
+      width:2.5rem; height:2.5rem; padding:0; margin-left:1rem;
+      border:none; background:none; border-radius:50%;
+      overflow:hidden; cursor:pointer;
+      animation:hueShift 25s linear infinite;
+      box-shadow:0 0 2px 2px currentColor;
+      transition: box-shadow 0.3s;
+    }
+    .profile-btn:hover {
+      box-shadow:0 0 60px 4px currentColor;
+    }
+    .profile-btn img {
+      width:100%; height:100%; object-fit:cover;
+      display:block;
+    }
     .profile-header {
       display: flex;
       align-items: center;
@@ -61,7 +103,6 @@
       font-size: 1rem;
       color: var(--muted);
     }
-
     .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
     .grid {
       display: grid;
@@ -123,6 +164,7 @@
     <a href="index.html" class="logo">
       <img src="/images/aibarf-logo-1.jpeg" alt="aibarf Logo" height="32" />
     </a>
+    <div id="nav-right"></div>
   </nav>
 
   <section class="profile-header" id="profile-header" style="display:none;">
@@ -134,40 +176,89 @@
   </section>
 
   <main class="container">
-    <div id="grid-status">Loading user sets…</div>
+    <div id="grid-status">Loading user sets...</div>
     <div id="sets-grid" class="grid" style="display:none;"></div>
   </main>
 
   <footer>
-    &copy; 2025 aibarf. All images synthetic. All minds welcome.
-    <a href="https://z532.ai" class="z532">A Z532 product.</a>
+    © 2025 aibarf. All images synthetic. All minds welcome.
+    <a href="https://z532.ai" class="z532">A Z532 product.</a>
   </footer>
 
   <script>
     const API = window.location.origin;
-    const pathname = window.location.pathname;
-    const username = pathname.split("/")[2]; // /u/USERNAME
+    // Extract username from /u/USERNAME, handling trailing slashes
+    const usernameMatch = window.location.pathname.match(/^\/u\/([^\/]+)\/?$/);
+    const username = usernameMatch ? decodeURIComponent(usernameMatch[1]) : null;
 
     const gridStatus = document.getElementById("grid-status");
     const grid = document.getElementById("sets-grid");
-
     const profileHeader = document.getElementById("profile-header");
     const profileImage = document.getElementById("profile-image");
     const profileUsername = document.getElementById("profile-username");
     const profileBio = document.getElementById("profile-bio");
+    const navRight = document.getElementById("nav-right");
+
+    // Sanitize text to prevent XSS
+    function sanitizeText(text) {
+      const div = document.createElement('div');
+      div.textContent = text || '';
+      return div.innerHTML;
+    }
+
+    // Render navigation based on auth status
+    async function renderNav() {
+      try {
+        const res = await fetch(`${API}/me`, { credentials: "include", mode: "cors" });
+        if (!res.ok) throw new Error('Failed to fetch user');
+        const data = await res.json();
+        if (data.user) {
+          navRight.innerHTML = `
+            <button id="create-btn" class="btn-add" data-tooltip="Create Set">＋</button>
+            <button id="profile-btn" class="profile-btn">
+              <img src="${data.user.profile_image_url || '/images/initial-profile-image-v1.png'}" alt="Profile">
+            </button>
+          `;
+          document.getElementById("create-btn").addEventListener("click", () => {
+            location.href = "create-image-set.html";
+          });
+          document.getElementById("profile-btn").addEventListener("click", () => {
+            location.href = `/u/${encodeURIComponent(data.user.name)}`;
+          });
+        } else {
+          navRight.innerHTML = `
+            <button class="btn-login" onclick="location.href='login-page.html'">Log In</button>
+            <button class="btn-signup" onclick="location.href='signup.html'">Sign Up</button>
+          `;
+        }
+      } catch (err) {
+        navRight.innerHTML = `
+          <button class="btn-login" onclick="location.href='login-page.html'">Log In</button>
+          <button class="btn-signup" onclick="location.href='signup.html'">Sign Up</button>
+        `;
+      }
+    }
 
     async function loadUserProfile() {
+      if (!username) {
+        gridStatus.textContent = "Invalid username";
+        return;
+      }
       try {
         const res = await fetch(`${API}/api/u/${encodeURIComponent(username)}`, {
-          credentials: "include", mode: "cors"
+          credentials: "include",
+          mode: "cors"
         });
-        if (!res.ok) throw new Error("Failed to fetch user profile");
+        if (!res.ok) {
+          if (res.status === 404) throw new Error("User not found");
+          throw new Error(`Failed to fetch user profile: ${res.status}`);
+        }
         const { user, sets } = await res.json();
 
         profileHeader.style.display = "flex";
         profileImage.src = user.profile_image_url || "/images/initial-profile-image-v1.png";
-        profileUsername.textContent = user.name;
-        profileBio.textContent = user.bio || "";
+        profileUsername.textContent = sanitizeText(user.name);
+        profileBio.textContent = sanitizeText(user.bio) || "No bio provided";
 
         if (!sets.length) {
           gridStatus.textContent = "This user has not published any image sets.";
@@ -178,20 +269,28 @@
 
         sets.forEach(s => {
           const a = document.createElement("a");
-          a.href = `/set.html?id=${s.id}`;
+          a.href = `/set-page.html?id=${encodeURIComponent(s.id)}`; // Link to set-page.html
           a.className = "card";
 
           const img = document.createElement("img");
           img.src = s.mainImageUrl;
-          img.alt = s.title;
+          img.alt = sanitizeText(s.title);
           img.className = "thumbnail";
           a.appendChild(img);
 
           const ov = document.createElement("div");
           ov.className = "overlay";
+          const levelEmojis = {
+            1: "🧸🏞️🌿🖍️🐥",
+            2: "🎨🍭🔮🧬🌈",
+            3: "🚗🏙️🏗️🤸‍♀️🚴‍♂️",
+            4: "🤔🏛️✊🏳️‍🌈📢",
+            5: "🎭👙🤡🍸👠"
+          };
+          const emojiSet = levelEmojis[s.level] || "";
           ov.innerHTML = `
-            <h2>${s.title}</h2>
-            <div class="card-stats">Level ${s.level}</div>
+            <h2>${sanitizeText(s.title)}</h2>
+            <div class="card-stats">Level ${s.level} ${emojiSet}</div>
             <div class="card-stats">${s.imageCount} Images</div>
           `;
           a.appendChild(ov);
@@ -199,10 +298,12 @@
         });
       } catch (err) {
         gridStatus.textContent = err.message;
+        profileHeader.style.display = "none";
       }
     }
 
-    loadUserProfile();
+    // Load navigation and user profile
+    Promise.all([renderNav(), loadUserProfile()]);
   </script>
 </body>
 </html>

@@ -54,7 +54,7 @@ export async function handleUser(request, env, pathname, corsHeaders) {
       title: row.title,
       level: row.level,
       imageCount: row.imageCount,
-      mainImageUrl: `https://aibarf.coryzuber.workers.dev/images/sets/${row.id}/${row.firstFile}`
+      mainImageUrl: `https://aibarf.com/images/sets/${row.id}/${row.firstFile}`
     }));
 
     return new Response(JSON.stringify({
@@ -79,21 +79,29 @@ export async function handleUser(request, env, pathname, corsHeaders) {
 }
 
 /**
- * Handles the fallback route /u/:username and serves the user.html page
+ * Handles the route /u/:username and serves the user.html page
  */
 export async function handleUserPage(request, env, pathname, corsHeaders) {
-  if (!pathname.startsWith('/u/')) return null;
+  // Only handle /u/:username (e.g., /u/coryzuber)
+  const userMatch = pathname.match(/^\/u\/([^\/]+)$/);
+  if (!userMatch || request.method !== 'GET') return null;
 
-  const assetUrl = new URL('/user.html', request.url);
-  const assetRequest = new Request(assetUrl.toString(), request);
+  try {
+    // Fetch user.html from assets
+    const assetUrl = new URL('/user.html', request.url);
+    const assetRequest = new Request(assetUrl.toString(), request);
+    const assetResponse = await env.ASSETS.fetch(assetRequest);
 
-  const assetResponse = await env.ASSETS.fetch(assetRequest);
-  if (!assetResponse.ok) {
-    return new Response('User page not found', { status: 404, headers: corsHeaders });
+    if (!assetResponse.ok) {
+      return new Response('User page not found', { status: 404, headers: { 'Content-Type': 'text/html' } });
+    }
+
+    return new Response(await assetResponse.text(), {
+      status: 200,
+      headers: { 'Content-Type': 'text/html' }
+    });
+  } catch (err) {
+    console.error('Error serving user.html:', err.message);
+    return new Response('Internal server error', { status: 500, headers: { 'Content-Type': 'text/html' } });
   }
-
-  return new Response(await assetResponse.text(), {
-    status: 200,
-    headers: { 'Content-Type': 'text/html', ...corsHeaders }
-  });
 }
