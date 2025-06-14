@@ -14,3 +14,7 @@ database_id   = "d4aad340-2cb5-4dd5-a998-4d80f7adc8d8"
 [[r2_buckets]]
 binding     = "USER_IMAGES"
 bucket_name = "user-images-v1"
+
+[assets]
+directory = "./public/"
+binding = "ASSETS"
