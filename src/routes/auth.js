@@ -80,11 +80,7 @@ export async function handleAuth(request, env, pathname, corsHeaders) {
 
   // /login
   if (pathname === '/login' && method === 'POST') {
-    if (pathname === '/login' && method === 'POST') {
-      console.log('🐛 🔑 handleAuth POST /login hit');
-      …
-    }
-
+    console.log('🦊 🔑 handleAuth → POST /login hit');
     let { email, password } = await request.json();
     if (!email || !password) {
       return new Response(JSON.stringify({ error: 'Missing credentials' }), { status: 400, headers });
