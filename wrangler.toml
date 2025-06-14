@@ -1,26 +1,16 @@
 name = "aibarf-auth"
-main = "src/index.js"               # points at your module entrypoint
-compatibility_date = "2025-06-13"   # today’s date in YYYY-MM-DD
+main = "src/index.js"
+compatibility_date = "2025-06-13"
 account_id = "e311884653d907a208aec107614e8f02"
 workers_dev = true
 
 # D1 bindings
 [[d1_databases]]
-binding      = "DB"
+binding = "DB"
 database_name = "aibarf-core-v1"
-database_id  = "d4aad340-2cb5-4dd5-a998-4d80f7adc8d8"
+database_id = "d4aad340-2cb5-4dd5-a998-4d80f7adc8d8"
 
-<<<<<<< HEAD
+# R2 bucket
 [[r2_buckets]]
 binding = "USER_IMAGES"
 bucket_name = "user-images-v1"
-=======
-# R2 bucket
-[r2_buckets]
-USER_IMAGES = { binding = "USER_IMAGES", bucket_name = "user-images-v1" }
-
-# tell Wrangler to publish your `public/` folder as a Workers Site
-[[site]]
-bucket     = "./public"
-entry-point = "workers-site"
->>>>>>> 50a103ae2e580f4e01f90e8a6f4e0f295d964d48
