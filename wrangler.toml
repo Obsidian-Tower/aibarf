@@ -3,7 +3,6 @@ main               = "src/index.js"
 compatibility_date = "2025-06-13"
 account_id         = "e311884653d907a208aec107614e8f02"
 workers_dev        = false
-route              = "aibarf.com/*"
 
 [[d1_databases]]
 binding       = "DB"
