@@ -112,6 +112,7 @@ export async function handleAuth(request, env, pathname, corsHeaders) {
 
   // /me
   if (pathname === '/me' && method === 'GET') {
+    console.log('🦊 ME handleAuth → GET /me hit');
     const cookie = request.headers.get('Cookie') || '';
     const m = cookie.match(/session=([^;]+)/);
     if (!m) return new Response(JSON.stringify({}), { status: 200, headers });
