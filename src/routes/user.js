@@ -54,7 +54,7 @@ export async function handleUser(request, env, pathname, corsHeaders) {
       title: row.title,
       level: row.level,
       imageCount: row.imageCount,
-      mainImageUrl: `https://aibarf-auth.coryzuber.workers.dev/images/sets/${row.id}/${row.firstFile}`
+      mainImageUrl: `https://aibarf.coryzuber.workers.dev/images/sets/${row.id}/${row.firstFile}`
     }));
 
     return new Response(JSON.stringify({

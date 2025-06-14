@@ -61,7 +61,7 @@ export async function handleAuth(request, env, pathname, corsHeaders) {
         userId,
         normalizedEmail,
         name,
-        'https://aibarf-auth.coryzuber.workers.dev/assets/images/initial-profile-image-v1.png'
+        'https://aibarf.coryzuber.workers.dev/assets/images/initial-profile-image-v1.png'
       ),
       env.DB.prepare('INSERT INTO password_logins(email,password_hash,user_id) VALUES(?,?,?)').bind(
         normalizedEmail,
