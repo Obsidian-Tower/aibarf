@@ -2,24 +2,17 @@ name               = "aibarf"
 main               = "src/index.js"
 compatibility_date = "2025-06-13"
 account_id         = "e311884653d907a208aec107614e8f02"
+workers_dev        = false
+route              = "aibarf.com/*"
 
-# If you're deploying to your custom domain (aibarf.com), disable workers_dev 
-# and bind the route. Otherwise keep workers_dev = true to use the *.workers.dev subdomain.
-workers_dev = false  
-route       = "aibarf.com/*"
-
-# — D1 (SQLite-compatible) database for users, sets, images metadata
 [[d1_databases]]
 binding       = "DB"
 database_name = "aibarf-core-v1"
 database_id   = "d4aad340-2cb5-4dd5-a998-4d80f7adc8d8"
 
-# — R2 bucket for user-uploaded images
 [[r2_buckets]]
 binding     = "USER_IMAGES"
 bucket_name = "user-images-v1"
 
-# — Static assets (serve everything in ./public via env.ASSETS.fetch)
 [assets]
-binding   = "ASSETS"
 directory = "./public"
