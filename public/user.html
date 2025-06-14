@@ -269,7 +269,7 @@
 
         sets.forEach(s => {
           const a = document.createElement("a");
-          a.href = `/set-page.html?id=${encodeURIComponent(s.id)}`; // Link to set-page.html
+          a.href = `/set-page?id=${encodeURIComponent(s.id)}`; // Link to set-page.html
           a.className = "card";
 
           const img = document.createElement("img");
