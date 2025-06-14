@@ -15,6 +15,7 @@ database_id = "d4aad340-2cb5-4dd5-a998-4d80f7adc8d8"
 binding = "USER_IMAGES"
 bucket_name = "user-images-v1"
 
-# Serve static assets from /public (e.g., user.html)
-[site]
+# Static assets served from /public folder, accessed via env.ASSETS
+[[assets]]
 bucket = "./public"
+binding = "ASSETS"
