@@ -161,7 +161,7 @@
   </footer>
 
   <script>
-    const API = "https://aibarf-auth.coryzuber.workers.dev";
+    const API = window.location.origin;
     const params = new URLSearchParams(location.search);
     const setId = params.get("id");
     const status = document.getElementById("status");

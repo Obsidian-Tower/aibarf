@@ -445,7 +445,7 @@
       </div>
     </div>
     <script>
-      const apiBase = "https://aibarf-auth.coryzuber.workers.dev";
+      const apiBase = window.location.origin;
       const qs = (id) => document.getElementById(id);
 
       const USERNAME_REGEX = /^[a-zA-Z0-9_-]{3,20}$/;
