@@ -93,7 +93,7 @@ export async function handleUserPage(request, env, pathname, corsHeaders) {
       });
     }
 
-    const assetUrl = new URL('/user.html', request.url);
+    const assetUrl = new URL('/public/user.html', request.url);
     const assetRequest = new Request(assetUrl.toString(), request);
     console.log('🦊 handleUserPage: Fetching asset', assetUrl.toString());
     const assetResponse = await env.ASSETS.fetch(assetRequest);
