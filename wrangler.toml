@@ -15,5 +15,5 @@ binding     = "USER_IMAGES"
 bucket_name = "user-images-v1"
 
 [assets]
-directory = "./public/"
+directory = "./public"
 binding = "ASSETS"
