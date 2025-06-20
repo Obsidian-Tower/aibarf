@@ -123,7 +123,7 @@ export async function handleAuth(request, env, pathname, corsHeaders) {
         status: 200,
         headers: {
           ...headers,
-          'Set-Cookie': `session=deleted; Domain=aibarf.com; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None`,
+          'Set-Cookie': `session=deleted; Domain=.aibarf.com; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None`,
         },
       });
     }
@@ -142,7 +142,7 @@ export async function handleAuth(request, env, pathname, corsHeaders) {
       status: 200,
       headers: {
         ...headers,
-        'Set-Cookie': `session=deleted; Domain=aibarf.com; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None`,
+        'Set-Cookie': `session=deleted; Domain=.aibarf.com; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=None`,
       },
     });
   }
