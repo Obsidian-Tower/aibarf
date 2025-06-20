@@ -197,7 +197,7 @@
 </head>
 <body>
   <nav class="top-nav">
-    <a href="index.html" class="logo">
+    <a href="index" class="logo">
       <img src="/images/assets/images/aibarf-logo-1.jpeg" alt="aibarf Logo" height="32" />
     </a>
     <div id="nav-right"></div>
@@ -280,14 +280,14 @@
 
           // Create Set handler
           document.getElementById("create-btn")
-            .addEventListener("click", () => location.href = "create-image-set.html");
+            .addEventListener("click", () => location.href = "create-image-set");
 
           // Profile button & modal
           modalUsername.textContent = data.user.name;
           document.getElementById("profile-btn")
             .addEventListener("click", () => profileModal.classList.toggle("show"));
 
-          modalEdit.addEventListener("click", () => location.href = "edit-profile.html");
+          modalEdit.addEventListener("click", () => location.href = "edit-profile");
           modalLogout.addEventListener("click", () => {
             fetch(`${API}/logout`, { method: "POST", credentials: "include", mode: "cors" })
               .then(() => location.reload());
