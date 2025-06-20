@@ -323,11 +323,14 @@
         top: 0.5rem;
         right: 0.5rem;
         background: transparent;
-        border: none;
+        border: 1px solid black; /* ✅ added border */
         font-size: 1.5rem;
         color: var(--fg);
         cursor: pointer;
+        border-radius: 4px; /* optional: soften corners */
+        padding: 0.1rem 0.4rem; /* optional: improve click target */
       }
+
     </style>
   </head>
   <body>
