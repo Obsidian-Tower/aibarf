@@ -138,6 +138,7 @@ export async function handleAuth(request, env, pathname, corsHeaders) {
 
   // /logout
   if (pathname === '/logout' && method === 'POST') {
+    console.log('🦊 handleAuth → POST /logout hit');
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: {
