@@ -33,6 +33,7 @@ export async function handleAuth(request, env, pathname, corsHeaders) {
 
   // /signup
   if (pathname === '/signup' && method === 'POST') {
+    console.log('🦊 handleAuth → POST /signup hit');
     const { name, email, password } = await request.json();
     if (!name || !email || !password) {
       return new Response(JSON.stringify({ error: 'Missing fields' }), { status: 400, headers });
