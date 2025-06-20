@@ -69,11 +69,7 @@ export async function handleAuth(request, env, pathname, corsHeaders) {
         hash,
         userId
       ),
-      env.DB.prepare('INSERT INTO auth_providers(provider,provider_user_id,user_id) VALUES(?,?,?)').bind(
-        'email',
-        normalizedEmail,
-        userId
-      ),
+      //auth provider push
     ]);
 
     return new Response(JSON.stringify({ success: true, userId }), { status: 201, headers });
