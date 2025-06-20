@@ -464,21 +464,23 @@
         const modal = document.getElementById("terms-modal");
         const iframe = document.getElementById("terms-iframe");
         const closeBtn = document.getElementById("terms-close");
-
+      
         termsLink.addEventListener("click", (e) => {
           e.preventDefault();
-
-          // OPTION A: use the anchor's href property
           iframe.src = termsLink.href;
-
-          // OPTION B: or explicitly read the attribute
-          // iframe.src = termsLink.getAttribute("href");
-
           modal.hidden = false;
         });
-
+      
         closeBtn.addEventListener("click", () => (modal.hidden = true));
+      
+        // ✅ NEW: close modal when clicking outside the box
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) {
+            modal.hidden = true;
+          }
+        });
       });
+
 
       // Username check
       let userTimer;
