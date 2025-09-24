@@ -5,6 +5,7 @@ import { handleProfile }      from './routes/profile.js';
 import { handleSets }         from './routes/sets.js';
 import { handleImages }       from './routes/images.js';
 import { handleAdmin }        from './routes/admin.js';
+import { ballsUpload }        from './routes/balls-upload.js';
 import { handleUser, handleUserPage } from './routes/user.js';
 
 export default {
