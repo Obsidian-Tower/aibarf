@@ -1,4 +1,4 @@
-export const onRequestPost = async ({ request, env }) => {
+export const ballsUpload = async ({ request, env }) => {
   const headers = { "Content-Type": "application/json" };
 
   try {
