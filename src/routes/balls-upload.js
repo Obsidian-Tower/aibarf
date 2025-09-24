@@ -2,7 +2,7 @@ export async function handleBallsUpload(request, env, pathname, corsHeaders) {
   const method = request.method;
   const headers = { "Content-Type": "application/json", ...corsHeaders };
 
-  // Only handle POST /admin/balls
+  // Only handle POST /admin/balls g
   if (pathname === "/admin/balls" && method === "POST") {
     const contentType = request.headers.get("content-type") || "";
 
